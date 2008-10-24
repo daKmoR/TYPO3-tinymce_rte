@@ -5,7 +5,8 @@ RTE.default {
 	typo3filemanager.height = 600
 	typo3filemanagerThumbs.width = 200
 	typo3filemanagerThumbs.height = 150
-	languagesExtension = tinymce_languages
+	# the following should be set by the language extension itself, but can also be set directly
+	# languagesExtension = tinymce_languages
 	typo3filemanagerMaxPlainImages.width = 1000
 	typo3filemanagerMaxPlainImages.height = 1000
 }
