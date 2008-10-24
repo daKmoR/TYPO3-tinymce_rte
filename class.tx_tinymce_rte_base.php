@@ -78,9 +78,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		$code .= '
 			<script type="text/javascript">
-				tinyMCE.init({
+				tinyMCE.init(
 					' . $this->parseConfig($this->conf['init']) .  '
-				});
+				);
 			</script>
 		';
 		
@@ -92,12 +92,16 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		return $code;
 	}
 	
-	function parseConfig($config) {
-		$tmp = array();
+	function fixTSArray($config) {
+		$output = array();
 		foreach($config as $key => $value) {
-			$tmp[] = "$key : \"$value\"";
+			$output[trim($key,'.')] = is_array($value) ? $this->fixTSArray($value) : $value;
 		}
-		return implode(",\n", $tmp);
+		return $output;
+	}
+	
+	function parseConfig($config) {
+		return json_encode($this->fixTSArray($config));
 	}
 	
 	// returns languages in ISO [brought to you by Peter Klein]
@@ -111,21 +115,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			return $typo3lang;
 		}
 	}
-	
-	// the default TS_links_rte() always prefix the links with ?id so we need to remove it again... sad but true
-	// didn't get called on all links so we now use XCLASS
-	/*
-	function fixLinks($content, $conf) {
-		$siteUrl = t3lib_div::getIndpEnv("TYPO3_SITE_URL");
-		
-		if (strpos($content, $siteUrl) === false)
-		  return $content;
-		if ($pos = strpos($content, '?id='))
-		  return substr($content, $pos+4);
-		
-		return $content;
-	}
-	*/
 	
 	function loadLanguageExtension($lang, $plugins, $path) {
 		$msg = "";

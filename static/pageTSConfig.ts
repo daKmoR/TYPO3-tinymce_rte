@@ -144,11 +144,11 @@ RTE.default.proc {
 		htmlSpecialChars = 0
 	}
 	
-	HTMLparser_rte {
+#	HTMLparser_rte {
 	  # REMOVES THE ?id= ADDED IN THE DEFAULT DB->RTE TRANSFORMATION
 		# DON'T GET CALLED ALWAYS, SO WE NOW USE XCLASS :(
 		# tags.a.fixAttrib.href.userFunc = tx_tinymce_rte_base->fixLinks
-	}
+#	}
 
 }
 

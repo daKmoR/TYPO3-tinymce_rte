@@ -38,8 +38,8 @@ require ($BACK_PATH.'template.php');
 require_once (PATH_t3lib.'class.t3lib_foldertree.php');
 require_once (PATH_t3lib.'class.t3lib_stdgraphic.php');
 require_once (PATH_t3lib.'class.t3lib_basicfilefunc.php');
-$LANG->includeLLFile('EXT:tinymce_rte/mod2/locallang_rte_select_image.php');
-//$LANG->includeLLFile('EXT:tinymce_rte/mod2/locallang_rte_select_image.xml');
+//$LANG->includeLLFile('EXT:tinymce_rte/mod2/locallang_rte_select_image.php');
+$LANG->includeLLFile('EXT:tinymce_rte/mod2/locallang_rte_select_image.xml');
 
 
 /**
