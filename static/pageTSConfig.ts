@@ -8,12 +8,23 @@ RTE.default {
 	# the following should be set by the language extension itself, but can also be set directly
 	# languagesExtension = tinymce_languages
 	typo3filemanagerMaxPlainImages.width = 1000
-	typo3filemanagerMaxPlainImages.height = 1000
+	typo3filemanagerMaxPlainImages.height = 1000	
+}
+
+RTE.default.spellcheck {
+	general.engine = GoogleSpell
+	PSpell.mode = PSPELL_FAST
+	PSpell.spelling =
+	PSpell.jargon =
+	PSpell.encoding =
+	PSpellShell.mode = PSPELL_FAST
+	PSpellShell.aspell =
+	PSpellShell.tmp = ./tmp
 }
 
 RTE.default.init {
 	content_css = fileadmin/templates/main/css/screen.css
-	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,template,typo3filemanager
+	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,template,spellchecker,typo3filemanager
 	theme_advanced_buttons1 = newdocument,|,undo,redo,|,bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,pastetext,pasteword,|,search,replace,|,fullscreen
 	theme_advanced_buttons2 = link,unlink,image,|,attribs,styleprops,anchor,charmap,tablecontrols
 	theme_advanced_buttons3 = code,forecolor,backcolor,strikethrough,sub,sup,|,bullist,numlist,|,outdent,indent,|,cleanup,nonbreaking,blockquote,|,insertlayer,moveforward,movebackward,absolute
@@ -22,6 +33,8 @@ RTE.default.init {
 	theme_advanced_toolbar_location = top
 	theme_advanced_toolbar_align = left
 	theme_advanced_statusbar_location = bottom
+	spellchecker_languages = +English=en,German=de
+	spellchecker_rpc_url = ../typo3conf/ext/tinymce_rte/mod3/rpc.php
 }
 
 # MANDATORY RTE CONFIG IF YOU CHANGE ANY OF THESE THE RTE MIGHT FAIL TO WORK
