@@ -708,7 +708,7 @@ class SC_browse_links {
 			$JScode.='
 				function link_insert(value,anchor)	{
 					var win = tinyMCEPopup.getWindowArg("window");
-					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = value;
+					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = value + anchor;
 					tinyMCEPopup.close();
 					return false;
 				}
