@@ -13,7 +13,7 @@ RTE.default {
 
 RTE.default.init {
 	content_css = fileadmin/templates/main/css/screen.css
-	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,typo3filemanager
+	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,template,typo3filemanager
 	theme_advanced_buttons1 = newdocument,|,undo,redo,|,bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,pastetext,pasteword,|,search,replace,|,fullscreen
 	theme_advanced_buttons2 = link,unlink,image,|,attribs,styleprops,anchor,charmap,tablecontrols
 	theme_advanced_buttons3 = code,forecolor,backcolor,strikethrough,sub,sup,|,bullist,numlist,|,outdent,indent,|,cleanup,nonbreaking,blockquote,|,insertlayer,moveforward,movebackward,absolute
@@ -49,12 +49,12 @@ RTE.default.proc {
 	# needed if you want to save spezial chars like &#9829; &hearts; both displays a heart (first NUM-Code second HTML-Code)
 	dontHSC_rte = 1
 
-	# REMAP DIV TAGS TO P TAGS
-	# For compatibility to other RTE
-	remapParagraphTag = p
+	# PRESERVE DIV
+	# we don't want div to be remove or remaped to p
+	preserveDIVSections = 1
 
 	# TAGS ALLOWED OUTSIDE P & DIV
-	allowTagsOutside = hr, address, img
+	allowTagsOutside = hr, address, ul, ol, li, img
 
 	# TAGS ALLOWED
 	# Added to the default internal list: b,i,u,a,img,br,div,center,pre,font,hr,sub,sup,p,strong,em,li,ul,ol,blockquote,strike,span
@@ -143,12 +143,6 @@ RTE.default.proc {
 		# AVOID CONTENT BEING HSC'ed TWICE
 		htmlSpecialChars = 0
 	}
-	
-#	HTMLparser_rte {
-	  # REMOVES THE ?id= ADDED IN THE DEFAULT DB->RTE TRANSFORMATION
-		# DON'T GET CALLED ALWAYS, SO WE NOW USE XCLASS :(
-		# tags.a.fixAttrib.href.userFunc = tx_tinymce_rte_base->fixLinks
-#	}
 
 }
 
