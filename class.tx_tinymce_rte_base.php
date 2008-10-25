@@ -35,9 +35,21 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		//loads the current Value
 		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
+		
+		// get the language (also checks if lib is called from FE or BE, which might of use later.)
+		$lang = (TYPO3_MODE == 'FE') ? $GLOBALS['TSFE'] : $GLOBALS['LANG'];
+		$this->language = $lang->lang;
+		
+		// language conversion from TLD to iso631
+		if ( array_key_exists($this->language, $lang->csConvObj->isoArray) )
+			$this->language = $lang->csConvObj->isoArray[$this->language];
 
-		// get the language
-		$this->language = ( ($LANG->lang == 'default') || (!$LANG->lang) ) ? 'en' : $this->getISO2Lang($LANG->lang);
+		// check if TinyMCE language file exists
+		$langpath = (t3lib_extmgm::isLoaded($thisConfig['languagesExtension'])) ? t3lib_extMgm::siteRelPath($thisConfig['languagesExtension']) : t3lib_extMgm::siteRelPath('tinymce_rte') . 'res/';
+
+		if(!is_file(PATH_site . $langpath . 'tiny_mce/langs/' . $this->language . '.js')) {
+		  $this->language = 'en';
+		}
 		
 		$mcePath = 'EXT:tinymce_rte/res/tiny_mce/tiny_mce.js';
 		$mceGzipPath = 'EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js';
@@ -102,18 +114,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	
 	function parseConfig($config) {
 		return json_encode($this->fixTSArray($config));
-	}
-	
-	// returns languages in ISO [brought to you by Peter Klein]
-	function getISO2Lang($typo3lang) {
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('lg_iso_2','static_languages','lg_typo3='.$GLOBALS['TYPO3_DB']->fullQuoteStr($typo3lang,'static_languages'));
-		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
-			$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-			return strtolower($row['lg_iso_2']);
-		}
-		else {
-			return $typo3lang;
-		}
 	}
 	
 	function loadLanguageExtension($lang, $plugins, $path) {

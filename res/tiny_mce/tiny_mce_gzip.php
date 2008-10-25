@@ -32,7 +32,8 @@
 	
 	$languagesExtension = getParam("langExt");
 	$languagesExtensionLoaded = getParam("langExtLoaded");
-	$langTinyMcePath = realpath('../../../' . $languagesExtension . '/tiny_mce/') . '/';
+	$langTinyMcePath = realpath('../../../' . $languagesExtension . '/tiny_mce/');
+	$langTinyMcePath .= (strpos($langTinyMcePath, '/') === true) ? '/' : '\\';
 	
 	if (!$languagesExtensionLoaded)
 	  $langTinyMcePath = '';
@@ -72,7 +73,7 @@
 		else
 			$cacheFile = $cachePath . "/tiny_mce_" . $cacheKey . ".js";
 	}
-
+	
 	// Check if it supports gzip
 	if (isset($_SERVER['HTTP_ACCEPT_ENCODING']))
 		$encodings = explode(',', strtolower(preg_replace("/\s+/", "", $_SERVER['HTTP_ACCEPT_ENCODING'])));
@@ -91,6 +92,7 @@
 		die();
 	}
 
+
 	// Add core
 	if ($core == "true") {
 		$content .= getFileContents("tiny_mce" . $suffix . ".js");
@@ -102,7 +104,7 @@
 	// Add core languages
 	foreach ($languages as $lang) {
 		$content .= getFileContents($langTinyMcePath . "langs/" . $lang . ".js");
-	}
+	}	
 
 	// Add themes
 	foreach ($themes as $theme) {
