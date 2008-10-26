@@ -1,0 +1,20 @@
+--- res/tiny_mce/plugins/fullscreen/editor_plugin_src.js	Sat Oct 25 12:08:29 2008
++++ res/tiny_mce/plugins/fullscreen/editor_plugin.js	Sun Oct 26 09:29:42 2008
+@@ -75,7 +75,7 @@
+ 					if (tinymce.isIE)
+ 						vp.h -= 1;
+ 
+-					n = DOM.add(DOM.doc.body, 'div', {id : 'mce_fullscreen_container', style : 'position:' + (tinymce.isIE6 || (tinymce.isIE && !DOM.boxModel) ? 'absolute' : 'fixed') + ';top:0;left:0;width:' + vp.w + 'px;height:' + vp.h + 'px;z-index:200000;'});
++					n = DOM.add(DOM.doc.body, 'div', {id : 'mce_fullscreen_container', style : 'position:' + (tinymce.isIE6 || (tinymce.isIE && !DOM.boxModel) ? 'absolute' : 'fixed') + ';top:51px;left:0;width:' + vp.w + 'px;height:' + (vp.h-51) + 'px;z-index:200000;'});
+ 					DOM.add(n, 'div', {id : 'mce_fullscreen'});
+ 
+ 					tinymce.each(ed.settings, function(v, n) {
+@@ -116,7 +116,7 @@
+ 					t.resizeFunc = tinymce.dom.Event.add(DOM.win, 'resize', function() {
+ 						var vp = tinymce.DOM.getViewPort();
+ 
+-						t.fullscreenEditor.theme.resizeTo(vp.w, vp.h);
++						t.fullscreenEditor.theme.resizeTo(vp.w, (vp.h-51));
+ 					});
+ 				}
+ 			});
