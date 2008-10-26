@@ -33,7 +33,11 @@ class ext_update {
 	var $patches = array(
 			'fullscreen' => array(
 				'desc' => 'Patch window size of fullscreen plugin, in order to make TYPO3\'s save buttons visible.',
-				'diff' => 'patcher/fullscreen.diff'
+				'diff' => 'patcher/diffs/fullscreen.diff'
+			),
+			'advlink' => array(
+				'desc' => 'Patch advlink to hide the popup tab as it\'s not supported',
+				'diff' => 'patcher/diffs/advlink.diff'
 			)
 		 );
 	/**
