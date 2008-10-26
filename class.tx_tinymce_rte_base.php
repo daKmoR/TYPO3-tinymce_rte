@@ -113,7 +113,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	}
 	
 	function parseConfig($config) {
-		return json_encode($this->fixTSArray($config));
+		return t3lib_div::array2json($this->fixTSArray($config));
 	}
 	
 	function loadLanguageExtension($lang, $plugins, $path) {
