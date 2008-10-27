@@ -66,7 +66,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$loaded = ( t3lib_extmgm::isLoaded($thisConfig['languagesExtension']) ) ? 1 : 0;
 		if ($thisConfig['gzip'])
 			$code .= '
-				<script type="text/javascript" src="../' . $this->getPath($mceGzipPath) . '"></script>
+				<script type="text/javascript" src="' . $this->getPath($mceGzipPath) . '"></script>
 				<script type="text/javascript">
 				tinyMCE_GZ.init({
 					plugins : "' . $this->conf['init']['plugins'] . '",
@@ -80,10 +80,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				</script>
 			';
 		else {
-		  $code .= '<script type="text/javascript" src="../' . $this->getPath($mcePath) . '"></script>';
+		  $code .= '<script type="text/javascript" src="' . $this->getPath($mcePath) . '"></script>';
 			if ( t3lib_extmgm::isLoaded($thisConfig['languagesExtension']) && ($this->language != 'en') && ($this->language != 'de') ) {
 				$code .= '<script type="text/javascript">';
-				$code .= $this->loadLanguageExtension($this->language, $this->conf['init']['plugins'], '../typo3conf/ext/' . $thisConfig['languagesExtension'] . '/tiny_mce' );
+				$code .= $this->loadLanguageExtension($this->language, $this->conf['init']['plugins'], $this->getPath('EXT:' . $thisConfig['languagesExtension'] .'/tiny_mce/') );
 				$code .= '</script>';
 			}
 		}
@@ -96,7 +96,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			</script>
 		';
 		
-    $code .= $this->getFileDialogJS('../typo3conf/ext/tinymce_rte/', $pObj, $table, $field, $row, $thisConfig);
+		$code .= $this->getFileDialogJS( $this->getPath('EXT:tinymce_rte/./'), $pObj, $table, $field, $row, $thisConfig);
 		
 		$code .= $this->triggerField($PA['itemFormElName']);
 		$code .= '<textarea id="RTEarea'.$pObj->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="15" cols="80">'.t3lib_div::formatForTextarea($value).'</textarea>';		
@@ -113,7 +113,18 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	}
 	
 	function parseConfig($config) {
-		return t3lib_div::array2json($this->fixTSArray($config));
+		if ((t3lib_div::int_from_ver(TYPO3_version) >= 4001000) && !(t3lib_div::int_from_ver(TYPO3_version) >= 4002000))
+			return $this->array2json($this->fixTSArray($config));
+		else	
+			return t3lib_div::array2json($this->fixTSArray($config));
+	}
+	
+	function array2json($jsonArray) {
+		if (!$GLOBALS['JSON']) {
+			require_once(PATH_typo3.'contrib/json.php');
+			$GLOBALS['JSON'] = t3lib_div::makeInstance('Services_JSON');
+		}
+		return $GLOBALS['JSON']->encode($jsonArray);
 	}
 	
 	function loadLanguageExtension($lang, $plugins, $path) {
@@ -176,7 +187,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 							}
 							
 
-							template_file = "'.$path.'mod1/browse_links.php?act="+act+expPage+"&mode=wizard&P[ext]=../'.t3lib_extMgm::siteRelPath("tinymce_rte").'&P[init]=tinymce_rte&P[formName]=' . /*$pObj->formName*/ 'editform' . '"+current+"&P[itemName]=data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D&P[fieldChangeFunc][TBE_EDITOR_fieldChanged]=TBE_EDITOR_fieldChanged%28%27'.$table.'%27%2C%27'.$row["uid"].'%27%2C%27'.$field.'%27%2C%27data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D%27%29%3B";
+							template_file = "'.$path.'mod1/browse_links.php?act="+act+expPage+"&mode=wizard&P[ext]='. $this->getPath('EXT:tinymce_rte/./') .'&P[init]=tinymce_rte&P[formName]=' . /*$pObj->formName*/ 'editform' . '"+current+"&P[itemName]=data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D&P[fieldChangeFunc][TBE_EDITOR_fieldChanged]=TBE_EDITOR_fieldChanged%28%27'.$table.'%27%2C%27'.$row["uid"].'%27%2C%27'.$field.'%27%2C%27data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D%27%29%3B";
 							break;
 	
 						case "image":
@@ -206,7 +217,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	}
 	
   function getPath($path) {
-    return str_replace(PATH_site,'',t3lib_div::getFileAbsFileName($path));
+		$httpTypo3Path = substr( substr( t3lib_div::getIndpEnv('TYPO3_SITE_URL'), strlen( t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') ) ), 0, -1 );
+		$httpTypo3Path = (strlen($httpTypo3Path) == 1) ? '/' : $httpTypo3Path . '/';
+		return $httpTypo3Path . str_replace(PATH_site,'',t3lib_div::getFileAbsFileName($path));
   }
 
 
