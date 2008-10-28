@@ -59,7 +59,7 @@
 	// Setup cache info
 	if ($diskCache) {
 		if (!$cachePath)
-			die("alert('TinyMCE gzip cache file couldn't be created.');");
+			die("alert('TinyMCE gzip cache file couldn\'t be created.');");
 
 		$cacheKey = getParam("plugins", "") . getParam("languages", "") . getParam("themes", "") . $suffix;
 
