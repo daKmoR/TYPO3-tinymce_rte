@@ -51,39 +51,42 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		  $this->language = 'en';
 		}
 		
-		$mcePath = 'EXT:tinymce_rte/res/tiny_mce/tiny_mce.js';
-		$mceGzipPath = 'EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js';
-		
 		if (!is_array($BE_USER->userTS['RTE.']['default.']['init.']))
 		  $BE_USER->userTS['RTE.']['default.']['init.'] = array();
 		
-		$this->conf['init'] = array(
+		$this->conf = array( 'init.' => array(
 			'language' => $this->language,
-			'document_base_url' => t3lib_div::getIndpEnv('TYPO3_SITE_URL')
-		);
-		$this->conf['init'] = array_merge($this->conf['init'], $thisConfig['init.'], $BE_USER->userTS['RTE.']['default.']['init.']);
+			'document_base_url' => t3lib_div::getIndpEnv('TYPO3_SITE_URL'),
+		));
+		
+		$this->conf = array_merge_recursive($this->conf, $thisConfig, $BE_USER->userTS['RTE.']['default.']);
+		
+		//resolve EXT pathes for these values
+		$this->conf['init.']['spellchecker_rpc_url'] = $this->getPath($this->conf['init.']['spellchecker_rpc_url']);
+		$this->conf['tiny_mcePath'] = $this->getPath($this->conf['tiny_mcePath']);
+		$this->conf['tiny_mceGzipPath'] = $this->getPath($this->conf['tiny_mceGzipPath']);
 
-		$loaded = ( t3lib_extmgm::isLoaded($thisConfig['languagesExtension']) ) ? 1 : 0;
-		if ($thisConfig['gzip'])
+		$loaded = ( t3lib_extmgm::isLoaded($this->conf['languagesExtension']) ) ? 1 : 0;
+		if ($this->conf['gzip'])
 			$code .= '
-				<script type="text/javascript" src="' . $this->getPath($mceGzipPath) . '"></script>
+				<script type="text/javascript" src="' . $this->conf['tiny_mceGzipPath'] . '"></script>
 				<script type="text/javascript">
 				tinyMCE_GZ.init({
-					plugins : "' . $this->conf['init']['plugins'] . '",
+					plugins : "' . $this->conf['init.']['plugins'] . '",
 					themes : "advanced",
-					languages : "' . $this->conf['init']['language'] .'",
-					disk_cache : ' . $thisConfig['gzipFileCache'] . ',
-					langExt : "' . $thisConfig['languagesExtension'] . '",
+					languages : "' . $this->conf['init.']['language'] .'",
+					disk_cache : ' . $this->conf['gzipFileCache'] . ',
+					langExt : "' . $this->conf['languagesExtension'] . '",
 					langExtLoaded : ' . $loaded  . ',
 					debug : false
 				});
 				</script>
 			';
 		else {
-		  $code .= '<script type="text/javascript" src="' . $this->getPath($mcePath) . '"></script>';
-			if ( t3lib_extmgm::isLoaded($thisConfig['languagesExtension']) && ($this->language != 'en') && ($this->language != 'de') ) {
+		  $code .= '<script type="text/javascript" src="' . $this->conf['tiny_mcePath'] . '"></script>';
+			if ( t3lib_extmgm::isLoaded($this->conf['languagesExtension']) && ($this->language != 'en') && ($this->language != 'de') ) {
 				$code .= '<script type="text/javascript">';
-				$code .= $this->loadLanguageExtension($this->language, $this->conf['init']['plugins'], $this->getPath('EXT:' . $thisConfig['languagesExtension'] .'/tiny_mce/') );
+				$code .= $this->loadLanguageExtension($this->language, $this->conf['init.']['plugins'], $this->getPath('EXT:' . $this->conf['languagesExtension'] .'/tiny_mce/') );
 				$code .= '</script>';
 			}
 		}
@@ -92,14 +95,14 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			<script type="text/javascript">
 			/* <![CDATA[ */
 				tinyMCE.init(
-					' . $this->parseConfig($this->conf['init']) .  '
+					' . $this->parseConfig($this->conf['init.']) .  '
 				);
 			/* ]]> */	
 			</script>
 		';
 		
 		if (TYPO3_MODE == 'BE')
-			$code .= $this->getFileDialogJS( $this->getPath('EXT:tinymce_rte/./'), $pObj, $table, $field, $row, $thisConfig);
+			$code .= $this->getFileDialogJS( $this->getPath('EXT:tinymce_rte/./'), $pObj, $table, $field, $row);
 		
 		$code .= $this->triggerField($PA['itemFormElName']);
 		$code .= '<textarea id="RTEarea'.$pObj->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';		
@@ -143,7 +146,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		return $msg;
 	}
 	
-	function getFileDialogJS($path, $pObj, $table, $field, $row, $thisConfig) {
+	function getFileDialogJS($path, $pObj, $table, $field, $row) {
 		$msg = "";
 		$msg .=' 			
 			<script language="javascript" type="text/javascript">
@@ -171,10 +174,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 									var url=node.getAttribute("t3url") ? node.getAttribute("t3url") : node.getAttribute("href");
 									var target=node.getAttribute("t3target") ? node.getAttribute("t3target") : (node.getAttribute("target") ? node.getAttribute("target") : "");
 									if(url.indexOf("?id=")<0) {
-										var selURL=url;
+										var selURL=encodeURIComponent(url);
+										var selURL = url;
 										current="&P[currentValue]="+selURL+" "+target;
-									}
-									else {
+									}	else {
 										var fz=url.indexOf("?")+4;
 										selURL=url.substr(fz,url.length);
 										current="&P[currentValue]="+selURL+" "+target;
@@ -200,8 +203,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 
 					tinyMCE.activeEditor.windowManager.open({
 						file : template_file,
-						width : ' . $thisConfig['typo3filemanager.']['width'] . ', 
-						height : ' . $thisConfig['typo3filemanager.']['height'] . ',
+						width : ' . $this->conf['typo3filemanager.']['width'] . ', 
+						height : ' . $this->conf['typo3filemanager.']['height'] . ',
 						resizable : "yes",
 						inline : "yes",
 						close_previous : "no"

@@ -1,5 +1,5 @@
-# clear RTE.default
-RTE.default >
+# clear htmlarea skin?
+RTE.default.skin > 
 
 RTE.default {
 	gzip = 1
@@ -9,9 +9,11 @@ RTE.default {
 	typo3filemanagerThumbs.width = 200
 	typo3filemanagerThumbs.height = 150
 	# the following should be set by the language extension itself, but can also be set directly
-	# languagesExtension = tinymce_languages
+	# languagesExtension = tinymce_rte
 	typo3filemanagerMaxPlainImages.width = 1000
 	typo3filemanagerMaxPlainImages.height = 1000	
+	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
+	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
 }
 
 RTE.default.init {
@@ -26,7 +28,7 @@ RTE.default.init {
 	theme_advanced_toolbar_align = left
 	theme_advanced_statusbar_location = bottom
 	spellchecker_languages = +English=en,German=de
-	spellchecker_rpc_url = ../typo3conf/ext/tinymce_rte/mod3/rpc.php
+	spellchecker_rpc_url = EXT:tinymce_rte/mod3/rpc.php
 }
  
 # MANDATORY RTE CONFIG IF YOU CHANGE ANY OF THESE THE RTE MIGHT FAIL TO WORK
