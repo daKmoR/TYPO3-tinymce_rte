@@ -56,9 +56,9 @@ RTE.default.FE < .RTE.default
 
 # Default config for FE use; stripping off many buttons
 RTE.default.FE.init {
-	plugins = safari,inlinepopups,paste,link
-	theme_advanced_buttons1 = cut,copy,pastetext,|,bold,italic,underline,forecolor,backcolor,|,indent,outdent,|,link,unlink
-	theme_advanced_buttons2 = bullist,numlist,|,justifyleft,justifycenter,justifyright
+	plugins = safari,inlinepopups,paste,link,image
+	theme_advanced_buttons1 = cut,copy,pastetext,|,bold,italic,underline,forecolor,backcolor,|,indent,outdent
+	theme_advanced_buttons2 = bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,image
 	theme_advanced_buttons3 =
 	theme_advanced_buttons4 =
 	theme_advanced_statusbar_location = none
