@@ -1,3 +1,6 @@
+# clear RTE.default
+RTE.default >
+
 RTE.default {
 	gzip = 1
 	gzipFileCache = 1
@@ -25,17 +28,15 @@ RTE.default.init {
 	spellchecker_languages = +English=en,German=de
 	spellchecker_rpc_url = ../typo3conf/ext/tinymce_rte/mod3/rpc.php
 }
-
-# Default config for FE use; stripping off many buttons
-RTE.default.FE.init {
-	plugins = safari,inlinepopups,advimage,advlink,paste
-	theme_advanced_buttons1 = cut,copy,pastetext,|,bold,italic,underline,forecolor,backcolor,|,indent,outdent,|,link,unlink
-	theme_advanced_buttons2 = bullist,numlist,|,justifyleft,justifycenter,justifyright
-	theme_advanced_buttons3 =
-	theme_advanced_buttons4 =
-	theme_advanced_statusbar_location = none
-	theme_advanced_resizing = false
-	file_browser_callback >
+ 
+# MANDATORY RTE CONFIG IF YOU CHANGE ANY OF THESE THE RTE MIGHT FAIL TO WORK
+RTE.default.init {
+	mode = textareas
+	editor_selector = tinymce_rte
+	theme = advanced
+	entity_encoding = raw
+	# you could override the following option if you don't want to insert links.
+	file_browser_callback = fileBrowserCallBack
 }
 
 # Config used for the spellchecker
@@ -49,19 +50,23 @@ RTE.default.spellcheck {
 	PSpellShell.aspell =
 	PSpellShell.tmp = ./tmp
 }
- 
-# MANDATORY RTE CONFIG IF YOU CHANGE ANY OF THESE THE RTE MIGHT FAIL TO WORK
-RTE.default.init {
-	mode = textareas
-	editor_selector = tinymce_rte
-	theme = advanced
-	entity_encoding = raw
-	# you could override the following option if you don't want to insert links.
-	file_browser_callback = fileBrowserCallBack
+
+RTE.default.FE >
+RTE.default.FE < .RTE.default
+
+# Default config for FE use; stripping off many buttons
+RTE.default.FE.init {
+	plugins = safari,inlinepopups,paste,link
+	theme_advanced_buttons1 = cut,copy,pastetext,|,bold,italic,underline,forecolor,backcolor,|,indent,outdent,|,link,unlink
+	theme_advanced_buttons2 = bullist,numlist,|,justifyleft,justifycenter,justifyright
+	theme_advanced_buttons3 =
+	theme_advanced_buttons4 =
+	theme_advanced_statusbar_location = none
+	theme_advanced_resizing = false
+	file_browser_callback =
 }
 
 # Default RTE processing rules
-
 RTE.default.proc {
 	# TRANSFORMATION METHOD
 	# We assume that CSS Styled Content is used.

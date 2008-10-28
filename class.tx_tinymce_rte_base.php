@@ -62,7 +62,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			'document_base_url' => t3lib_div::getIndpEnv('TYPO3_SITE_URL')
 		);
 		$this->conf['init'] = array_merge($this->conf['init'], $thisConfig['init.'], $BE_USER->userTS['RTE.']['default.']['init.']);
-		
+
 		$loaded = ( t3lib_extmgm::isLoaded($thisConfig['languagesExtension']) ) ? 1 : 0;
 		if ($thisConfig['gzip'])
 			$code .= '
@@ -90,9 +90,11 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		$code .= '
 			<script type="text/javascript">
+			/* <![CDATA[ */
 				tinyMCE.init(
 					' . $this->parseConfig($this->conf['init']) .  '
 				);
+			/* ]]> */	
 			</script>
 		';
 		
@@ -221,7 +223,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$httpTypo3Path = (strlen($httpTypo3Path) == 1) ? '/' : $httpTypo3Path . '/';
 		return $httpTypo3Path . str_replace(PATH_site,'',t3lib_div::getFileAbsFileName($path));
   }
-
 
 }
 

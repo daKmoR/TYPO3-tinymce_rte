@@ -27,26 +27,21 @@
  *
  * Provides tinymce_rte for use in frontend plugins
  *
- * @author Marcus Schwemer <schwemer@netzwerkberatung.de)
+ * @author Thomas Allmer <thomas.allmer@webteam.at)
  *
  */
 
 /**
  * This class provides the tinymce_rte for usage in FE-plugins
  *
- * @author Marcus Schwemer <schwemer@netzwerkberatung.de>
+ * @author Thomas Allmer <thomas.allmer@webteam.at)
  * @package Typo3
  * @subpackage tinymce_rte
  */
 
 require_once(t3lib_extMgm::extPath('tinymce_rte').'class.tx_tinymce_rte_base.php');
 
-class tx_tinymcerte_pi1 extends tx_tinymce_rte_base
-{
-	var $pageTSConfig = array();
-	var $rteSetup = array();
-	var $httpTypo3Path;
-	var $extHttpPath;
+class tx_tinymcerte_pi1 extends tx_tinymce_rte_base {
 
 	/**
 	 * 	 * Adds the tinymce_rte to a textarea
@@ -65,152 +60,8 @@ class tx_tinymcerte_pi1 extends tx_tinymce_rte_base
 	 */
 
 	function drawRTE($parentObject,$table,$field,$row,$PA,$specConf,$thisConfig,$RTEtypeVal,$RTErelPath,$thePidValue) {
-
-		// relativ paths to tinymce files
-		$mceRelPath = 'res/tiny_mce/tiny_mce.js';
-		$mceRelGzipPath = 'res/tiny_mce/tiny_mce_gzip.js';
-
-		// html code for rte creation
-		$code = '';
-
-		//loads the current Value
-		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
-
-		$this->initClassVars();
-
-		$config = $this->getConfiguration($parentObject);
-
-		$loaded = ( t3lib_extmgm::isLoaded( $this->rteSetup['languagesExtension'] ) ) ? 1 : 0;
-
-		if ($this->rteSetup['gzip']) {
-			$code .= '
-				<script type="text/javascript" src="'. $this->extHttpPath . $mceRelGzipPath . '"></script>
-				<script type="text/javascript">
-				/* <![CDATA[ */
-				tinyMCE_GZ.init({
-					plugins : "' . $this->conf['init']['plugins'] . '",
-					themes : "advanced",
-					languages : "' . $this->conf['init']['language'] .'",
-					disk_cache : ' . $this->rteSetup['gzipFileCache'] . ',
-					langExt : "' . $this->rteSetup['languagesExtension'] . '",
-					langExtLoaded : ' . $loaded  . ',
-					debug : false
-				});
-				/* ]]> */
-				</script>
-			';
-		} else {
-		  $code .= '<script type="text/javascript" src="'. $this->extHttpPath . $mceRelPath . '"></script>';
-			if ( t3lib_extmgm::isLoaded($this->rteSetup['languagesExtension']) && ($this->conf['init']['language'] != 'en') && ($this->conf['init']['language'] != 'de') ) {
-				$code .= '<script type="text/javascript"> /* <![CDATA[ */';
-				$code .= $this->loadLanguageExtension($this->conf['init']['language'], $this->conf['init']['plugins'], t3lib_extMgm::siteRelPath($this->rteSetup['languagesExtension']) . '/tiny_mce' );
-				$code .= '/* ]]> */</script>';
-			}
-		}
-
-		$code .= '
-			<script type="text/javascript">
-			/* <![CDATA[ */
-				tinyMCE.init(
-					' . $this->parseConfig($config) .  '
-				);
-			/* ]]> */
-			</script>
-		';
-
-		$code .= $this->triggerField($PA['itemFormElName']);
-		$code .= '<textarea id="RTEarea'.$pObj->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="15" cols="80">'.t3lib_div::formatForTextarea($value).'</textarea>';
-
-		return $code;
-
-
-	}
-
-	/**
-	 * This function initializes the class viariables
-	 *
-	 * @param none
-	 * @return void
-	 */
-
-	function initClassVars() {
-
-		// first get the http-path to typo3:
-		$this->httpTypo3Path = substr( substr( t3lib_div::getIndpEnv('TYPO3_SITE_URL'), strlen( t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') ) ), 0, -1 );
-		if (strlen($this->httpTypo3Path) == 1) {
-			$this->httpTypo3Path = '/';
-		} else {
-			$this->httpTypo3Path .= '/';
-		}
-
-		// Get the path to this extension:
-		$this->extHttpPath = $this->httpTypo3Path.t3lib_extMgm::siteRelPath('tinymce_rte');
-
-		$this->pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig();
-
-		if (is_array($this->pageTSConfig) && is_array($this->pageTSConfig['RTE.']['default.'])) {
-			$this->rteSetup = $this->pageTSConfig['RTE.']['default.'];
-		}
-	}
-
-	/**
-	 * Reads the configuration from PageTS and TS-Setup and merges them into one array
-	 *
-	 * @param object $parentObject
-	 * @return array Array with all configuration parameters
-	 */
-	function getConfiguration($parentObject) {
-
-		if (is_array($this->rteSetup['init.'])) {
-			$rteInit = $this->rteSetup['init.'];
-		} else {
-			$rteInit = array();
-		}
-
-		if (is_array($this->rteSetup) && is_array($this->rteSetup['FE.'])) {
-			$feSetup = $this->rteSetup['FE.'];
-		}
-
-		if (is_array($feSetup['init.'])) {
-			$feInit = $feSetup['init.'];
-		} else {
-			$feInit = array();
-		}
-
-		if (is_array($parentObject->conf['tinymce_rte.'])) {
-			$tsSetup = $parentObject->conf['tinymce_rte.'];
-		}
-
-		if (is_array($tsSetup['init.'])) {
-			$tsInit = $tsSetup['init.'];
-		} else {
-			$tsInit = array();
-		}
-
-		// get the language (also checks if lib is called from FE or BE, which might of use later.)
-		$lang = (TYPO3_MODE == 'FE') ? $GLOBALS['TSFE'] : $GLOBALS['LANG'];
-		$this->language = $lang->lang;
-
-		// language conversion from TLD to iso631
-		if ( array_key_exists($this->language, $lang->csConvObj->isoArray) )
-			$this->language = $lang->csConvObj->isoArray[$this->language];
-
-		// check if TinyMCE language file exists
-		$langpath = (t3lib_extmgm::isLoaded($thisConfig['languagesExtension'])) ? t3lib_extMgm::siteRelPath($thisConfig['languagesExtension']) : t3lib_extMgm::siteRelPath('tinymce_rte') . 'res/';
-
-		if(!is_file(PATH_site . $langpath . 'tiny_mce/langs/' . $this->language . '.js')) {
-		  $this->language = 'en';
-		}
-
-		$this->conf['init'] = array(
-			'language' => $this->language,
-			'document_base_url' => t3lib_div::getIndpEnv('TYPO3_SITE_URL')
-		);
-
-		$this->conf['init'] = array_merge($this->conf['init'], $rteInit, $feInit, $tsInit);
-
-		return $this->conf['init'];
-
+		$tmpConf = $GLOBALS['TSFE']->getPagesTSconfig();
+		return parent::drawRTE($parentObject,$table,$field,$row,$PA,$specConf,$tmpConf['RTE.']['default.']['FE.'],$RTEtypeVal,$RTErelPath,$thePidValue);
 	}
 
 }
