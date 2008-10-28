@@ -98,10 +98,11 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			</script>
 		';
 		
-		$code .= $this->getFileDialogJS( $this->getPath('EXT:tinymce_rte/./'), $pObj, $table, $field, $row, $thisConfig);
+		if (TYPO3_MODE == 'BE')
+			$code .= $this->getFileDialogJS( $this->getPath('EXT:tinymce_rte/./'), $pObj, $table, $field, $row, $thisConfig);
 		
 		$code .= $this->triggerField($PA['itemFormElName']);
-		$code .= '<textarea id="RTEarea'.$pObj->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="15" cols="80">'.t3lib_div::formatForTextarea($value).'</textarea>';		
+		$code .= '<textarea id="RTEarea'.$pObj->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';		
 		
 		return $code;
 	}
