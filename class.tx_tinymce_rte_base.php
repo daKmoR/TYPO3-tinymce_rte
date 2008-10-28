@@ -97,7 +97,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				tinyMCE.init(
 					' . $this->parseConfig($this->conf['init.']) .  '
 				);
-			/* ]]> */	
+			/* ]]> */
 			</script>
 		';
 		
@@ -150,52 +150,23 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$msg = "";
 		$msg .=' 			
 			<script language="javascript" type="text/javascript">
-				//<![CDATA[
-				
-				/**
-				 * Here are the additional Typo3-Functions
-				 * At this time only "type" is used to
-				 * manage Link or Image functions 
-				 */
+				/* <![CDATA[ */
 				function fileBrowserCallBack(field_name, url, type, win) {
-					field=field_name;
-					var expPage="";
-					var editor_id="RTEarea'.$pObj->RTEcounter.'";
-					var act="page";
-          if(type!="image") type="link";
+					if ( type != "image") type = "link";
 					switch(type){
 						case "link":
-							var selURL="";
-							var current="";
-							var node=tinyMCE.activeEditor.selection.getNode();
-							do {
-								if (node.nodeName.toLowerCase() == "a" && node.getAttribute("href") != "") {
-									var act=node.getAttribute("t3page") ? node.getAttribute("t3page") : "page";
-									var url=node.getAttribute("t3url") ? node.getAttribute("t3url") : node.getAttribute("href");
-									var target=node.getAttribute("t3target") ? node.getAttribute("t3target") : (node.getAttribute("target") ? node.getAttribute("target") : "");
-									if(url.indexOf("?id=")<0) {
-										var selURL=encodeURIComponent(url);
-										var selURL = url;
-										current="&P[currentValue]="+selURL+" "+target;
-									}	else {
-										var fz=url.indexOf("?")+4;
-										selURL=url.substr(fz,url.length);
-										current="&P[currentValue]="+selURL+" "+target;
-									}
-								}
-
-							} while ((node = node.parentNode));
-
-							if(selURL.indexOf("#")>-1) {
-								var lT=selURL.split("#")
-								var expPage="&expandPage="+lT[0]+"&cE="+lT[1];
-								current=current.replace("#","%23");
+							var expPage = "";
+							var tab = "page";
+							if ( url.indexOf("fileadmin") >- 1) tab = "file";
+							if ( (url.indexOf("http://") > -1) || (url.indexOf("ftp://") > -1) || (url.indexOf("https://") > -1) ) tab = "url";
+							if ( url.indexOf("@") > -1 ) tab = "mail";
+							var current = "&P[currentValue]=" + encodeURIComponent(url);
+							if (url.indexOf("#")>-1) {
+								var pageCE = url.split("#");
+								expPage = "&expandPage=" + pageCE[0] + "&cE=" + pageCE[1];
 							}
-							
-
-							template_file = "'.$path.'mod1/browse_links.php?act="+act+expPage+"&mode=wizard&P[ext]='. $this->getPath('EXT:tinymce_rte/./') .'&P[init]=tinymce_rte&P[formName]=' . /*$pObj->formName*/ 'editform' . '"+current+"&P[itemName]=data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D&P[fieldChangeFunc][TBE_EDITOR_fieldChanged]=TBE_EDITOR_fieldChanged%28%27'.$table.'%27%2C%27'.$row["uid"].'%27%2C%27'.$field.'%27%2C%27data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D%27%29%3B";
+							template_file = "'.$path.'mod1/browse_links.php?act="+tab+expPage+"&mode=wizard&P[ext]='. $this->getPath('EXT:tinymce_rte/./') .'&P[init]=tinymce_rte&P[formName]=' . /*$pObj->formName*/ 'editform' . '"+current+"&P[itemName]=data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D&P[fieldChangeFunc][TBE_EDITOR_fieldChanged]=TBE_EDITOR_fieldChanged%28%27'.$table.'%27%2C%27'.$row["uid"].'%27%2C%27'.$field.'%27%2C%27data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D%27%29%3B";
 							break;
-	
 						case "image":
 							template_file = "'.$path.'mod2/rte_select_image.php?act=magic&RTEtsConfigParams='.$table.'%3A136%3A'.$field.'%3A29%3Atext%3A'.$row["pid"].'%3A";
 							break;
@@ -213,10 +184,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 						input : field_name
 					});
 					return false;
-					
 				}
-				
-				//]]>
+				/* ]]> */
 			</script>
 		';
 		return $msg;
