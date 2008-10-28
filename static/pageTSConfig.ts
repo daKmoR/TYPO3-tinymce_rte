@@ -11,17 +11,6 @@ RTE.default {
 	typo3filemanagerMaxPlainImages.height = 1000	
 }
 
-RTE.default.spellcheck {
-	general.engine = GoogleSpell
-	PSpell.mode = PSPELL_FAST
-	PSpell.spelling =
-	PSpell.jargon =
-	PSpell.encoding =
-	PSpellShell.mode = PSPELL_FAST
-	PSpellShell.aspell =
-	PSpellShell.tmp = ./tmp
-}
-
 RTE.default.init {
 	content_css = fileadmin/templates/main/css/screen.css
 	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,template,spellchecker,typo3filemanager
@@ -37,6 +26,30 @@ RTE.default.init {
 	spellchecker_rpc_url = ../typo3conf/ext/tinymce_rte/mod3/rpc.php
 }
 
+# Default config for FE use; stripping off many buttons
+RTE.default.FE.init {
+	plugins = safari,inlinepopups,advimage,advlink,paste
+	theme_advanced_buttons1 = cut,copy,pastetext,|,bold,italic,underline,forecolor,backcolor,|,indent,outdent,|,link,unlink
+	theme_advanced_buttons2 = bullist,numlist,|,justifyleft,justifycenter,justifyright
+	theme_advanced_buttons3 =
+	theme_advanced_buttons4 =
+	theme_advanced_statusbar_location = none
+	theme_advanced_resizing = false
+	file_browser_callback >
+}
+
+# Config used for the spellchecker
+RTE.default.spellcheck {
+	general.engine = GoogleSpell
+	PSpell.mode = PSPELL_FAST
+	PSpell.spelling =
+	PSpell.jargon =
+	PSpell.encoding =
+	PSpellShell.mode = PSPELL_FAST
+	PSpellShell.aspell =
+	PSpellShell.tmp = ./tmp
+}
+ 
 # MANDATORY RTE CONFIG IF YOU CHANGE ANY OF THESE THE RTE MIGHT FAIL TO WORK
 RTE.default.init {
 	mode = textareas
