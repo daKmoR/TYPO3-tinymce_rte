@@ -29,6 +29,8 @@ RTE.default.init {
 	theme_advanced_statusbar_location = bottom
 	spellchecker_languages = +English=en,German=de
 	spellchecker_rpc_url = EXT:tinymce_rte/mod3/rpc.php
+	width = 600
+	height = 550
 }
  
 # MANDATORY RTE CONFIG IF YOU CHANGE ANY OF THESE THE RTE MIGHT FAIL TO WORK
@@ -38,7 +40,7 @@ RTE.default.init {
 	theme = advanced
 	entity_encoding = raw
 	# you could override the following option if you don't want to insert links.
-	file_browser_callback = fileBrowserCallBack
+	file_browser_callback = typo3filebrowser
 }
 
 # Config used for the spellchecker
@@ -63,8 +65,9 @@ RTE.default.FE.init {
 	theme_advanced_buttons2 = bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,image
 	theme_advanced_buttons3 =
 	theme_advanced_buttons4 =
-	theme_advanced_statusbar_location = none
-	theme_advanced_resizing = false
+	theme_advanced_resize_horizontal = false
+	width = 
+	height = 
 	file_browser_callback =
 }
 

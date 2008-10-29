@@ -136,12 +136,13 @@ class	PhpPatcher {
 		foreach($files as $file) {
 			// print_r($file);
 			// die();
+			@mkdir(dirname($file));
 			$f = @fopen($file, 'w');
 			if ($f===null)
 				continue;
 			//fwrite($f, implode($this->newline, $this->destinations[$file]));
 			$uncompressed = implode($this->newline, $this->destinations[$file]);
-			if ( strpos($file, '.html') OR strpos($file, '.htm') )
+			if ( strpos($file, '.html') OR strpos($file, '.htm') OR strpos($file, '_src') )
 				$compressed = $uncompressed;
 			else
 				$compressed = JSMin::minify($uncompressed);

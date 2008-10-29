@@ -119,9 +119,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	
 	function parseConfig($config) {
 		if ((t3lib_div::int_from_ver(TYPO3_version) >= 4001000) && !(t3lib_div::int_from_ver(TYPO3_version) >= 4002000))
-			return $this->array2json($this->fixTSArray($config));
+			$code = $this->array2json($this->fixTSArray($config));
 		else	
-			return t3lib_div::array2json($this->fixTSArray($config));
+			$code = t3lib_div::array2json($this->fixTSArray($config));
+		return str_replace( array('"false"', '"true"'), array('false', 'true'), $code);
 	}
 	
 	function array2json($jsonArray) {
@@ -150,7 +151,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$msg .=' 			
 			<script language="javascript" type="text/javascript">
 				/* <![CDATA[ */
-				function fileBrowserCallBack(field_name, url, type, win) {
+				function typo3filemanager(field_name, url, type, win) {
 					if ( type != "image") type = "link";
 					switch(type){
 						case "link":
