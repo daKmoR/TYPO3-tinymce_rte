@@ -56,7 +56,7 @@ class ux_t3lib_parsehtml_proc extends t3lib_parsehtml_proc {
 						}
 						$page = t3lib_BEfunc::getRecord('pages', $idPart);
 						if (is_array($page))	{	// Page must exist...
-							$href = $link_param;
+							$href = $link_param; //XLCASS changed from $href = $siteUrl.'?id='.$link_param;
 						} else if(strtolower(substr($link_param, 0, 7)) == 'record:') {
 								// linkHandler - allowing links to start with "record:"
 							$href = $link_param;
@@ -84,6 +84,163 @@ class ux_t3lib_parsehtml_proc extends t3lib_parsehtml_proc {
 		return implode('',$blockSplit);		
 		
 	}
+	
+	/**
+	 * Transformation handler: 'ts_images' / direction: "db"
+	 * Processing images inserted in the RTE.
+	 * This is used when content goes from the RTE to the database.
+	 * Images inserted in the RTE has an absolute URL applied to the src attribute. This URL is converted to a relative URL
+	 * If it turns out that the URL is from another website than the current the image is read from that external URL and moved to the local server.
+	 * Also "magic" images are processed here.
+	 *
+	 * @param	string		The content from RTE going to Database
+	 * @return	string		Processed content
+	 */
+	function TS_images_db($value)	{
+
+			// Split content by <img> tags and traverse the resulting array for processing:
+		$imgSplit = $this->splitTags('img',$value);
+		foreach($imgSplit as $k => $v)	{
+			if ($k%2)	{	// image found, do processing:
+
+					// Init
+				$attribArray = $this->get_tag_attributes_classic($v,1);
+				$siteUrl = $this->siteUrl();
+				$sitePath = str_replace (t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST'), '', $siteUrl);
+
+				$absRef = trim($attribArray['src']);		// It's always a absolute URL coming from the RTE into the Database.
+
+					// make path absolute if it is relative and we have a site path wich is not '/'
+				$pI=pathinfo($absRef);
+				if($sitePath AND !$pI['scheme'] && t3lib_div::isFirstPartOfStr($absRef,$sitePath)) {
+						// if site is in a subpath (eg. /~user_jim/) this path needs to be removed because it will be added with $siteUrl
+					$absRef = substr($absRef,strlen($sitePath));
+					$absRef = $siteUrl.$absRef;
+				}
+
+					// External image from another URL? In that case, fetch image (unless disabled feature).
+				if (!t3lib_div::isFirstPartOfStr($absRef,$siteUrl) && !$this->procOptions['dontFetchExtPictures'])	{
+					$externalFile = $this->getUrl($absRef);	// Get it
+					if ($externalFile)	{
+						$pU = parse_url($absRef);
+						$pI=pathinfo($pU['path']);
+
+						if (t3lib_div::inList('gif,png,jpeg,jpg',strtolower($pI['extension'])))	{
+							$filename = t3lib_div::shortMD5($absRef).'.'.$pI['extension'];
+							$origFilePath = PATH_site.$this->rteImageStorageDir().'RTEmagicP_'.$filename;
+							$C_origFilePath = PATH_site.$this->rteImageStorageDir().'RTEmagicC_'.$filename.'.'.$pI['extension'];
+							if (!@is_file($origFilePath))	{
+								t3lib_div::writeFile($origFilePath,$externalFile);
+								t3lib_div::writeFile($C_origFilePath,$externalFile);
+							}
+							$absRef = $siteUrl.$this->rteImageStorageDir().'RTEmagicC_'.$filename.'.'.$pI['extension'];
+
+							$attribArray['src']=$absRef;
+							$params = t3lib_div::implodeAttributes($attribArray,1);
+							$imgSplit[$k] = '<img '.$params.' />';
+						}
+					}
+				}
+
+					// Check image as local file (siteURL equals the one of the image)
+				
+				if ( (strpos($absRef, 'http://') === FALSE) AND (strpos($absRef, 'https://') === FALSE) AND (strpos($absRef, 'ftp://') === FALSE) )	{  //XCLASS changed from: if (t3lib_div::isFirstPartOfStr($absRef,$siteUrl))	{
+					$path = rawurldecode(substr($absRef,strlen($siteUrl)));	// Rel-path, rawurldecoded for special characters.
+					$path = $absRef; //XCLASS change
+					$filepath = t3lib_div::getFileAbsFileName($path);		// Abs filepath, locked to relative path of this project.
+					
+
+						// Check file existence (in relative dir to this installation!)
+					if ($filepath && @is_file($filepath))	{
+
+							// If "magic image":
+						$pathPre=$this->rteImageStorageDir().'RTEmagicC_';
+						if (t3lib_div::isFirstPartOfStr($path,$pathPre))	{
+							// Find original file:
+							$pI=pathinfo(substr($path,strlen($pathPre)));
+							$filename = substr($pI['basename'],0,-strlen('.'.$pI['extension']));
+							$origFilePath = PATH_site.$this->rteImageStorageDir().'RTEmagicP_'.$filename;
+							if (@is_file($origFilePath))	{
+								$imgObj = t3lib_div::makeInstance('t3lib_stdGraphic');
+								$imgObj->init();
+								$imgObj->mayScaleUp=0;
+								$imgObj->tempPath=PATH_site.$imgObj->tempPath;
+
+								$curInfo = $imgObj->getImageDimensions($filepath);	// Image dimensions of the current image
+								$curWH = $this->getWHFromAttribs($attribArray);	// Image dimensions as set in the image tag
+									// Compare dimensions:
+								if ($curWH[0]!=$curInfo[0] || $curWH[1]!=$curInfo[1])	{
+									$origImgInfo = $imgObj->getImageDimensions($origFilePath);	// Image dimensions of the current image
+									$cW = $curWH[0];
+									$cH = $curWH[1];
+										$cH = 1000;	// Make the image based on the width solely...
+									$imgI = $imgObj->imageMagickConvert($origFilePath,$pI['extension'],$cW.'m',$cH.'m');
+									if ($imgI[3])	{
+										$fI=pathinfo($imgI[3]);
+										@copy($imgI[3],$filepath);	// Override the child file
+											// Removing width and heigth form style attribute
+										$attribArray['style'] = preg_replace('/((?:^|)\s*(?:width|height)\s*:[^;]*(?:$|;))/si', '', $attribArray['style']);
+										$attribArray['width']=$imgI[0];
+										$attribArray['height']=$imgI[1];
+										$params = t3lib_div::implodeAttributes($attribArray,1);
+										$imgSplit[$k]='<img '.$params.' />';
+									}
+								}
+							}
+
+						} elseif ($this->procOptions['plainImageMode']) {	// If "plain image" has been configured:
+
+								// Image dimensions as set in the image tag, if any
+							$curWH = $this->getWHFromAttribs($attribArray);
+							if ($curWH[0]) $attribArray['width'] = $curWH[0];
+							if ($curWH[1]) $attribArray['height'] = $curWH[1];
+
+								// Removing width and heigth form style attribute
+							$attribArray['style'] = preg_replace('/((?:^|)\s*(?:width|height)\s*:[^;]*(?:$|;))/si', '', $attribArray['style']);
+
+								// Finding dimensions of image file:
+							$fI = @getimagesize($filepath);
+
+								// Perform corrections to aspect ratio based on configuration:
+							switch((string)$this->procOptions['plainImageMode'])	{
+								case 'lockDimensions':
+									$attribArray['width']=$fI[0];
+									$attribArray['height']=$fI[1];
+								break;
+								case 'lockRatioWhenSmaller':	// If the ratio has to be smaller, then first set the width...:
+									if ($attribArray['width']>$fI[0])	$attribArray['width'] = $fI[0];
+								case 'lockRatio':
+									if ($fI[0]>0)	{
+										$attribArray['height']=round($attribArray['width']*($fI[1]/$fI[0]));
+									}
+								break;
+							}
+
+								// Compile the image tag again:
+							$params = t3lib_div::implodeAttributes($attribArray,1);
+							$imgSplit[$k]='<img '.$params.' />';
+						}
+					} else {	// Remove image if it was not found in a proper position on the server!
+
+							// Commented out; removing the image tag might not be that logical...
+						#$imgSplit[$k]='';
+					}
+				}
+
+					// Convert abs to rel url
+				if ($imgSplit[$k])	{
+					$attribArray=$this->get_tag_attributes_classic($imgSplit[$k],1);
+					$absRef = trim($attribArray['src']);
+					if (t3lib_div::isFirstPartOfStr($absRef,$siteUrl))	{
+						$attribArray['src'] = $this->relBackPath.substr($absRef,strlen($siteUrl));
+						if (!isset($attribArray['alt']))	$attribArray['alt']='';		// Must have alt-attribute for XHTML compliance.
+						$imgSplit[$k]='<img '.t3lib_div::implodeAttributes($attribArray,1,1).' />';
+					}
+				}
+			}
+		}
+		return implode('',$imgSplit);
+	}	
 		
 		
 }

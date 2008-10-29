@@ -46,7 +46,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 
 		// check if TinyMCE language file exists
 		$langpath = (t3lib_extmgm::isLoaded($thisConfig['languagesExtension'])) ? t3lib_extMgm::siteRelPath($thisConfig['languagesExtension']) : t3lib_extMgm::siteRelPath('tinymce_rte') . 'res/';
-
 		if(!is_file(PATH_site . $langpath . 'tiny_mce/langs/' . $this->language . '.js')) {
 		  $this->language = 'en';
 		}
@@ -102,10 +101,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		';
 		
 		if (TYPO3_MODE == 'BE')
-			$code .= $this->getFileDialogJS( $this->getPath('EXT:tinymce_rte/./'), $pObj, $table, $field, $row);
+			$code .= $this->getFileDialogJS( $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
 		
 		$code .= $this->triggerField($PA['itemFormElName']);
-		$code .= '<textarea id="RTEarea'.$pObj->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';		
+		$code .= '<textarea id="RTEarea'.$parentObject->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';		
 		
 		return $code;
 	}
@@ -168,7 +167,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 							template_file = "'.$path.'mod1/browse_links.php?act="+tab+expPage+"&mode=wizard&P[ext]='. $this->getPath('EXT:tinymce_rte/./') .'&P[init]=tinymce_rte&P[formName]=' . /*$pObj->formName*/ 'editform' . '"+current+"&P[itemName]=data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D&P[fieldChangeFunc][TBE_EDITOR_fieldChanged]=TBE_EDITOR_fieldChanged%28%27'.$table.'%27%2C%27'.$row["uid"].'%27%2C%27'.$field.'%27%2C%27data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D%27%29%3B";
 							break;
 						case "image":
-							template_file = "'.$path.'mod2/rte_select_image.php?act=magic&RTEtsConfigParams='.$table.'%3A136%3A'.$field.'%3A29%3Atext%3A'.$row["pid"].'%3A";
+							var current = "&expandFolder=' . rawurlencode($this->getPath('./',1)) . '" + encodeURIComponent(url.substr(0,url.lastIndexOf("/")));
+							if (url == "") current = "&expandFolder=' . rawurlencode($this->getPath('./fileadmin/',1)) . '";
+							template_file = "'.$path.'mod2/rte_select_image.php?act=plain"+current+"&RTEtsConfigParams='.$table.'%3A136%3A'.$field.'%3A29%3Atext%3A'.$row["pid"].'%3A";
 							break;
 					}
 
@@ -191,9 +192,11 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		return $msg;
 	}
 	
-  function getPath($path) {
+	function getPath($path, $abs = false) {
 		$httpTypo3Path = substr( substr( t3lib_div::getIndpEnv('TYPO3_SITE_URL'), strlen( t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') ) ), 0, -1 );
 		$httpTypo3Path = (strlen($httpTypo3Path) == 1) ? '/' : $httpTypo3Path . '/';
+		if ($abs)
+			return t3lib_div::getFileAbsFileName($path);
 		return $httpTypo3Path . str_replace(PATH_site,'',t3lib_div::getFileAbsFileName($path));
   }
 
