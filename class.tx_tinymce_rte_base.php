@@ -157,11 +157,11 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 						case "link":
 							var expPage = "";
 							var tab = "page";
-							if ( url.indexOf("fileadmin") >- 1) tab = "file";
+							if ( url.indexOf("fileadmin") > -1 ) tab = "file";
 							if ( (url.indexOf("http://") > -1) || (url.indexOf("ftp://") > -1) || (url.indexOf("https://") > -1) ) tab = "url";
 							if ( url.indexOf("@") > -1 ) tab = "mail";
 							var current = "&P[currentValue]=" + encodeURIComponent(url);
-							if (url.indexOf("#")>-1) {
+							if ( url.indexOf("#") > -1 ) {
 								var pageCE = url.split("#");
 								expPage = "&expandPage=" + pageCE[0] + "&cE=" + pageCE[1];
 							}
@@ -169,7 +169,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 							break;
 						case "image":
 							var current = "&expandFolder=' . rawurlencode($this->getPath('./',1)) . '" + encodeURIComponent(url.substr(0,url.lastIndexOf("/")));
-							if (url == "") current = "&expandFolder=' . rawurlencode($this->getPath('./fileadmin/',1)) . '";
+							if ( ( url.indexOf("RTEmagicC_") > -1 ) || (url == "") ) current = "&expandFolder=' . rawurlencode($this->getPath('./fileadmin/',1)) . '";
 							template_file = "'.$path.'mod2/rte_select_image.php?act=plain"+current+"&RTEtsConfigParams='.$table.'%3A136%3A'.$field.'%3A29%3Atext%3A'.$row["pid"].'%3A";
 							break;
 					}
