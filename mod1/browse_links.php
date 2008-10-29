@@ -941,7 +941,7 @@ class SC_browse_links {
 		global $LANG, $BACK_PATH;
 
 			// Starting content:
-		$content=$this->doc->startPage('Page/Filebrowser');
+		$content=$this->doc->startPage($LANG->getLL('title',1));
 
 			// Initializing the action value, possibly removing blinded values etc:
 		$allowedItems = array_diff(explode(',','page,file,url,mail,spec'),t3lib_div::trimExplode(',',$this->thisConfig['blindLinkOptions'],1));

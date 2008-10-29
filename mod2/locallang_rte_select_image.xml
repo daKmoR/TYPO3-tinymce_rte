@@ -24,6 +24,7 @@
 			<label index="update">Update</label>
 			<label index="uploadImage">Upload Image</label>
 			<label index="width">Width</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="dk" type="array">
 			<label index="border">Kant</label>
@@ -43,6 +44,7 @@
 			<label index="update">Opdatér</label>
 			<label index="uploadImage">Send billede</label>
 			<label index="width">Bredde</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="border">Rand</label>
@@ -62,6 +64,7 @@
 			<label index="update">Aktualisieren</label>
 			<label index="uploadImage">Bild hochladen</label>
 			<label index="width">Breite</label>
+			<label index="title">Bilderbrowser</label>
 		</languageKey>
 		<languageKey index="no" type="array">
 			<label index="border">Kant</label>
@@ -81,6 +84,7 @@
 			<label index="update">Oppdater</label>
 			<label index="uploadImage">Last opp bilde</label>
 			<label index="width">Bredde</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="it" type="array">
 			<label index="border">Bordo</label>
@@ -100,6 +104,7 @@
 			<label index="update">Aggiornamento</label>
 			<label index="uploadImage">Upload immagine</label>
 			<label index="width">Larghezza</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="border">Bordure</label>
@@ -119,6 +124,7 @@
 			<label index="update">Mettre à jour</label>
 			<label index="uploadImage">Uploader une image</label>
 			<label index="width">Largeur</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="es" type="array">
 			<label index="border">Borde</label>
@@ -138,6 +144,7 @@
 			<label index="update">Actualizar</label>
 			<label index="uploadImage">Enviar imágen</label>
 			<label index="width">Ancho:</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="nl" type="array">
 			<label index="border">Kader</label>
@@ -157,6 +164,7 @@
 			<label index="update">Actualiseren</label>
 			<label index="uploadImage">Upload afbeelding</label>
 			<label index="width">Breedte</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="cz" type="array">
 			<label index="border">Okraj</label>
@@ -176,6 +184,7 @@
 			<label index="update">Aktualizovat</label>
 			<label index="uploadImage">Uploadovat obrázek</label>
 			<label index="width">Šířka</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="pl" type="array">
 			<label index="border">Ramka</label>
@@ -195,6 +204,7 @@
 			<label index="update">Aktualizacja</label>
 			<label index="uploadImage">Uploaduj obrazek</label>
 			<label index="width">Szerokość</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="si" type="array">
 			<label index="border">Okvir</label>
@@ -213,6 +223,7 @@
 			<label index="update">Osveľi</label>
 			<label index="uploadImage">Dodaj sliko</label>
 			<label index="width">©irina</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="fi" type="array">
 			<label index="border">Raja</label>
@@ -232,6 +243,7 @@
 			<label index="update">Päivitä</label>
 			<label index="uploadImage">Vie kuva</label>
 			<label index="width">Leveys</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="tr" type="array">
 			<label index="border">Kenar</label>
@@ -251,6 +263,7 @@
 			<label index="update">Güncelle</label>
 			<label index="uploadImage">Resim yükle</label>
 			<label index="width">Genişlik</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="se" type="array">
 			<label index="border">Ram</label>
@@ -270,6 +283,7 @@
 			<label index="update">Uppdatera</label>
 			<label index="uploadImage">Ladda upp bild</label>
 			<label index="width">Bredd</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="pt" type="array">
 			<label index="border">Borda</label>
@@ -289,6 +303,7 @@
 			<label index="update">Atualização</label>
 			<label index="uploadImage">Enviar imagem (upload)</label>
 			<label index="width">Largura</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="ru" type="array">
 			<label index="border">Рамка</label>
@@ -308,6 +323,7 @@
 			<label index="update">Обновить</label>
 			<label index="uploadImage">Загрузить изображение на сервер</label>
 			<label index="width">Ширина</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="ro"></languageKey>
 		<languageKey index="ch" type="array">
@@ -328,6 +344,7 @@
 			<label index="update">更新</label>
 			<label index="uploadImage">上传图片</label>
 			<label index="width">宽</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="sk" type="array">
 			<label index="border">Okraj</label>
@@ -347,6 +364,7 @@
 			<label index="update">Aktualizovať</label>
 			<label index="uploadImage">Uploadovať obrázok</label>
 			<label index="width">Šírka</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="lt"></languageKey>
 		<languageKey index="is"></languageKey>
@@ -368,6 +386,7 @@
 			<label index="update">Obnova</label>
 			<label index="uploadImage">Pošalji sliku</label>
 			<label index="width">Širina</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="hu" type="array">
 			<label index="border">Keret</label>
@@ -387,6 +406,7 @@
 			<label index="update">Frissítés</label>
 			<label index="uploadImage">Kép feltöltése</label>
 			<label index="width">Szélesség</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="gl"></languageKey>
 		<languageKey index="th"></languageKey>
@@ -411,6 +431,7 @@
 			<label index="update">Обновяване</label>
 			<label index="uploadImage">Upload на изображение</label>
 			<label index="width">Ширина</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="br" type="array">
 			<label index="border">Borda</label>
@@ -430,6 +451,7 @@
 			<label index="update">Atualização</label>
 			<label index="uploadImage">Enviar imagem (upload)</label>
 			<label index="width">Largura</label>
+			<label index="title">Imagebrowser</label>
 		</languageKey>
 		<languageKey index="et"></languageKey>
 		<languageKey index="ar"></languageKey>

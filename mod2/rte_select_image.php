@@ -391,7 +391,7 @@ class SC_rte_select_image {
 		
 			// Starting content:
 		$this->content="";
-		$this->content.=$this->doc->startPage("TYPO3 Imagebrowser");
+		$this->content.=$this->doc->startPage($LANG->getLL('title',1));
 	}
 
 	/**
