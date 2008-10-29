@@ -38,11 +38,7 @@ class ext_update {
 			'advlink' => array(
 				'desc' => 'Patch advlink to hide the popup tab as it\'s not supported',
 				'diff' => 'patcher/diffs/advlink.diff'
-			),
-			'typo3filemanager' => array(
-				'desc' => 'Adds the typo3filemanager as a plugin',
-				'diff' => 'patcher/diffs/typo3filemanager.diff'
-			)			
+			)
 		 );
 	/**
 	 * Main function, returning the HTML content of the module

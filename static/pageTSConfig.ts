@@ -18,7 +18,7 @@ RTE.default {
 
 RTE.default.init {
 	content_css = fileadmin/templates/main/css/screen.css
-	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,template,spellchecker,typo3filemanager
+	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,template,spellchecker
 	theme_advanced_buttons1 = newdocument,|,undo,redo,|,bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,pastetext,pasteword,|,search,replace,|,fullscreen
 	theme_advanced_buttons2 = link,unlink,image,|,attribs,styleprops,anchor,charmap,tablecontrols
 	theme_advanced_buttons3 = code,forecolor,backcolor,strikethrough,sub,sup,|,bullist,numlist,|,outdent,indent,|,cleanup,nonbreaking,blockquote,|,insertlayer,moveforward,movebackward,absolute
@@ -40,7 +40,7 @@ RTE.default.init {
 	theme = advanced
 	entity_encoding = raw
 	# you could override the following option if you don't want to insert links.
-	file_browser_callback = typo3filebrowser
+	file_browser_callback = typo3filemanager
 }
 
 # Config used for the spellchecker
