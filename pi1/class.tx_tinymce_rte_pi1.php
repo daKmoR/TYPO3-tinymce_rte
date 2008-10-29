@@ -41,7 +41,7 @@
 
 require_once(t3lib_extMgm::extPath('tinymce_rte').'class.tx_tinymce_rte_base.php');
 
-class tx_tinymcerte_pi1 extends tx_tinymce_rte_base {
+class tx_tinymce_rte_pi1 extends tx_tinymce_rte_base {
 
 	/**
 	 * 	 * Adds the tinymce_rte to a textarea
