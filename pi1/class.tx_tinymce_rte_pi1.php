@@ -60,15 +60,23 @@ class tx_tinymce_rte_pi1 extends tx_tinymce_rte_base {
 	 */
 
 	function drawRTE($parentObject,$table,$field,$row,$PA,$specConf,$thisConfig,$RTEtypeVal,$RTErelPath,$thePidValue) {
-		$tmpConf = $GLOBALS['TSFE']->getPagesTSconfig();
-		return parent::drawRTE($parentObject,$table,$field,$row,$PA,$specConf,$tmpConf['RTE.']['default.']['FE.'],$RTEtypeVal,$RTErelPath,$thePidValue);
+
+		$pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig();
+
+		$rteConfig = $pageTSConfig['RTE.']['default.']['FE.'];
+		if (is_array($parentObject->conf['tinymce_rte'])){
+			$tmpConf = array_merge($rteConfig, $parentObject->conf['tinymce_rte']);
+		} else {
+			$tmpConf = $rteConfig;
+		}
+
+		return parent::drawRTE($parentObject,$table,$field,$row,$PA,$specConf,$tmpConf,$RTEtypeVal,$RTErelPath,$thePidValue);
 	}
 
 }
 
 // Default-Code for using XCLASS (dont touch)
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/pi1/class.tx_tinymcerte_pi1.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/pi1/class.tx_tinymcerte_pi1.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/pi1/class.tx_tinymce_rte_pi1.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/pi1/class.tx_tinymce_rte_pi1.php']);
 }
-
 ?>
