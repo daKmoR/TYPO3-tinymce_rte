@@ -31,12 +31,14 @@ RTE.default.init {
 	spellchecker_rpc_url = EXT:tinymce_rte/mod3/rpc.php
 	width = 600
 	height = 550
+	button_tile_map = true	
 }
  
 # MANDATORY RTE CONFIG IF YOU CHANGE ANY OF THESE THE RTE MIGHT FAIL TO WORK
 RTE.default.init {
-	mode = textareas
-	editor_selector = tinymce_rte
+	mode = exact
+	# the element will be set by the main class
+	# elements = RTEarea1
 	theme = advanced
 	entity_encoding = raw
 	# you could override the following option if you don't want to insert links.

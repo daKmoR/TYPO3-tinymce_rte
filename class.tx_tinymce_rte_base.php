@@ -56,6 +56,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$this->conf = array( 'init.' => array(
 			'language' => $this->language,
 			'document_base_url' => t3lib_div::getIndpEnv('TYPO3_SITE_URL'),
+			'elements' => 'RTEarea' . $parentObject->RTEcounter
 		));
 		
 		$this->conf = array_merge_recursive($this->conf, $thisConfig, $BE_USER->userTS['RTE.']['default.']);
@@ -89,6 +90,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				$code .= '</script>';
 			}
 		}
+		
+		if ($parentObject->RTEcounter > 1)
+			$code = ""; //don't reinclude the core js if there is already another RTE
 		
 		$code .= '
 			<script type="text/javascript">
