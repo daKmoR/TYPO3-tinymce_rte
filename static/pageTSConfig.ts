@@ -13,7 +13,7 @@ RTE.default {
 	# the following should be set by the language extension itself, but can also be set directly
 	# languagesExtension = tinymce_rte
 	typo3filemanagerMaxPlainImages.width = 1000
-	typo3filemanagerMaxPlainImages.height = 1000	
+	typo3filemanagerMaxPlainImages.height = 1000
 	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
 	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
 }
@@ -33,7 +33,7 @@ RTE.default.init {
 	spellchecker_rpc_url = EXT:tinymce_rte/mod3/rpc.php
 	width = 600
 	height = 550
-	button_tile_map = true	
+	button_tile_map = true
 }
  
 # MANDATORY RTE CONFIG IF YOU CHANGE ANY OF THESE THE RTE MIGHT FAIL TO WORK
