@@ -195,7 +195,7 @@ class localPageTree extends t3lib_browseTree {
 	function printTree($treeArr='')	{
 		global $BACK_PATH, $P;
 		$titleLen=intval($GLOBALS['BE_USER']->uc['titleLen']);
-$titleLen=12;
+		$titleLen = 30;  // crop title to this length
 		if (!is_array($treeArr))	$treeArr=$this->tree;
 
 		$out='';
