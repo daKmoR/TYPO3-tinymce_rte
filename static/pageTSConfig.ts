@@ -6,6 +6,8 @@ RTE.default {
 	gzipFileCache = 1
 	typo3filemanager.width = 600
 	typo3filemanager.height = 600
+	typo3filemanager.defaultTab = page
+	typo3filemanager.defaultImageTab = magic
 	typo3filemanagerThumbs.width = 200
 	typo3filemanagerThumbs.height = 150
 	# the following should be set by the language extension itself, but can also be set directly

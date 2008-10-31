@@ -160,7 +160,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 					switch(type){
 						case "link":
 							var expPage = "";
-							var tab = "page";
+							var tab = "' . $this->conf['typo3filemanager.']['defaultTab'] . '";
 							if ( url.indexOf("fileadmin") > -1 ) tab = "file";
 							if ( (url.indexOf("http://") > -1) || (url.indexOf("ftp://") > -1) || (url.indexOf("https://") > -1) ) tab = "url";
 							if ( url.indexOf("@") > -1 ) tab = "mail";
@@ -172,9 +172,14 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 							template_file = "'.$path.'mod1/browse_links.php?act="+tab+expPage+"&mode=wizard&P[ext]='. $this->getPath('EXT:tinymce_rte/./') .'&P[init]=tinymce_rte&P[formName]=' . /*$pObj->formName*/ 'editform' . '"+current+"&P[itemName]=data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D&P[fieldChangeFunc][TBE_EDITOR_fieldChanged]=TBE_EDITOR_fieldChanged%28%27'.$table.'%27%2C%27'.$row["uid"].'%27%2C%27'.$field.'%27%2C%27data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D%27%29%3B";
 							break;
 						case "image":
+							var tab = "plain";
 							var current = "&expandFolder=' . rawurlencode($this->getPath('./',1)) . '" + encodeURIComponent(url.substr(0,url.lastIndexOf("/")));
-							if ( ( url.indexOf("RTEmagicC_") > -1 ) || (url == "") ) current = "&expandFolder=' . rawurlencode($this->getPath('./fileadmin/',1)) . '";
-							template_file = "'.$path.'mod2/rte_select_image.php?act=plain"+current+"&RTEtsConfigParams='.$table.'%3A136%3A'.$field.'%3A29%3Atext%3A'.$row["pid"].'%3A";
+							if ( (url.indexOf("RTEmagicC_") > -1) || (url == "") ) {
+								current = "&expandFolder=' . rawurlencode($this->getPath('./fileadmin/',1)) . '";
+								tab = "magic";
+							}
+							if ( url == "" ) tab = "' . $this->conf['typo3filemanager.']['defaultImageTab'] . '";
+							template_file = "'.$path.'mod2/rte_select_image.php?act="+tab+current+"&RTEtsConfigParams='.$table.'%3A136%3A'.$field.'%3A29%3Atext%3A'.$row["pid"].'%3A";
 							break;
 					}
 
