@@ -87,7 +87,7 @@ function insertTable() {
 			elm.insertBefore(capEl, elm.firstChild);
 		}
 
-		if (width && /(pt|em|cm)$/.test(width)) {
+		if (width && inst.settings.inline_styles) {
 			dom.setStyle(elm, 'width', width);
 			dom.setAttrib(elm, 'width', '');
 		} else {
@@ -100,9 +100,12 @@ function insertTable() {
 		dom.setAttrib(elm, 'bgColor', '');
 		dom.setAttrib(elm, 'background', '');
 
-		if (height) {
+		if (height && inst.settings.inline_styles) {
 			dom.setStyle(elm, 'height', height);
 			dom.setAttrib(elm, 'height', '');
+		} else {
+			dom.setAttrib(elm, 'height', height, true);
+			dom.setStyle(elm, 'height', '');
 		}
 
 		if (background != '')

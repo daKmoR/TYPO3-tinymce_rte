@@ -53,16 +53,17 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		  $this->language = 'en';
 		}
 
-		if (!is_array($BE_USER->userTS['RTE.']['default.']['init.']))
-		  $BE_USER->userTS['RTE.']['default.']['init.'] = array();
+		if (!is_array($BE_USER->userTS['RTE.']['default.']))
+		  $BE_USER->userTS['RTE.']['default.'] = array();
 
 		$this->conf = array( 'init.' => array(
 			'language' => $this->language,
 			'document_base_url' => t3lib_div::getIndpEnv('TYPO3_SITE_URL'),
-			'elements' => 'RTEarea' . $rteID,
+			'elements' => 'RTEarea' . $rteID
 		));
-
-		$this->conf = array_merge_recursive($this->conf, $thisConfig, $BE_USER->userTS['RTE.']['default.']);
+		
+		$this->conf = $this->array_merge_recursive_override($this->conf, $thisConfig);
+		$this->conf = $this->array_merge_recursive_override($this->conf, $BE_USER->userTS['RTE.']['default.']);
 
 		//resolve EXT pathes for these values
 		$this->conf['init.']['spellchecker_rpc_url'] = $this->getPath($this->conf['init.']['spellchecker_rpc_url']);
@@ -119,6 +120,20 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$code .= '<textarea id="RTEarea'.$rteID.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
 
 		return $code;
+	}
+
+	function array_merge_recursive_override($arr,$ins) {
+		if ( is_array($arr) ) {
+			if( is_array($ins) ) foreach( $ins as $k => $v ) {
+				if(isset($arr[$k])&&is_array($v)&&is_array($arr[$k]))
+					$arr[$k] = $this->array_merge_recursive_override($arr[$k],$v);
+				else 
+					$arr[$k] = $v;
+			}
+		}
+		elseif ( !is_array($arr) && ( strlen($arr) == 0 || $arr == 0 ) )
+			$arr = $ins;
+		return( $arr );
 	}
 
 	function fixTSArray($config) {

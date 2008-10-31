@@ -94,7 +94,7 @@ RTE.default.proc {
 	preserveDIVSections = 1
 
 	# TAGS ALLOWED OUTSIDE P & DIV
-	allowTagsOutside = hr, address, ul, ol, li, img
+	allowTagsOutside = hr, address, ul, ol, li, img, table
 
 	# TAGS ALLOWED
 	# Added to the default internal list: b,i,u,a,img,br,div,center,pre,font,hr,sub,sup,p,strong,em,li,ul,ol,blockquote,strike,span
@@ -136,7 +136,7 @@ RTE.default.proc {
 			div.fixAttrib.align.unset = 1
 			hr.allowedAttribs = class, style
 			br.allowedAttribs = class, style
-			table.allowedAttribs = class, style
+			table.allowedAttribs = class, style, id, border, cellpadding, cellspacing
 			b.allowedAttribs = xml:lang
 			blockquote.allowedAttribs = xml:lang
 			cite.allowedAttribs = xml:lang
