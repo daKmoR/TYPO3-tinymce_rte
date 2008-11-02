@@ -33,7 +33,7 @@
 	$languagesExtension = getParam("langExt");
 	$languagesExtensionLoaded = getParam("langExtLoaded");
 	$langTinyMcePath = realpath('../../../' . $languagesExtension . '/tiny_mce/');
-	$langTinyMcePath .= (strpos($langTinyMcePath, '/') === true) ? '/' : '\\';
+	$langTinyMcePath .= (strpos($langTinyMcePath, '/') !== false) ? '/' : '\\';
 	
 	if (!$languagesExtensionLoaded)
 	  $langTinyMcePath = '';
