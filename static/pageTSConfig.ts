@@ -38,6 +38,7 @@ RTE.default.init {
 	width = 600
 	height = 550
 	button_tile_map = true
+	fix_table_elements = true
 }
  
 # MANDATORY RTE CONFIG IF YOU CHANGE ANY OF THESE THE RTE MIGHT FAIL TO WORK
