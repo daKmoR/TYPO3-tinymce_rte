@@ -39,6 +39,7 @@
  * @subpackage tinymce_rte
  */
 
+require_once(PATH_t3lib.'class.t3lib_befunc.php');
 require_once(t3lib_extMgm::extPath('tinymce_rte').'class.tx_tinymce_rte_base.php');
 
 class tx_tinymce_rte_pi1 extends tx_tinymce_rte_base {
