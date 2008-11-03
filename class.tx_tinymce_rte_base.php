@@ -208,8 +208,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 
 					tinyMCE.activeEditor.windowManager.open({
 						file : template_file,
-						width : ' . $this->conf['typo3filemanager.']['width'] . ',
-						height : ' . $this->conf['typo3filemanager.']['height'] . ',
+						width : ' . $this->conf['typo3filemanager.']['window.']['width'] . ',
+						height : ' . $this->conf['typo3filemanager.']['window.']['height'] . ',
 						resizable : "yes",
 						inline : "yes",
 						close_previous : "no"

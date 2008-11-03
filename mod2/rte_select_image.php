@@ -510,8 +510,8 @@ class SC_rte_select_image {
 		$expandFolder = $expandFolder ? $expandFolder :t3lib_div::_GP("expandFolder");
 		$out="";
 		
-		$resolutionLimit_x = $this->thisConfig['typo3filemanagerMaxPlainImages.']['width'];
-		$resolutionLimit_y = $this->thisConfig['typo3filemanagerMaxPlainImages.']['height'];
+		$resolutionLimit_x = $this->thisConfig['typo3filemanager.']['maxPlainImages.']['width'];
+		$resolutionLimit_y = $this->thisConfig['typo3filemanager.']['maxPlainImages.']['height'];
 		
 		if ($expandFolder)	{
 			$files = t3lib_div::getFilesInDir($expandFolder,($plainFlag?"jpg,jpeg,gif,png":$GLOBALS["TYPO3_CONF_VARS"]["GFX"]["imagefile_ext"]),1,1);	// $extensionList="",$prependPath=0,$order="")
@@ -562,7 +562,7 @@ class SC_rte_select_image {
 					$lines[]='<tr><td>'.(
 						$noThumbs ? 
 						"" :
-						$ATag2.t3lib_BEfunc::getThumbNail($this->doc->backPath.'thumbs.php',$filepath,'hspace="5" vspace="5" border="1"', $this->thisConfig['typo3filemanagerThumbs.']['width'] . 'x' . $this->thisConfig['typo3filemanagerThumbs.']['height']).$ATag2_e).
+						$ATag2.t3lib_BEfunc::getThumbNail($this->doc->backPath.'thumbs.php',$filepath,'hspace="5" vspace="5" border="1"', $this->thisConfig['typo3filemanager.']['thumbs.']['width'] . 'x' . $this->thisConfig['typo3filemanager.']['thumbs.']['height']).$ATag2_e).
 						'</td></tr>';
 					$lines[]='<tr><td><img src="clear.gif" style="width: 1px; height: 3px;" alt="clear" /></td></tr>';
 				}

@@ -1,3 +1,4 @@
+// Patch window size of fullscreen plugin, in order to make TYPO3's save buttons visible.
 --- res/tiny_mce/plugins/fullscreen/editor_plugin_src.js	Sat Oct 25 12:08:29 2008
 +++ res/tiny_mce/plugins/fullscreen/editor_plugin.js	Sun Oct 26 09:29:42 2008
 @@ -75,7 +75,7 @@

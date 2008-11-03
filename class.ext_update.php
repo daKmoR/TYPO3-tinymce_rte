@@ -22,67 +22,138 @@
 	*  This copyright notice MUST APPEAR in all copies of the script!
 	***************************************************************/
 
-require_once('patcher/class.phppatcher.php');
-require_once('patcher/class.jsmin.php');
+require_once('patcher/class.pmkpatcher.php');
+require_once(PATH_typo3.'contrib/jsmin/jsmin.php');
+
 /**
  * Class for updating/patching TinyMCE files for specific TYPO3 usage
  *
  * @author	 Peter Klein <peter@umloud.dk>
  */
+
 class ext_update {
-	var $patches = array(
-			'fullscreen' => array(
-				'desc' => 'Patch window size of fullscreen plugin, in order to make TYPO3\'s save buttons visible.',
-				'diff' => 'patcher/diffs/fullscreen.diff'
-			),
-			'advlink' => array(
-				'desc' => 'Patch advlink to hide the popup tab as it\'s not supported',
-				'diff' => 'patcher/diffs/advlink.diff'
-			)
-		 );
+
 	/**
 	 * Main function, returning the HTML content of the module
 	 *
 	 * @return	string		HTML
 	 */
 	function main()	{
-		if (t3lib_div::_GP('update') ) {
-			$class = t3lib_div::makeInstance("PhpPatcher");
-			$patchObj = new $class(t3lib_extMgm::extPath('tinymce_rte'));
-			foreach ($this->patches as $plugin => $conf) {
-				if (intval(t3lib_div::_GP($plugin))) {
-					$patchObj->ClearCache();
-					if ($diff = file_get_contents($patchObj->root.$conf['diff'])) {
-						if ($patchObj->Merge($diff)) {
-							if ($patchObj->ApplyPatch()) {
-								$content.= '<p>Plugin <strong>'.$plugin.'</strong> patched sucessfully.</p>';
-							}
-							else {
-								$content.= '<p><strong>'.$plugin.'</strong> patching failed<br />Error: '.preg_replace('|'.preg_quote($patchObj->root).'|i','',$patchObj->msg).'</p>';
-							}
-						}
-						else {
-							$content.= '<p><strong>'.$plugin.'</strong> patching failed<br />Error: '.preg_replace('|'.preg_quote($patchObj->root).'|i','',$patchObj->msg).'</p>';
-						}
-					}
-					else {
-						$content.= '<p><strong>'.$plugin.'</strong> patching failed<br />Error: Diff file '.$conf['diff'].' not found.</p>';
-					}
+		global $BACK_PATH;
+		
+		$this->diffPath = t3lib_extMgm::extPath('tinymce_rte').'patcher/diffs/';
+		$this->filePath = t3lib_extMgm::extPath('tinymce_rte');
+		$content = '';
+		
+		if (t3lib_div::_GP('update')) {
+			$content = '<h2 class="typo3-tstemplate-ceditor-subcat">Applying TinyMCE/TYPO3 compability patches</h2>';
+			$patches = t3lib_div::_GP('patch');
+			$updated = false;
+			foreach ($patches as $patchName => $value) {
+				if ($value = intval($value)) {
+					$content .= $this->appplyPatch($patchName,$this->diffPath,$value-1);
+					$updated = true;
 				}
-				else {
-				 // maybe some unpatch function here?
-				}
-				$this->removeCachedFiles();
 			}
+			$content .= '<div style="padding-top: 10px;"></div>';
+			$content .= ($updated) ? 'Patching done..' : 'Noting selected to patch..';
+			$content .= '<div style="padding-top: 25px;"></div><a href="'.htmlspecialchars(t3lib_div::linkThisScript()).'" class="typo3-goBack"><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/goback.gif','width="14" height="14"').' alt="" />Go back</a>';
+			// Remove cache files
+			$this->removeCachedFiles();
 		}
 		else {
-			$content = '<form name="tinymcepatcher_form" action="'.htmlspecialchars(t3lib_div::linkThisScript()).'" method="post">';
-			foreach ($this->patches as $plugin => $conf) {
-				$content.= '<p><input type="checkbox" name="'.$plugin.'" value="1" checked /> <strong>'.$plugin.':</strong> '.$conf['desc'].'</p>';
-			}
-			$content .= '<p>&nbsp;</p><p><input type="submit" name="update" value="Update" /></p>';
-			$content .= '</form>';
+			// display form
+			$content .= $this->displayDiffs($this->diffPath);
 		}
+		return $content;
+	}
+	
+	function appplyPatch($patchName,$diffPath,$rev) {
+		$diffData = @file_get_contents($diffPath.$patchName.'.diff');
+		if (!$diffData) return 'Could not read '.$patchName.'.diff';
+		$diffArray = pmkpatcher::parseDiff($diffData,$this->filePath,$rev);
+		if (!count($diffArray)) return 'No diff data found in '.$patchName.'.diff';
+		$content .= '<h3>'.($rev ? 'Unpatching' : 'Patching').' file "'.$diffArray['destinationfile'].'"</h3>';
+		$fileExt = strtolower(pathinfo($diffArray['destinationfile'],PATHINFO_EXTENSION));
+		if ($fileExt=='js' && $rev) {
+			// If unpatch is selected, and the file is a javascript file,
+			// Then the .src file is just copied into the destination instead of unpatching.
+			// Unpatching of .js files is not possible due to the minifying of the javascripts.
+			$patchedData = @file_get_contents($this->filePath.$diffArray['sourcefile']);
+			$content .= '<p>File unpatched sucessfully.</p>';
+		}
+		else {
+			$patched = pmkpatcher::applyDiff($diffArray,$this->filePath,$rev);
+			if (is_array($patched)) {
+				$patchedData = $patched['patcheddata'];
+				$content .= '<p>File '.($rev ? 'unpatched' : 'patched').' sucessfully.</p>';
+			}
+			else {
+				// Error msg
+				$content .= $patched;
+				return $content;
+			}
+		}
+		if ($fileExt=='js') {
+			// Minify data if extension is .js
+			$patchedData = JSMin::minify($patchedData);
+		}
+		file_put_contents($this->filePath.$diffArray['destinationfile'],$patchedData);
+		return $content;
+	}
+	
+	function displayDiffs($diffPath) {
+		$diffFiles =  t3lib_div::getFilesInDir($diffPath,'diff',0,'1');
+		if (!count($diffFiles)) return false;
+		$content = '';
+		foreach ($diffFiles as $diffFile) {
+			$diffData = @file_get_contents($diffPath.$diffFile);
+			if (!$diffData) continue;
+			$diffArray = pmkpatcher::parseDiff($diffData,$this->filePath);
+			if (!count($diffArray)) return false;
+			$name = htmlspecialchars(pathinfo($diffPath.$diffFile,PATHINFO_FILENAME));
+			$content .= '<dl class="typo3-tstemplate-ceditor-constant">
+	<dt class="typo3-tstemplate-ceditor-label">Patch for '.$diffArray['destinationfile'].'</dt>
+	<dt class="typo3-dimmed">['.$name.']</dt>';
+			if (count($diffArray['comment'])) {
+			$content .= '
+	<dd>'.implode('<br />',$diffArray['comment']).'</dd>';
+			}
+			$content .= '
+	<dd>
+		<div class="typo3-tstemplate-ceditor-row">
+			<select name="patch['.$name.']">
+				<option value="0" selected="selected">Do nothing</option>
+				<option value="1">Patch file</option>
+				<option value="2">Unpatch file</option>
+			</select>
+		</div>
+	</dd>
+</dl>';
+		}
+		if (!$content) return false;
+		$content = '<h2 class="typo3-tstemplate-ceditor-subcat">TinyMCE/TYPO3 compability patches</h2>'.
+			$content .'<input name="update" value="Update" type="submit">' .
+			$this->displayDetails();
+		return '<form name="tinymcepatcher_form" action="'.htmlspecialchars(t3lib_div::linkThisScript()).'" method="post">'.$content.'</form>';
+		
+	}
+	
+	function displayDetails() {
+		$content = '<h3 class="uppercase">Details:</h3>
+<table border="0" cellpadding="1" cellspacing="2">
+	<tbody>
+		<tr class="bgColor5">
+			<td><strong>General information:</strong></td>
+		</tr>
+		<tr class="bgColor4" >
+			<td>If you manually update the TinyMCE code to a new version, you will need to apply the above patches to the newly installed files, in order to make it compatible with TYPO3.</td>
+		</tr>
+		<tr class="bgColor4">
+			<td>NOTE: The TYPO3 TinyMCE RTE extension is ALWAYS shipped with the patches installed, so if you have downloaded it from TER, you don\'t need to apply the patches.</td>
+		</tr>
+	</tbody>
+</table>';
 		return $content;
 	}
 

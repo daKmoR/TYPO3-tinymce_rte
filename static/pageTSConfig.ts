@@ -4,16 +4,20 @@ RTE.default.skin >
 RTE.default {
 	gzip = 1
 	gzipFileCache = 1
-	typo3filemanager.width = 600
-	typo3filemanager.height = 600
-	typo3filemanager.defaultTab = page
-	typo3filemanager.defaultImageTab = magic
-	typo3filemanagerThumbs.width = 200
-	typo3filemanagerThumbs.height = 150
+	typo3filemanager {
+		window.width = 600
+		window.height = 600
+		# possible values for defaultTab = page,file,url,mail
+		defaultTab = page
+		# possible values for defaultImageTab = magic,plain,upload
+		defaultImageTab = magic
+		thumbs.width = 200
+		thumbs.height = 150
+		maxPlainImages.width = 1000
+		maxPlainImages.height = 1000
+	}
 	# the following should be set by the language extension itself, but can also be set directly
 	# languagesExtension = tinymce_rte
-	typo3filemanagerMaxPlainImages.width = 1000
-	typo3filemanagerMaxPlainImages.height = 1000
 	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
 	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
 }
