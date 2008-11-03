@@ -43,7 +43,6 @@ class ext_update {
 		
 		$this->diffPath = t3lib_extMgm::extPath('tinymce_rte').'patcher/diffs/';
 		$this->filePath = t3lib_extMgm::extPath('tinymce_rte');
-		$content = '';
 		
 		if (t3lib_div::_GP('update')) {
 			$content = '<h2 class="typo3-tstemplate-ceditor-subcat">Applying TinyMCE/TYPO3 compability patches</h2>';
@@ -62,6 +61,18 @@ class ext_update {
 			$this->removeCachedFiles();
 		}
 		else {
+			$content .= '
+				<script type="text/javascript">
+					/* <![CDATA[ */
+					function difftoggle(val) {
+						els = document.getElementsByTagName("select");
+						for (var i=0;i<els.length;i++) {
+							if (els[i].name.match(/^patch/)) els[i].selectedIndex = val;
+						}
+						return false;
+					}
+				/* ]]> */
+				</script>';
 			// display form
 			$content .= $this->displayDiffs($this->diffPath);
 		}
@@ -132,8 +143,12 @@ class ext_update {
 </dl>';
 		}
 		if (!$content) return false;
-		$content = '<h2 class="typo3-tstemplate-ceditor-subcat">TinyMCE/TYPO3 compability patches</h2>'.
-			$content .'<input name="update" value="Update" type="submit">' .
+		$content = '<h2 class="typo3-tstemplate-ceditor-subcat">TinyMCE/TYPO3 compability patches</h2>' .
+			$content .
+			'<input type="button" name="patchall" value="Select Patch all" onclick="return difftoggle(1)" /> ' .
+			'<input type="button" name="unpatchall" value="Select Unpatch all" onclick="return difftoggle(2)" /> ' .
+			'<input type="button" name="resetall" value="Reset all" onclick="return difftoggle(0)" /> ' .
+			'<input name="update" value="Update" type="submit" style="font-weight: bold;"/>' .
 			$this->displayDetails();
 		return '<form name="tinymcepatcher_form" action="'.htmlspecialchars(t3lib_div::linkThisScript()).'" method="post">'.$content.'</form>';
 		
@@ -147,10 +162,10 @@ class ext_update {
 			<td><strong>General information:</strong></td>
 		</tr>
 		<tr class="bgColor4" >
-			<td>If you manually update the TinyMCE code to a new version, you will need to apply the above patches to the newly installed files, in order to make it compatible with TYPO3.</td>
+			<td>If you manually update the TinyMCE code to a new version, you will need to apply the above patches to the newly installed files, in order to make them compatible with TYPO3.</td>
 		</tr>
 		<tr class="bgColor4">
-			<td>NOTE: The TYPO3 TinyMCE RTE extension is ALWAYS shipped with the patches installed, so if you have downloaded it from TER, you don\'t need to apply the patches.</td>
+			<td>NOTE: The TYPO3 TinyMCE RTE extension is ALWAYS shipped with the patches installed. So if you have downloaded it from TER, you don\'t need to apply the patches.</td>
 		</tr>
 	</tbody>
 </table>';
@@ -185,7 +200,6 @@ class ext_update {
 	function access() {
 		return true;
 	}
-
 	
 }
 
@@ -193,6 +207,5 @@ class ext_update {
 if (defined('TYPO3_MODE') && isset($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tinymce_rte/class.ext_update.php']))	{
 	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/tinymce_rte/class.ext_update.php']);
 }
-
 
 ?>
