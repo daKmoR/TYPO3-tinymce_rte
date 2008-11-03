@@ -30,7 +30,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @return	string		HTML code for RTE!
 	 */
 	function drawRTE($parentObject, $table, $field, $row, $PA, $specConf, $thisConfig, $RTEtypeVal, $RTErelPath, $thePidValue) {
-		global $LANG, $BE_USER;
+		global $LANG;
+		if (TYPO3_MODE == 'BE') global $BE_USER;
 		$code = "";
 
 		// set a uniq rte id.
