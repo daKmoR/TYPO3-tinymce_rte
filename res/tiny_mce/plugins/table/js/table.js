@@ -106,7 +106,7 @@ function insertTable() {
 		} else {
 			dom.setAttrib(elm, 'height', height, true);
 			dom.setStyle(elm, 'height', '');
-		}
+ 		}
 
 		if (background != '')
 			elm.style.backgroundImage = "url('" + background + "')";
@@ -152,7 +152,7 @@ function insertTable() {
 	html += makeAttrib('cellpadding', cellpadding);
 	html += makeAttrib('cellspacing', cellspacing);
 
-	if (width && /(pt|em|cm)$/.test(width)) {
+	if (width && inst.settings.inline_styles) {
 		if (style)
 			style += '; ';
 
