@@ -62,10 +62,14 @@ class tx_tinymce_rte_pi1 extends tx_tinymce_rte_base {
 	function drawRTE($parentObject,$table,$field,$row,$PA,$specConf,$thisConfig,$RTEtypeVal,$RTErelPath,$thePidValue) {
 
 		$pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig();
+		$localRteId = $parentObject->RTEcounter . '.';
 
 		$rteConfig = $pageTSConfig['RTE.']['default.']['FE.'];
-		if (is_array($parentObject->conf['tinymce_rte'])){
-			$tmpConf = array_merge($rteConfig, $parentObject->conf['tinymce_rte']);
+
+		if (is_array($parentObject->conf['tinymce_rte.'][$localRteId])){
+			$tmpConf = $this->array_merge_recursive_override($rteConfig, $parentObject->conf['tinymce_rte.'][$localRteId]);
+		} elseif  (is_array($parentObject->conf['tinymce_rte.']['1.'])){
+			$tmpConf = $this->array_merge_recursive_override($rteConfig, $parentObject->conf['tinymce_rte.']['1.']);
 		} else {
 			$tmpConf = $rteConfig;
 		}
