@@ -1,31 +1,29 @@
 <?php
-	/***************************************************************
-	*  Copyright notice
-	*
-	*  (c) 2008 Peter Klein <peter@umloud.dk>
-	*  All rights reserved
-	*
-	*  This script is part of the TYPO3 project. The TYPO3 project is
-	*  free software; you can redistribute it and/or modify
-	*  it under the terms of the GNU General Public License as published by
-	*  the Free Software Foundation; either version 2 of the License, or
-	*  (at your option) any later version.
-	*
-	*  The GNU General Public License can be found at
-	*  http://www.gnu.org/copyleft/gpl.html.
-	*
-	*  This script is distributed in the hope that it will be useful,
-	*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-	*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	*  GNU General Public License for more details.
-	*
-	*  This copyright notice MUST APPEAR in all copies of the script!
-	***************************************************************/
+/***************************************************************
+*  Copyright notice
+*
+*  (c) 2008 Peter Klein <peter@umloud.dk>
+*  All rights reserved
+*
+*  This script is part of the TYPO3 project. The TYPO3 project is
+*  free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or
+*  (at your option) any later version.
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  This copyright notice MUST APPEAR in all copies of the script!
+***************************************************************/
 
-if (intval(phpversion())<5 || TYPO3_branch<4.2) {
-	die('<div style="padding-top: 10px;"></div><p>Updater <strong>requires</strong> PHP5 and TYPO3 v4.2+</p>');
-}
-else {
+// PHP and TYPO3 version check
+if (intval(phpversion())>=5 || TYPO3_branch>=4.2) {
 	require_once('patcher/class.pmkpatcher.php');
 	require_once(PATH_typo3.'contrib/jsmin/jsmin.php');
 }
@@ -45,6 +43,11 @@ class ext_update {
 	 */
 	function main()	{
 		global $BACK_PATH;
+		
+		// PHP and TYPO3 version check
+		if (intval(phpversion())<5 || TYPO3_branch<4.2) {
+			return '<div style="padding-top: 10px;"></div><p>Updater <strong>requires</strong> PHP5 and TYPO3 v4.2+</p>';
+		}
 		
 		$this->diffPath = t3lib_extMgm::extPath('tinymce_rte').'patcher/diffs/';
 		$this->filePath = t3lib_extMgm::extPath('tinymce_rte');
