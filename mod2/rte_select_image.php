@@ -297,7 +297,6 @@ class SC_rte_select_image {
 		$this->doc->backPath = $BACK_PATH;
 
 		$this->doc->JScode='
-		<link rel="stylesheet" type="text/css" href="../res/tiny_mce/themes/advanced/css/editor_popup.css" />
 		<script language="javascript" type="text/javascript" src="../res/tiny_mce/tiny_mce_popup.js"></script>
 		<script language="javascript" type="text/javascript">
 			<!--
