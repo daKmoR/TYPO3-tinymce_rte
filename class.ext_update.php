@@ -22,8 +22,13 @@
 	*  This copyright notice MUST APPEAR in all copies of the script!
 	***************************************************************/
 
-require_once('patcher/class.pmkpatcher.php');
-require_once(PATH_typo3.'contrib/jsmin/jsmin.php');
+if (intval(phpversion())<5) {
+	die('<div style="padding-top: 10px;"></div><p>Updater <strong>requires</strong> PHP 5+!</p>');
+}
+else {
+	require_once('patcher/class.pmkpatcher.php');
+	require_once(PATH_typo3.'contrib/jsmin/jsmin.php');
+}
 
 /**
  * Class for updating/patching TinyMCE files for specific TYPO3 usage
