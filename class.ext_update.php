@@ -22,8 +22,8 @@
 	*  This copyright notice MUST APPEAR in all copies of the script!
 	***************************************************************/
 
-if (intval(phpversion())<5) {
-	die('<div style="padding-top: 10px;"></div><p>Updater <strong>requires</strong> PHP 5+!</p>');
+if (intval(phpversion())<5 || TYPO3_branch<4.2) {
+	die('<div style="padding-top: 10px;"></div><p>Updater <strong>requires</strong> PHP5 and TYPO3 v4.2+</p>');
 }
 else {
 	require_once('patcher/class.pmkpatcher.php');
