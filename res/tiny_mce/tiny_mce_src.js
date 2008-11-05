@@ -3,8 +3,8 @@
 
 var tinymce = {
 	majorVersion : '3',
-	minorVersion : '2.0.3',
-	releaseDate : '2008-x-xxx',
+	minorVersion : '2.1',
+	releaseDate : '2008-11-04',
 
 	_init : function() {
 		var t = this, d = document, w = window, na = navigator, ua = na.userAgent, i, nl, n, base, p, v;
@@ -4837,20 +4837,27 @@ tinymce.create('static tinymce.util.XHR', {
 					}
 				};
 
-				e = tinymce.DOM.create('script', {id : id, type : 'text/javascript', src : u});
-
 				if (tinymce.isIE) {
-					Event.add(e, 'readystatechange', function(e) {
+/*					Event.add(e, 'readystatechange', function(e) {
 						if (e.target && e.target.readyState == 'complete')
 							done();
+					});*/
+
+					tinymce.util.XHR.send({
+						url : tinymce._addVer(u),
+						async : false,
+						success : function(co) {
+							window.execScript(co);
+							done();
+						}
 					});
+				} else {
+					e = tinymce.DOM.create('script', {id : id, type : 'text/javascript', src : tinymce._addVer(u)});
+					Event.add(e, 'load', done);
+
+					// Check for head or body
+					(document.getElementsByTagName('head')[0] || document.body).appendChild(e);
 				}
-
-				Event.add(e, 'load', done);
-
-				// Check for head or body
-				(document.getElementsByTagName('head')[0] || document.body).appendChild(e);
-				e = null;
 			}
 		}
 
