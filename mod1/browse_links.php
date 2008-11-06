@@ -710,7 +710,16 @@ class SC_browse_links {
 					if (!anchor) anchor = "";
 					var win = tinyMCEPopup.getWindowArg("window");
 					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = value + anchor;
-					tinyMCEPopup.close();
+			';
+			//miss use bparams
+			if(t3lib_div::_GP('bparams') == 'media') {
+				$JScode .= '
+					// for media browsers: update media preview
+					win.updatePreview();
+				';
+			}
+			$JScode .= '
+					tinyMCEPopup.close(); 
 					return false;
 				}
 			';
