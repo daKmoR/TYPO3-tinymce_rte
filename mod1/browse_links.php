@@ -1043,7 +1043,7 @@ class SC_browse_links {
 
 				list(,,$specUid) = explode('_',$this->PM);
 				$files = $this->expandFolder($foldertree->specUIDmap[$specUid]);
-				$files='<fieldset><legend>'.$GLOBALS['LANG']->getLL('files').'</legend></legend><div style="overflow-x:hidden ; overflow-y:auto;"><table style="width: 100%;"><tr><td>'.$files.'</td></tr></table></div></fieldset>';
+				$files='<fieldset><legend>'.$GLOBALS['LANG']->getLL('files').'</legend></legend><div style="overflow: auto;"><table style="width: 100%;"><tr><td>'.$files.'</td></tr></table></div></fieldset>';
 				$content.= '
 
 			<!--
@@ -1051,7 +1051,7 @@ class SC_browse_links {
 			-->
 					<table border="0" cellpadding="0" cellspacing="0" style="width: 100%">
 						<tr>
-							<td valign="top" style="width: 48%;"><fieldset><legend>'.$GLOBALS['LANG']->getLL('folderTree').'</legend></legend><div style="overflow-x:hidden ; overflow-y:auto;"><table style="width: 100%;"><tr><td>'.$tree.'</td></tr></table></div></fieldset></td>
+							<td valign="top" style="width: 48%;"><fieldset><legend>'.$GLOBALS['LANG']->getLL('folderTree').'</legend></legend><div style="overflow: auto;"><table style="width: 100%;"><tr><td>'.$tree.'</td></tr></table></div></fieldset></td>
 							<td valign="top" style="width: 1%;"><img src="clear.gif" width="5" alt="" /></td>
 							<td valign="top" style="width: 48%;">'.$files.'</td>
 						</tr>
@@ -1121,7 +1121,7 @@ class SC_browse_links {
 				$pagetree = t3lib_div::makeInstance('rtePageTree');
 				$tree=$pagetree->getBrowsableTree();
 				$cElements = $this->expandPage();
-				$cElements ='<fieldset><legend>'.$GLOBALS['LANG']->getLL('contentElements').'</legend><div style="overflow-x:hidden ; overflow-y:auto; min-height: 200px;"><table><tr><td>'.$cElements.'</td></tr></table></div></fieldset>';
+				$cElements ='<fieldset><legend>'.$GLOBALS['LANG']->getLL('contentElements').'</legend><div style="overflow: auto; min-height: 200px;"><table><tr><td>'.$cElements.'</td></tr></table></div></fieldset>';
 				$content.= '
 
 			<!--
@@ -1130,9 +1130,9 @@ class SC_browse_links {
 					
 					<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 						<tr>
-							<td valign="top" style="width: 48%;"><fieldset><legend>'.$GLOBALS['LANG']->getLL('pageTree').'</legend><div style="overflow-x:hidden ; overflow-y:auto;"><table style="width: 100%;"><tr><td>'.$tree.'</td></tr></table></div></fieldset></td>
+							<td valign="top" style="width: 58%;"><fieldset><legend>'.$GLOBALS['LANG']->getLL('pageTree').'</legend><div style="overflow: auto;"><table style="width: 100%;"><tr><td>'.$tree.'</td></tr></table></div></fieldset></td>
 							<td valign="top" style="width: 1%;"><img src="clear.gif" width="5" alt="" /></td>
-							<td valign="top" style="width: 48%;">'.$cElements.'</td>
+							<td valign="top" style="width: 38%;">'.$cElements.'</td>
 						</tr>
 					</table>
 					';
