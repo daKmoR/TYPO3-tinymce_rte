@@ -20,6 +20,7 @@ RTE.default {
 	# languagesExtension = tinymce_rte
 	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
 	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
+	callbackJavascriptFile =
 }
 
 RTE.default.init {
@@ -99,7 +100,7 @@ RTE.default.proc {
 	preserveDIVSections = 1
 
 	# TAGS ALLOWED OUTSIDE P & DIV
-	allowTagsOutside = hr, address, ul, ol, li, img, table
+	allowTagsOutside = hr, address, ul, ol, li, img, table, object, embed
 	
 	# DON'T FETCH EXTERNAL IMAGES
 	dontFetchExtPictures = 1

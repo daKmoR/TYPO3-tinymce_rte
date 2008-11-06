@@ -70,8 +70,17 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$this->conf['init.']['spellchecker_rpc_url'] = $this->getPath($this->conf['init.']['spellchecker_rpc_url']);
 		$this->conf['tiny_mcePath'] = $this->getPath($this->conf['tiny_mcePath']);
 		$this->conf['tiny_mceGzipPath'] = $this->getPath($this->conf['tiny_mceGzipPath']);
+		$this->conf['callbackJavascriptFile'] = $this->getPath($this->conf['callbackJavascriptFile']);
 
 		$loaded = ( t3lib_extmgm::isLoaded($this->conf['languagesExtension']) ) ? 1 : 0;
+
+		// add callback javascript file
+		if ($this->conf['callbackJavascriptFile'] !== '') {
+			$code = '
+				<script type="text/javascript" src="' . $this->conf['callbackJavascriptFile'] . '"></script>
+			';
+		}
+
 		if ($this->conf['gzip'])
 			$code .= '
 				<script type="text/javascript" src="' . $this->conf['tiny_mceGzipPath'] . '"></script>
@@ -180,11 +189,15 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			<script language="javascript" type="text/javascript">
 				/* <![CDATA[ */
 				function typo3filemanager(field_name, url, type, win) {
-					if ( type != "image") type = "link";
+					var tab = "";
+					if ( (type != "image") && (type != "media") ) type = "link";
 					switch(type){
+						case "media":
+							tab = "file";
 						case "link":
 							var expPage = "";
-							var tab = "' . $this->conf['typo3filemanager.']['defaultTab'] . '";
+							if (tab == "")
+								tab = "' . $this->conf['typo3filemanager.']['defaultTab'] . '";
 							if ( url.indexOf("fileadmin") > -1 ) tab = "file";
 							if ( (url.indexOf("http://") > -1) || (url.indexOf("ftp://") > -1) || (url.indexOf("https://") > -1) ) tab = "url";
 							if ( url.indexOf("@") > -1 ) tab = "mail";
@@ -196,7 +209,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 							template_file = "'.$path.'mod1/browse_links.php?act="+tab+expPage+"&mode=wizard&P[ext]='. $this->getPath('EXT:tinymce_rte/./') .'&P[init]=tinymce_rte&P[formName]=' . /*$pObj->formName*/ 'editform' . '"+current+"&P[itemName]=data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D&P[fieldChangeFunc][TBE_EDITOR_fieldChanged]=TBE_EDITOR_fieldChanged%28%27'.$table.'%27%2C%27'.$row["uid"].'%27%2C%27'.$field.'%27%2C%27data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D%27%29%3B";
 							break;
 						case "image":
-							var tab = "plain";
+							tab = "plain";
 							var current = "&expandFolder=' . rawurlencode($this->getPath('./',1)) . '" + encodeURIComponent(url.substr(0,url.lastIndexOf("/")));
 							if ( (url.indexOf("RTEmagicC_") > -1) || (url == "") ) {
 								current = "&expandFolder=' . rawurlencode($this->getPath('./fileadmin/',1)) . '";
