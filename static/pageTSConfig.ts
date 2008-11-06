@@ -100,6 +100,9 @@ RTE.default.proc {
 
 	# TAGS ALLOWED OUTSIDE P & DIV
 	allowTagsOutside = hr, address, ul, ol, li, img, table
+	
+	# DON'T FETCH EXTERNAL IMAGES
+	dontFetchExtPictures = 1
 
 	# TAGS ALLOWED
 	# Added to the default internal list: b,i,u,a,img,br,div,center,pre,font,hr,sub,sup,p,strong,em,li,ul,ol,blockquote,strike,span
@@ -107,8 +110,8 @@ RTE.default.proc {
 	# center, font, strike, sdfield and  u will be removed on entry (see below).
 	# b and i will be remapped on exit (see below).
 	allowTags (
-		a, abbr, acronym, address, blockquote, b, br, caption, cite, code, div, em,
-		h1, h2, h3, h4, h5, h6, hr, i, img, li, link, ol, p, pre, q, sdfield,
+		a, abbr, acronym, address, blockquote, b, br, caption, cite, code, div, em, embed
+		h1, h2, h3, h4, h5, h6, hr, i, img, li, link, object, ol, p, param, pre, q,
 		span, strong, sub, sup, table, tbody, td, th, tr, tt, ul
 	)
 
