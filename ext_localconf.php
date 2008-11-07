@@ -10,8 +10,13 @@ if(!$TYPO3_CONF_VARS['BE']['RTEenabled']) $TYPO3_CONF_VARS['BE']['RTEenabled'] =
 // register the RTE to TYPO3
 $TYPO3_CONF_VARS['BE']['RTE_reg'][$_EXTKEY] = array('objRef' => 'EXT:'.$_EXTKEY.'/class.tx_tinymce_rte_base.php:&tx_tinymce_rte_base');
 
-// load default config from static
+// load default PageTS config from static
 t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/pageTSConfig.ts">');
+
+// load default SetupTS config from static
+t3lib_extMgm::addTypoScript($_EXTKEY,'setup','
+	<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/setupTSConfig.ts">
+',43);
 
 
 ?>
