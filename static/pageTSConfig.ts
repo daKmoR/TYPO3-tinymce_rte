@@ -1,4 +1,4 @@
-# clear htmlarea skin?
+﻿# clear htmlarea skin?
 RTE.default.skin > 
 
 RTE.default {
