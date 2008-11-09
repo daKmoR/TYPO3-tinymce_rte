@@ -1,4 +1,4 @@
-<?php
+<?
 /***************************************************************
 *  Copyright notice
 *  
@@ -207,7 +207,9 @@ class pmkpatcher {
 	protected static function array_filterPM($arr,$excl,$rev=false) {
 		if ($rev) $excl = $excl=='+' ? '-' : '+';
 		$res = array();
-		array_walk($arr, create_function('$v,$k,$res','if ($v{0}!="'.$excl.'") $res[] = (string)substr($v,1);') ,&$res);
+		foreach ($arr as $v) {
+			if ($v{0}!=$excl) $res[] = (string)substr($v,1);
+		}
 		return $res;
 	}
 }
