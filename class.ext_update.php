@@ -68,6 +68,13 @@ class ext_update {
 			// Remove cache files
 			$this->removeCachedFiles();
 		}
+		elseif (t3lib_div::_GP('clear')) {
+			$content = '<h2 class="typo3-tstemplate-ceditor-subcat">Clearing gzip and TYPO3 cache.</h2>';
+			$content .= 'Gzip and TYPO3 cache cleared..';
+			$content .= '<div style="padding-top: 25px;"></div><a href="'.htmlspecialchars(t3lib_div::linkThisScript()).'" class="typo3-goBack"><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/goback.gif','width="14" height="14"').' alt="" />Go back</a>';
+			// Remove cache files
+			$this->removeCachedFiles();
+		}
 		else {
 			$content .= '
 				<script type="text/javascript">
@@ -157,9 +164,17 @@ class ext_update {
 			'<input type="button" name="unpatchall" value="Select Unpatch all" onclick="return difftoggle(2)" /> ' .
 			'<input type="button" name="resetall" value="Reset all" onclick="return difftoggle(0)" /> ' .
 			'<input name="update" value="Update" type="submit" style="font-weight: bold;"/>' .
+			$this->displayRemoveCache() .
 			$this->displayDetails();
 		return '<form name="tinymcepatcher_form" action="'.htmlspecialchars(t3lib_div::linkThisScript()).'" method="post">'.$content.'</form>';
 		
+	}
+	
+	function displayRemoveCache() {
+		$content = '<div style="padding-top: 10px;"></div><h2 class="typo3-tstemplate-ceditor-subcat">Clearing gzip cache</h2>
+		When you change parts of the TinyMCE installation manually, or install language packs, the cached gzip files still contains the old settings. In order to activate the new settings, the gzip cache must be cleared. After clearing the gzip cache, the BE/browser must be refreshed/reloaded.<br />
+ 		<div style="padding-top: 10px;"></div><input name="clear" value="Clear gzip cache" type="submit" style="font-weight: bold;"/>';
+		return $content;
 	}
 	
 	function displayDetails() {
