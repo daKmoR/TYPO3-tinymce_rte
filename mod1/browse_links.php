@@ -1557,7 +1557,7 @@ RTE.default.linkhandler {
 							$arrCol;
 					
 					if( $currentTable == 'tt_content' )
-						$out .= '<a href="#" onclick="return link_insert(\''.$expPageId.'\',\'#'.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($row['header'],$titleLen)).'">';
+						$out .= '<a href="#" onclick="return link_insert(\''.$expPageId.'\',\'#'.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)).'">';
 					else 
 						$out .= '<a href="#" onclick="return record_insert(\''.$currentTable.'\',\''.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($row['header'],$titleLen)).'">';
 					
