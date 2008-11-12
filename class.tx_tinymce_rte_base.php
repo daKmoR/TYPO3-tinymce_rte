@@ -72,7 +72,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$this->conf['tiny_mceGzipPath'] = $this->getPath($this->conf['tiny_mceGzipPath']);
 		$this->conf['callbackJavascriptFile'] = $this->getPath($this->conf['callbackJavascriptFile']);
 		
-		//do not us the default for tt_news unless it's loaded
+		//do not us the default linkhandler config for tt_news unless it's loaded
 		if ( !t3lib_extmgm::isLoaded('tt_news') )
 			unset($this->conf['linkhandler.']['tt_news.']);
 		
@@ -206,7 +206,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 							if ( (url.indexOf("http://") > -1) || (url.indexOf("ftp://") > -1) || (url.indexOf("https://") > -1) ) tab = "url";
 							if ( url.indexOf("@") > -1 ) tab = "mail";
 							var current = "&P[currentValue]=" + encodeURIComponent(url);
-							template_file = "'.$path.'mod1/browse_links.php?act="+tab+"&mode=wizard&bparams="+type+"&P[ext]='. $this->getPath('EXT:tinymce_rte/./') .'&P[init]=tinymce_rte&P[formName]=' . /*$pObj->formName*/ 'editform' . '"+current+"&P[itemName]=data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D&P[fieldChangeFunc][TBE_EDITOR_fieldChanged]=TBE_EDITOR_fieldChanged%28%27'.$table.'%27%2C%27'.$row["uid"].'%27%2C%27'.$field.'%27%2C%27data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D%27%29%3B";
+							template_file = "'.$path.'mod1/browse_links.php?act="+tab+"&mode=wizard&bparams="+type+"&P[ext]='. $this->getPath('EXT:tinymce_rte/./') .'&P[init]=tinymce_rte&P[formName]=' . /*$pObj->formName*/ 'editform' . '"+current+"&P[itemName]=data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D&P[fieldChangeFunc][TBE_EDITOR_fieldChanged]=TBE_EDITOR_fieldChanged%28%27'.$table.'%27%2C%27'.$row["uid"].'%27%2C%27'.$field.'%27%2C%27data%5B'.$table.'%5D%5B'.$row["uid"].'%5D%5B'.$field.'%5D%27%29%3B"+"&RTEtsConfigParams='.$table.'%3A136%3A'.$field.'%3A29%3Atext%3A'.$row["pid"].'%3A";
 							break;
 						case "image":
 							tab = "plain";

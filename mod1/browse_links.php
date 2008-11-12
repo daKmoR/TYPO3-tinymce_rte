@@ -51,7 +51,6 @@ require_once (PATH_t3lib.'class.t3lib_recordlist.php');
 require_once ($BACK_PATH.'class.db_list.inc');
 require_once ($BACK_PATH.'class.db_list_extra.inc');
 
-
 class tinymce_rte_template extends template {
 
 }
@@ -653,8 +652,7 @@ class SC_browse_links {
 		$this->expandPage = t3lib_div::_GP('expandPage');
 		$this->expandFolder = t3lib_div::_GP('expandFolder');
 		$this->PM = t3lib_div::_GP('PM');
-
-
+		
 			// Find "mode"
 		$this->mode=t3lib_div::_GP('mode');
 		if (!$this->mode)	{
@@ -742,11 +740,14 @@ class SC_browse_links {
 						echo "<pre>
 RTE.default.linkhandler {
 	tt_news {
-		parameter = 27 # id of the single news page
+		# id of the Single News Page
+		parameter = 27
+		# id of the Storage folder containing the news (just used to mark already selected news)
+		storage = 25
 		additionalParams = &tx_ttnews[tt_news]={field:uid}
 		additionalParams.insertData = 1
 		select = uid,title as header,hidden,starttime,endtime,fe_group,bodytext
-		sorting = crdate		
+		sorting = crdate
 	}
 }
 </pre>";
@@ -884,66 +885,8 @@ RTE.default.linkhandler {
 			}
 		';
 
-
-			// This is JavaScript especially for the TBE Element Browser!
-		$pArr = explode('|',$this->bparams);
-		$formFieldName = 'data['.$pArr[0].']['.$pArr[1].']['.$pArr[2].']';
-		$JScode.='
-			var elRef="";
-			var targetDoc="";
-
-			function launchView(url)	{	//
-				var thePreviewWindow="";
-				thePreviewWindow = window.open("show_item.php?table="+url,"ShowItem","height=300,width=410,status=0,menubar=0,resizable=0,location=0,directories=0,scrollbars=1,toolbar=0");
-				if (thePreviewWindow && thePreviewWindow.focus)	{
-					thePreviewWindow.focus();
-				}
-			}
-			function setReferences()	{	//
-				if (parent.window.opener
-				&& parent.window.opener.content
-				&& parent.window.opener.content.document.editform
-				&& parent.window.opener.content.document.editform["'.$formFieldName.'"]
-						) {
-					targetDoc = parent.window.opener.content.document;
-					elRef = targetDoc.editform["'.$formFieldName.'"];
-					return true;
-				} else {
-					return false;
-				}
-			}
-			function insertElement(table, uid, type, filename,fp,filetype,imagefile,action, close)	{	//
-				if (1=='.($pArr[0]&&!$pArr[1]&&!$pArr[2] ? 1 : 0).')	{
-					addElement(filename,table+"_"+uid,fp,close);
-				} else {
-					if (setReferences())	{
-						parent.window.opener.group_change("add","'.$pArr[0].'","'.$pArr[1].'","'.$pArr[2].'",elRef,targetDoc);
-					} else {
-						alert("Error - reference to main window is not set properly!");
-					}
-					if (close)	{
-						parent.window.opener.focus();
-						parent.close();
-					}
-				}
-				return false;
-			}
-			function addElement(elName,elValue,altElValue,close)	{	//
-				if (parent.window.opener && parent.window.opener.setFormValueFromBrowseWin)	{
-					parent.window.opener.setFormValueFromBrowseWin("'.$pArr[0].'",altElValue?altElValue:elValue,elName);
-					if (close)	{
-						parent.window.opener.focus();
-						parent.close();
-					}
-				} else {
-					alert("Error - reference to main window is not set properly!");
-					parent.close();
-				}
-			}
-		';
-
 			// Finally, add the accumulated JavaScript to the template object:
-		$this->doc->JScode = '<script language="javascript" type="text/javascript" src="../res/tiny_mce/tiny_mce_popup.js"></script>';
+		$this->doc->JScode .= '<script language="javascript" type="text/javascript" src="../res/tiny_mce/tiny_mce_popup.js"></script>';
 		$this->doc->JScode .= $this->doc->wrapScriptTags($JScode);
 
 			// Debugging:
@@ -960,7 +903,6 @@ RTE.default.linkhandler {
 			'expandFolder' => $this->expandFolder,
 			'PM' => $this->PM,
 		),'Internal variables of Script Class:');
-		return;
 	}
 
 
@@ -1462,10 +1404,6 @@ RTE.default.linkhandler {
 
 			// Add some space
 		$content.='<br /><br />';
-		if(TYPO3_branch>=4.2) {
-				// Setup indexed elements:
-			$this->doc->JScode.= $this->doc->wrapScriptTags('BrowseLinks.addElements('.t3lib_div::array2json($this->elements).');');
-		}
 
 			// Ending page, returning content:
 		$content.= $this->doc->endPage();
@@ -1578,7 +1516,8 @@ RTE.default.linkhandler {
 			$out.=$picon.'<br />';
 			
 			$queries = array('tt_content.' => array('sorting' => 'colpos,sorting', 'select' => 'uid,header,hidden,starttime,endtime,fe_group,CType,colpos,bodytext' ));
-			$queries = array_merge($queries, $this->thisConfig['linkhandler.']);
+			if( is_array($this->thisConfig['linkhandler.']) )
+				$queries = array_merge($queries, $this->thisConfig['linkhandler.']);
 			
 			foreach ($queries as $table => $query) {
 				// set some mandatory default values
@@ -1610,7 +1549,8 @@ RTE.default.linkhandler {
 					}
 						// Putting list element HTML together:
 					$cropAt = 25;
-					$t=strlen(htmlspecialchars(t3lib_div::fixed_lgd_cs($row['header'],$titleLen)))>$cropAt ? '&nbsp;'.substr(htmlspecialchars(t3lib_div::fixed_lgd_cs($row['header'],$titleLen)),0,$cropAt).'...' : '&nbsp;'.htmlspecialchars(t3lib_div::fixed_lgd_cs($row['header'],$titleLen));
+					$titleText = $row['header'] ? $row['header'] : strip_tags($row['bodytext']);
+					$t=strlen(htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)))>$cropAt ? '&nbsp;'.substr(htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)),0,$cropAt).'...' : '&nbsp;'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen));
 
 
 					$out.='<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/ol/join'.($c==$cc?'bottom':'').'.gif','width="18" height="16"').' alt="" />'.
@@ -1619,7 +1559,7 @@ RTE.default.linkhandler {
 					if( $currentTable == 'tt_content' )
 						$out .= '<a href="#" onclick="return link_insert(\''.$expPageId.'\',\'#'.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($row['header'],$titleLen)).'">';
 					else 
-						$out .= '<a href="#" onclick="return record_insert(\'tt_news\',\''.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($row['header'],$titleLen)).'">';
+						$out .= '<a href="#" onclick="return record_insert(\''.$currentTable.'\',\''.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($row['header'],$titleLen)).'">';
 					
 					$out.=$icon.
 							$t.
