@@ -10,7 +10,7 @@
  *    template_templates {
  *      0 {
  *        title = PHP based template/content
- *        src = typo3conf/ext/tinymce_rte/res/tinymce_tempaltes/advanced.php
+ *        src = typo3conf/ext/tinymce_rte/res/tinymce_templates/advanced.php
  *        description = Inserts name and email of current TYPO3 BE user
  *      }
  *    }
