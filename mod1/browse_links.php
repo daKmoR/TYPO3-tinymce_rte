@@ -1548,8 +1548,8 @@ RTE.default.linkhandler {
 						$arrCol='';
 					}
 						// Putting list element HTML together:
-					$cropAt = 25;
-					$titleText = $row['header'] ? $row['header'] : strip_tags($row['bodytext']);
+					$cropAt = 24;
+					$titleText = $row['header'] ? $row['header'] : (isset($row['bodytext']) ? strip_tags($row['bodytext']) : '');
 					$t=strlen(htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)))>$cropAt ? '&nbsp;'.substr(htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)),0,$cropAt).'...' : '&nbsp;'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen));
 
 
@@ -1559,7 +1559,7 @@ RTE.default.linkhandler {
 					if( $currentTable == 'tt_content' )
 						$out .= '<a href="#" onclick="return link_insert(\''.$expPageId.'\',\'#'.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)).'">';
 					else 
-						$out .= '<a href="#" onclick="return record_insert(\''.$currentTable.'\',\''.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($row['header'],$titleLen)).'">';
+						$out .= '<a href="#" onclick="return record_insert(\''.$currentTable.'\',\''.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)).'">';
 					
 					$out.=$icon.
 							$t.
