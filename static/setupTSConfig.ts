@@ -1,11 +1,8 @@
 lib.parseFunc_RTE {
 	
-	# COPY ALLOW TAGS FROM PAGETS (WITHOUT b, i, link)
-	allowTags (
-		a, abbr, acronym, address, blockquote, br, caption, cite, code, div, em, embed, 
-		h1, h2, h3, h4, h5, h6, hr, img, li, object, ol, p, param, pre, q, 
-		span, strong, sub, sup, table, tbody, td, th, tr, tt, ul
-	)
+	# COPY ALLOW TAGS FROM PAGETS (WITHOUT b, i, link) sometimes there is a probblem with multiline so just use one line
+	allowTags =	a, abbr, acronym, address, blockquote, br, caption, cite, code, div, em, embed, h1, h2, h3, h4, h5, h6, hr, img, li, object, ol, p, param, pre, q, span, strong, sub, sup, table, tbody, td, th, tr, tt, ul
+	
 	
 	# DO NOT ADD class="bodytext" TO EACH LINE
 	nonTypoTagStdWrap.encapsLines.addAttributes.P.class >
