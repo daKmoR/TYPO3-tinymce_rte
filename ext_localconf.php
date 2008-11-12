@@ -1,7 +1,7 @@
 <?php
 if (!defined ("TYPO3_MODE")) 	die ("Access denied.");
 
-// override TS_links_rte( )
+// override TS_links_rte( ), TS_images_db()
 $TYPO3_CONF_VARS['BE']['XCLASS']['t3lib/class.t3lib_parsehtml_proc.php'] = t3lib_extMgm::extPath($_EXTKEY).'class.ux_t3lib_parsehtml_proc.php';
 
 // enable the RTE in the BE by default
@@ -14,9 +14,9 @@ $TYPO3_CONF_VARS['BE']['RTE_reg'][$_EXTKEY] = array('objRef' => 'EXT:'.$_EXTKEY.
 t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/pageTSConfig.ts">');
 
 // load default SetupTS config from static
-t3lib_extMgm::addTypoScript($_EXTKEY,'setup','
-	<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/setupTSConfig.ts">
-',43);
+t3lib_extMgm::addTypoScript($_EXTKEY,'setup','<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/setupTSConfig.ts">',43);
 
+//add linkhandler for "record"
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['typolinkLinkHandler']['record'] = 'EXT:tinymce_rte/mod4/class.tx_tinymce_handler.php:&tx_tinymce_handler';
 
 ?>

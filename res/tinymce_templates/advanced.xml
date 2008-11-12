@@ -9,13 +9,9 @@
 			<label index="author">Author</label>
 			<label index="email">Email</label>
 		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="author">Autor</label>
+			<label index="email">E-Mail</label>
+		</languageKey>		
 	</data>
-	<orig_hash type="array">
-		<languageKey index="default" type="array">
-		</languageKey>
-	</orig_hash>
-	<orig_text type="array">
-		<languageKey index="default" type="array">
-		</languageKey>
-	</orig_text>
 </T3locallang>

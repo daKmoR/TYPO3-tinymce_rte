@@ -21,6 +21,18 @@ RTE.default {
 	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
 	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
 	callbackJavascriptFile =
+	linkhandler {
+    tt_news {
+			# id of the Single News Page
+			parameter = 27
+			additionalParams = &tx_ttnews[tt_news]={field:uid}
+			additionalParams.insertData = 1
+			# id of the Storage folder containing the news (just used to mark already selected news)
+			storage = 25
+			select = uid,title as header,hidden,starttime,endtime,fe_group,bodytext
+			sorting = crdate
+    }
+	}
 }
 
 RTE.default.init {
