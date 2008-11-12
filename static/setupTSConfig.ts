@@ -1,4 +1,4 @@
-﻿lib.parseFunc_RTE {
+lib.parseFunc_RTE {
 	
 	# COPY ALLOW TAGS FROM PAGETS (WITHOUT b, i, link)
 	allowTags (
