@@ -2,17 +2,22 @@
 RTE.default.skin > 
 
 RTE.default {
+	# do you want to create a single gzip file for the rte (much faster)
 	gzip = 1
+	# Should the gzip file saved in typo3temp/tinymce_rte/ for further use (faster)
 	gzipFileCache = 1
 	typo3filemanager {
+		# width/height of the typo3filemanger popup
 		window.width = 600
 		window.height = 600
 		# possible values for defaultTab = page,file,url,mail
 		defaultTab = page
 		# possible values for defaultImageTab = magic,plain,upload
 		defaultImageTab = magic
+		# in the imagebrowser how big should the thumbnails be
 		thumbs.width = 200
 		thumbs.height = 150
+		# defines the maximum allowed image size if you create a plain image
 		maxPlainImages.width = 1000
 		maxPlainImages.height = 1000
 	}
