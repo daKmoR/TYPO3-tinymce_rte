@@ -47,6 +47,7 @@
 			<label index="addToList">Tilføj til liste...</label>
 			<label index="clickToRedrawFullSize">Billedet er større end vist her! Klik for at gen-indlæse i fuld størrelse.</label>
 			<label index="contentElements">Indholdselementer</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Nuværende link</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Emailadresse</label>
@@ -80,6 +81,7 @@
 			<label index="addToList">Zur Liste hinzufügen...</label>
 			<label index="clickToRedrawFullSize">Das Bild ist größer als angezeigt! Zur Anzeige in voller Größe bitte anklicken.</label>
 			<label index="contentElements">Inhaltselemente</label>
+			<label index="contentRecords">Inhaltsdaten</label>			
 			<label index="currentLink">Aktueller Link</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Email Adresse</label>
@@ -113,6 +115,7 @@
 			<label index="addToList">Legg til liste....</label>
 			<label index="clickToRedrawFullSize">Bildet er større enn vist her! Klikk for å lese inn på nytt i full størrelse.</label>
 			<label index="contentElements">Innholdselementer</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Gjeldende link</label>
 			<label index="email">E-post</label>
 			<label index="emailAddress">Epost-adresse</label>
@@ -146,6 +149,7 @@
 			<label index="addToList">Aggiungi alla lista...</label>
 			<label index="clickToRedrawFullSize">L'immagine è più grande di quella mostrata qui! Clicca per rivedere la pagina con le immagini a dimensioni naturali..</label>
 			<label index="contentElements">Elementi di contenuto</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Link corrente</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Indirizzo email</label>
@@ -179,6 +183,7 @@
 			<label index="addToList">Ajouter à la liste...</label>
 			<label index="clickToRedrawFullSize">L'image est plus grande en réalité! Cliquez pour la redessiner en pleine grandeur.</label>
 			<label index="contentElements">Eléments de contenu</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Lien courant</label>
 			<label index="email">Adresse électronique</label>
 			<label index="emailAddress">Adresse électronique</label>
@@ -212,6 +217,7 @@
 			<label index="addToList">Agregar a la lista...</label>
 			<label index="clickToRedrawFullSize">¡La imágen es más grande que la visualizada! Haga click para redibujarla al tamaño original.</label>
 			<label index="contentElements">Elementos de contenido</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Liga actual</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Dirección de email</label>
@@ -245,6 +251,7 @@
 			<label index="addToList">Toevoegen aan lijst</label>
 			<label index="clickToRedrawFullSize">Afbeelding is groter dan hier getoond! Klik om te herladen tot de ware grootte.</label>
 			<label index="contentElements">Inhoudselementen</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Huidige link</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Emailadres</label>
@@ -278,6 +285,7 @@
 			<label index="addToList">Přidat do seznamu...</label>
 			<label index="clickToRedrawFullSize">Obrázek je větší než je zde zobrazeno! Klikněte pro překreslení v úplné velikosti.</label>
 			<label index="contentElements">Prvky obsahu</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Současný odkaz</label>
 			<label index="email">E-mail</label>
 			<label index="emailAddress">E-mailová adresa</label>
@@ -308,6 +316,7 @@
 			<label index="addToList">Dodaj do listy...</label>
 			<label index="clickToRedrawFullSize">Obrazek jest większy niż widzisz! Kliknij aby odświeżyć stronę z obrazkami w pełnych wymiarach.</label>
 			<label index="contentElements">Elementy zawartości</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Bieżący odnośnik</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Adresy email</label>
@@ -341,6 +350,7 @@
 			<label index="addToList">Dodaj v seznam...</label>
 			<label index="clickToRedrawFullSize">Slika je večja kot je prikazana tukaj! Klikni za prikaz v polni velikosti.</label>
 			<label index="contentElements">Elementi vsebine</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Obstoječa povezava</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Email naslov</label>
@@ -404,6 +414,7 @@
 			<label index="addToList">Listeye ekle</label>
 			<label index="clickToRedrawFullSize">Resim burda gösterilenden daha büyük! Tam ebat ile yeniden çizmeye tıklayınız.</label>
 			<label index="contentElements">İçerik elemanları</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Güncel Link</label>
 			<label index="email">E-mail</label>
 			<label index="emailAddress">E-mail adresi</label>
@@ -437,6 +448,7 @@
 			<label index="addToList">Sätt till i lista...</label>
 			<label index="clickToRedrawFullSize">Bilden är större än den visas här! Klicka för att visa hela bilden.</label>
 			<label index="contentElements">Innehållselement</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Nuvarande länk</label>
 			<label index="email">E-post</label>
 			<label index="emailAddress">E-post adress</label>
@@ -470,6 +482,7 @@
 			<label index="addToList">Adicionar à lista...</label>
 			<label index="clickToRedrawFullSize">A imagem é maior do que mostrado aqui! Clique para redesenhar em tamanho integral.</label>
 			<label index="contentElements">Elementos do conteúdo</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Ligação actual</label>
 			<label index="email">E-mail</label>
 			<label index="emailAddress">Endereço de e-mail</label>
@@ -499,6 +512,7 @@
 			<label index="addToList">Добавить в список...</label>
 			<label index="clickToRedrawFullSize">Картинка больше, чем показано здесь. Щелкните, чтобы открыть в натуральную величину.</label>
 			<label index="contentElements">Записи содержания</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Текущая ссылка</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Адрес электронной почты</label>
@@ -532,6 +546,7 @@
 			<label index="addToList">Adaugă la listă...</label>
 			<label index="clickToRedrawFullSize">Imagine micşorată! Click pentru a o vedea la mărime reală.</label>
 			<label index="contentElements">Elemente de conţinut</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Legătură curentă</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Adresă email</label>
@@ -564,6 +579,7 @@
 		<languageKey index="ch" type="array">
 			<label index="addToList">添加到列表</label>
 			<label index="clickToRedrawFullSize">图片实际大小比这里显示的大! 点击以全尺寸显示.</label>
+			<label index="contentRecords">Content records</label>
 			<label index="contentElements">内容元素</label>
 			<label index="currentLink">当前链接</label>
 			<label index="email">电子邮件</label>
@@ -595,6 +611,7 @@
 			<label index="addToList">Pridať do zoznamu ...</label>
 			<label index="clickToRedrawFullSize">Obrázok je väčší ako je tu zobrazené! Klikni na jeho prekreslenie v úplnej velkosti.</label>
 			<label index="contentElements">Prvky obsahu</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Súčasný odkaz</label>
 			<label index="email">E-mail</label>
 			<label index="emailAddress">E-mailová adresa</label>
@@ -625,6 +642,7 @@
 			<label index="addToList">Įterpti į sąrašą...</label>
 			<label index="clickToRedrawFullSize">Paveikslėlis yra didesnis negu rodoma čia! Spustelkit kad būtų parodytas visas.</label>
 			<label index="contentElements">Turinio elementai</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Esama nuoroda</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Email adresas</label>
@@ -658,6 +676,7 @@
 			<label index="addToList">Bæta við á lista...</label>
 			<label index="clickToRedrawFullSize">Myndinn er stærri en sést hér! Smeltu til að stækka.</label>
 			<label index="contentElements">Innihald hlutir</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Núverandi tengill</label>
 			<label index="email">Póstfang</label>
 			<label index="emailAddress">Póstfang</label>
@@ -687,6 +706,7 @@
 			<label index="addToList">Dodaj na popis...</label>
 			<label index="clickToRedrawFullSize">Slika je veća nego prikazana! Klikni za prikaz u punoj velićini.</label>
 			<label index="contentElements">Elementi sadržaja</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Trenutni link.</label>
 			<label index="email">E-mail</label>
 			<label index="emailAddress">E-mail adresa</label>
@@ -720,6 +740,7 @@
 			<label index="addToList">Hozzáadás a listához...</label>
 			<label index="clickToRedrawFullSize">A kép nagyobb az itt láthatónál. Kattints ide az oldal újrarajzolásához teljes méretű képekkel.</label>
 			<label index="contentElements">Tartalomelemek</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Aktuális Link</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Email cím</label>
@@ -756,6 +777,7 @@
 			<label index="addToList">เพิ่มเข้ารายการ....</label>
 			<label index="clickToRedrawFullSize">ภาพใหญ่เกินกว่าที่จะแสดงที่นี่ได้! กดปุ่มเพื่อให้แสดงเต็มขนาด</label>
 			<label index="contentElements">องค์ประกอบของเนื้อหา</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">ลิ้งค์ปัจจุบัน</label>
 			<label index="email">อีเมล์</label>
 			<label index="emailAddress">ที่อยู่อีเมล์</label>
@@ -792,6 +814,7 @@
 			<label index="addToList">加到列表...</label>
 			<label index="clickToRedrawFullSize">在此顯示的圖片較大！點擊以用原大小圖片重設網頁</label>
 			<label index="contentElements">內容元件</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">目前的連結</label>
 			<label index="email">電郵</label>
 			<label index="emailAddress">電郵地址</label>
@@ -825,6 +848,7 @@
 			<label index="addToList">Gehitu zerrendara...</label>
 			<label index="clickToRedrawFullSize">Irudia hemen erakutsitakoa baino handiagoa da! Egin klik tamaina osaoan ikusteko.</label>
 			<label index="contentElements">Eduki elementuak</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Oraingo lotura</label>
 			<label index="email">ePosta</label>
 			<label index="emailAddress">ePosta helbidea</label>
@@ -854,6 +878,7 @@
 			<label index="addToList">Добави към списъка</label>
 			<label index="clickToRedrawFullSize">Изображението е по-голямо отколкото е показано тук! Натиснете за да се опъне в пълния му размер.</label>
 			<label index="contentElements">Елементи на съдържанието</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Настояща връзка</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Email адрес</label>
@@ -884,6 +909,7 @@
 			<label index="addToList">Adicionar à lista...</label>
 			<label index="clickToRedrawFullSize">A imagem é maior do que mostrado aqui! Clique para redesenhar em tamanho integral.</label>
 			<label index="contentElements">Elementos do conteúdo</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Link atual</label>
 			<label index="email">E-mail</label>
 			<label index="emailAddress">Endereço de e-mail</label>
@@ -917,6 +943,7 @@
 			<label index="addToList">Lisa loendisse</label>
 			<label index="clickToRedrawFullSize">Pilt on suurem, kui siin näidatud! Kliki joonistamaks täissuuruses.</label>
 			<label index="contentElements">Sisuelemendid</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Käesolev link</label>
 			<label index="email">E-mail</label>
 			<label index="emailAddress">E-maili aadress</label>
@@ -950,6 +977,7 @@
 			<label index="addToList">إضــافة إلى القــائمة</label>
 			<label index="clickToRedrawFullSize">الصورحجمهــا أكبــر من المعروضة هنا! إضغط لتراها أكبر</label>
 			<label index="contentElements">عناصر المحتويات</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">الربط الحــالي</label>
 			<label index="email">بريــد</label>
 			<label index="emailAddress">عنوان البريــد</label>
@@ -983,6 +1011,7 @@
 			<label index="addToList">הוסף לרשימה...</label>
 			<label index="clickToRedrawFullSize">התמונה גדולה יותר ממה שמופיע כאן! הקלק כדי לראות אותה בגודל מלה.</label>
 			<label index="contentElements">מרכיבי תוכן</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">קישור נוכחי</label>
 			<label index="email">דואר אלקטרוני</label>
 			<label index="emailAddress">כתובת דוא''ל</label>
@@ -1016,6 +1045,7 @@
 			<label index="addToList">Додати до списку...</label>
 			<label index="clickToRedrawFullSize">Зображення більше, ніж показано тут!  Клацніть, щоб перемалювати сторінку із зображеннями повного розміру.</label>
 			<label index="contentElements">Елементи вмісту</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Поточне посилання</label>
 			<label index="email">Email</label>
 			<label index="emailAddress">Адреса e-mail</label>
@@ -1049,6 +1079,7 @@
 			<label index="addToList">Pievienot listei...</label>
 			<label index="clickToRedrawFullSize">Attēls ir lielāks, nekā parādīts šeit! Uzklikšķiniet, lai pārzīmētu pilnā izmērā.</label>
 			<label index="contentElements">Satura elementi</label>
+			<label index="contentRecords">Content records</label>
 			<label index="currentLink">Tekošais links</label>
 			<label index="email">E-pasts</label>
 			<label index="emailAddress">E-pasta adrese</label>
