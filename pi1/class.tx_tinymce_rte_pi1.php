@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2008 Marcus Schwemer (schwemer@netzwerkberatung.de)
+*  (c) 2008 Thomas Allmer (thomas.allmer@webteam.at)
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -27,14 +27,14 @@
  *
  * Provides tinymce_rte for use in frontend plugins
  *
- * @author Thomas Allmer <thomas.allmer@webteam.at)
+ * @author Thomas Allmer <thomas.allmer@webteam.at>
  *
  */
 
 /**
  * This class provides the tinymce_rte for usage in FE-plugins
  *
- * @author Thomas Allmer <thomas.allmer@webteam.at)
+ * @author Thomas Allmer <thomas.allmer@webteam.at>
  * @package Typo3
  * @subpackage tinymce_rte
  */

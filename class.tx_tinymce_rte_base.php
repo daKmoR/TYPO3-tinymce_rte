@@ -1,4 +1,34 @@
 <?php
+/***************************************************************
+*  Copyright notice
+*
+*  (c) 2008 Thomas Allmer (thomas.allmer@webteam.at)
+*  All rights reserved
+*
+*  This script is part of the TYPO3 project. The TYPO3 project is
+*  free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or
+*  (at your option) any later version.
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+*  GNU General Public License for more details.
+*
+*  This copyright notice MUST APPEAR in all copies of the script!
+***************************************************************/
+
+/**
+ * A RTE using TinyMCE
+ *
+ * @author Thomas Allmer <thomas.allmer@webteam.at>
+ *
+ */
+ 
 require_once(PATH_t3lib.'class.t3lib_rteapi.php');
 require_once(PATH_t3lib.'class.t3lib_cs.php');
 
@@ -33,6 +63,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		global $LANG;
 		if (TYPO3_MODE == 'BE') global $BE_USER;
 		$code = "";
+		
+		if ( TYPO3_branch == 4.1 && !t3lib_extMgm::isLoaded('tinymce_rte_patch41') )
+			die('for TYPO3 4.1 you need to install the extension tinymce_rte_patch41');
 
 		// set a uniq rte id.
 		$rteID = (TYPO3_MODE == 'BE') ? $parentObject->RTEcounter : $parentObject->cObj->data['uid'] . $parentObject->RTEcounter;
@@ -135,7 +168,15 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 
 		return $code;
 	}
-
+	
+	
+	/**
+	 * alternative to array_merge_recursive (which won't override valuse)
+	 * 
+	 * @param	array		source array
+	 * @param	array		array to merge with
+	 * @return	array		merged array (values are overwritten)
+	 */
 	function array_merge_recursive_override($arr,$ins) {
 		if ( is_array($arr) ) {
 			if( is_array($ins) ) foreach( $ins as $k => $v ) {
@@ -150,6 +191,12 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		return( $arr );
 	}
 
+	/**
+	 * creates an valid array that can be parced (recursive)
+	 * 
+	 * @param	array		config array to be fixed
+	 * @return	array		fixed array
+	 */
 	function fixTSArray($config) {
 		$output = array();
 		foreach($config as $key => $value) {
@@ -158,22 +205,25 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		return $output;
 	}
 
+	/**
+	 * parses the array to a valid javascript object in JSON
+	 * 
+	 * @param	array		config array to be parced
+	 * @return	string	javascript object in JSON
+	 */
 	function parseConfig($config) {
-		if ((t3lib_div::int_from_ver(TYPO3_version) >= 4001000) && !(t3lib_div::int_from_ver(TYPO3_version) >= 4002000))
-			$code = $this->array2json($this->fixTSArray($config));
-		else
-			$code = t3lib_div::array2json($this->fixTSArray($config));
+		$code = t3lib_div::array2json($this->fixTSArray($config));
 		return str_replace( array('"false"', '"true"'), array('false', 'true'), $code);
 	}
-
-	function array2json($jsonArray) {
-		if (!$GLOBALS['JSON']) {
-			require_once(PATH_typo3.'contrib/json.php');
-			$GLOBALS['JSON'] = t3lib_div::makeInstance('Services_JSON');
-		}
-		return $GLOBALS['JSON']->encode($jsonArray);
-	}
-
+	
+	/**
+	 * loads all needed language files with the tinymce.Scritploader
+	 * 
+	 * @param	string	language to use in iso631 (example 'en', 'de' ...)
+	 * @param	string	list of plugins (seperated with ',')
+	 * @param	string	path of the language files
+	 * @return	string	the javascript code to load all language files
+	 */
 	function loadLanguageExtension($lang, $plugins, $path) {
 		$msg = "";
 		foreach(explode(",", $plugins) as $plugin) {
@@ -186,7 +236,12 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		';
 		return $msg;
 	}
-
+	
+	/**
+	 * creates the javascript code (incl. <script> tags) for the typo3filemanager
+	 * 
+	 * @return	string	the javascript code to allow selection of pages in a TYPO3 dialog
+	 */
 	function getFileDialogJS($path, $pObj, $table, $field, $row) {
 		$msg = "";
 		$msg .='
@@ -239,7 +294,14 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		return $msg;
 	}
 
-	function getPath($path, $abs = false) {
+	/**
+	 * resolves a relative path
+	 * 
+	 * @param	string	path to be resolved
+	 * @param	boolean	do you wan't absolute path or relative?
+	 * @return	string	resolved path
+	 */
+	 function getPath($path, $abs = false) {
 		$httpTypo3Path = substr( substr( t3lib_div::getIndpEnv('TYPO3_SITE_URL'), strlen( t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') ) ), 0, -1 );
 		$httpTypo3Path = (strlen($httpTypo3Path) == 1) ? '/' : $httpTypo3Path . '/';
 		if ($abs)

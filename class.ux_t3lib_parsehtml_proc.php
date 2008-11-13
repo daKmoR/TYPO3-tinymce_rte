@@ -1,4 +1,34 @@
 <?php
+/***************************************************************
+*  Copyright notice
+*
+*  (c) 2008 Thomas Allmer (thomas.allmer@webteam.at)
+*  All rights reserved
+*
+*  This script is part of the TYPO3 project. The TYPO3 project is
+*  free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or
+*  (at your option) any later version.
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+*  GNU General Public License for more details.
+*
+*  This copyright notice MUST APPEAR in all copies of the script!
+***************************************************************/
+
+/**
+ * allow to use this functions with relative path search for //XCLASS  to see changes
+ * 3 changes
+ *
+ * @author Thomas Allmer <thomas.allmer@webteam.at>
+ *
+ */
 
 class ux_t3lib_parsehtml_proc extends t3lib_parsehtml_proc {
 	
@@ -56,7 +86,7 @@ class ux_t3lib_parsehtml_proc extends t3lib_parsehtml_proc {
 						}
 						$page = t3lib_BEfunc::getRecord('pages', $idPart);
 						if (is_array($page))	{	// Page must exist...
-							$href = $link_param; //XLCASS changed from $href = $siteUrl.'?id='.$link_param;
+							$href = $link_param; //XCLASS changed from $href = $siteUrl.'?id='.$link_param;
 						} else if(strtolower(substr($link_param, 0, 7)) == 'record:') {
 								// linkHandler - allowing links to start with "record:"
 							$href = $link_param;
@@ -146,7 +176,7 @@ class ux_t3lib_parsehtml_proc extends t3lib_parsehtml_proc {
 				
 				if ( (strpos($absRef, 'http://') === FALSE) AND (strpos($absRef, 'https://') === FALSE) AND (strpos($absRef, 'ftp://') === FALSE) )	{  //XCLASS changed from: if (t3lib_div::isFirstPartOfStr($absRef,$siteUrl))	{
 					$path = rawurldecode(substr($absRef,strlen($siteUrl)));	// Rel-path, rawurldecoded for special characters.
-					$path = $absRef; //XCLASS change
+					$path = $absRef; //XCLASS added
 					$filepath = t3lib_div::getFileAbsFileName($path);		// Abs filepath, locked to relative path of this project.
 					
 

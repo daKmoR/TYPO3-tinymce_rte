@@ -17,7 +17,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'shy' => 0,
 	'version' => '0.1.4',
 	'dependencies' => 'cms',
-	'conflicts' => 'rtehtmlarea,tinyrte',
+	'conflicts' => 'rtehtmlarea,tinyrte,linkhandler',
 	'priority' => '',
 	'loadOrder' => '',
 	'module' => 'mod1,mod2,mod3,mod4',
@@ -40,6 +40,7 @@ $EM_CONF[$_EXTKEY] = array(
 		'conflicts' => array(
 			'rtehtmlarea' => '',
 			'tinyrte' => '',
+			'linkhandler' => '',
 		),
 		'suggests' => array(
 		),

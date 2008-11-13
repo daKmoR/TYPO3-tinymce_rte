@@ -83,7 +83,7 @@ class TBE_browser_recordList extends localRecordList {
 	 * @return	string		Query-string for URL
 	 */
 	function listURL($altId='',$table=-1,$exclList='')	{
-		return $this->script.
+		return $this->thisScript.
 			'?id='.(strcmp($altId,'')?$altId:$this->id).
 			'&table='.rawurlencode($table==-1?$this->table:$table).
 			($this->thumbs?'&imagemode='.$this->thumbs:'').
@@ -228,7 +228,7 @@ class localPageTree extends t3lib_browseTree {
 				$arrCol='<td></td>';
 			}
 
-			$aOnClick = 'return jumpToUrl(\''.$this->script.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandPage='.$v['row']['uid'].'\');';
+			$aOnClick = 'return jumpToUrl(\''.$this->thisScript.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandPage='.$v['row']['uid'].'\');';
 			$cEbullet = $this->ext_isLinkable($v['row']['doktype'],$v['row']['uid']) ?
 						'<a href="#" onclick="'.htmlspecialchars($aOnClick).'"><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/ol/arrowbullet.gif','width="18" height="16"').' alt="" /></a>' :
 						'';
@@ -280,7 +280,7 @@ class localPageTree extends t3lib_browseTree {
 			$anchor = '#'.$bMark;
 			$name=' name="'.$bMark.'"';
 		}
-		$aOnClick = "return jumpToUrl('".$this->script.'?PM='.$cmd."','".$anchor."');";
+		$aOnClick = "return jumpToUrl('".$this->thisScript.'?PM='.$cmd."','".$anchor."');";
 
 		return '<a href="#"'.$name.' onclick="'.htmlspecialchars($aOnClick).'">'.$icon.'</a>';
 	}
@@ -342,7 +342,7 @@ class TBE_PageTree extends localPageTree {
 			$ficon=$BACK_PATH.t3lib_iconWorks::getIcon('pages',$v);
 			$onClick = "return insertElement('pages', '".$v['uid']."', 'db', unescape('".rawurlencode($v['title'])."'), '', '', '".$ficon."','',1);";
 		} else {
-			$onClick = 'return jumpToUrl(\'browse_links.php?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandPage='.$v['uid'].'\');';
+			$onClick = 'return jumpToUrl(\''.$this->thisScript.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandPage='.$v['uid'].'\');';
 		}
 		return '<a href="#" onclick="'.htmlspecialchars($onClick).'">'.$title.'</a>';
 	}
@@ -379,7 +379,7 @@ class localFolderTree extends t3lib_folderTree {
 	 */
 	function wrapTitle($title,$v)	{
 		if ($this->ext_isLinkable($v))	{
-			$aOnClick = 'return jumpToUrl(\''.$this->script.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandFolder='.rawurlencode($v['path']).'\');';
+			$aOnClick = 'return jumpToUrl(\''.$this->thisScript.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandFolder='.rawurlencode($v['path']).'\');';
 			return '<a href="#" onclick="'.htmlspecialchars($aOnClick).'">'.$title.'</a>';
 		} else {
 			return '<span class="typo3-dimmed">'.$title.'</span>';
@@ -414,7 +414,7 @@ class localFolderTree extends t3lib_folderTree {
 			$anchor = '#'.$bMark;
 			$name=' name="'.$bMark.'"';
 		}
-		$aOnClick = 'return jumpToUrl(\''.$this->script.'?PM='.$cmd.'\',\''.$anchor.'\');';
+		$aOnClick = 'return jumpToUrl(\''.$this->thisScript.'?PM='.$cmd.'\',\''.$anchor.'\');';
 		return '<a href="#"'.$name.' onclick="'.htmlspecialchars($aOnClick).'">'.$icon.'</a>';
 	}
 
@@ -456,7 +456,7 @@ class localFolderTree extends t3lib_folderTree {
 				$arrCol='<td></td>';
 			}
 				// Create arrow-bullet for file listing (if folder path is linkable):
-			$aOnClick = 'return jumpToUrl(\''.$this->script.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandFolder='.rawurlencode($v['row']['path']).'\');';
+			$aOnClick = 'return jumpToUrl(\''.$this->thisScript.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandFolder='.rawurlencode($v['row']['path']).'\');';
 			$cEbullet = $this->ext_isLinkable($v['row']) ? '<a href="#" onclick="'.htmlspecialchars($aOnClick).'"><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/ol/arrowbullet.gif','width="18" height="16"').' alt="" /></a>' : '';
 
 				// Put table row with folder together:
@@ -521,7 +521,7 @@ class TBE_FolderTree extends localFolderTree {
 	 */
 	function wrapTitle($title,$v)	{
 		if ($this->ext_isLinkable($v))	{
-			$aOnClick = 'return jumpToUrl(\'browse_links.php?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandFolder='.rawurlencode($v['path']).'\');';
+			$aOnClick = 'return jumpToUrl(\''.$this->thisScript.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandFolder='.rawurlencode($v['path']).'\');';
 			return '<a href="#" onclick="'.htmlspecialchars($aOnClick).'">'.$title.'</a>';
 		} else {
 			return '<span class="typo3-dimmed">'.$title.'</span>';
@@ -547,6 +547,7 @@ class SC_browse_links {
 	var $setTitle;      		// title (RTE specific)
 	var $doc;			// Backend template object
 	var $elements = array();	// Holds information about files
+	var $fileProcessor = array();	// Makes possible to handle file processing extenstion
 
 		// GPvars:	(Input variables from outside)
 	/**
@@ -659,21 +660,13 @@ class SC_browse_links {
 			$this->mode='rte';
 		}
 			// init hook objects:
+		
+		
 		$this->hookObjects = array();
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.browse_links.php']['browseLinksHook'])) {
-			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/class.browse_links.php']['browseLinksHook'] as $classData) {
-				$processObject = &t3lib_div::getUserObj($classData);
-				if(TYPO3_branch>=4.2) {
-					if(!($processObject instanceof t3lib_browseLinksHook)) {
-						throw new UnexpectedValueException('$processObject must implement interface t3lib_browseLinksHook', 1195039394);
-					}
-				}
-
-				$parameters = array();
-				$processObject->init($this, $parameters);
-				$this->hookObjects[] = $processObject;
-			}
-		}
+		if(intval(phpversion())>=5) {
+			include_once('include_php5.inc');
+		} else	include_once('include_php4.inc');
+		
 
 			// Site URL
 		$this->siteURL = t3lib_div::getIndpEnv('TYPO3_SITE_URL');	// Current site url
@@ -690,11 +683,9 @@ class SC_browse_links {
 			// the script to link to
 		$this->thisScript = t3lib_div::getIndpEnv('SCRIPT_NAME');
 		
-		if(TYPO3_branch>=4.2) {
-				// init fileProcessor
-			$this->fileProcessor = t3lib_div::makeInstance('t3lib_basicFileFunctions');
-			$this->fileProcessor->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
-		}
+			// init fileProcessor
+		$this->fileProcessor = t3lib_div::makeInstance('t3lib_basicFileFunctions');
+		$this->fileProcessor->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
 
 
 			// CurrentUrl - the current link url must be passed around if it exists
@@ -1033,6 +1024,9 @@ RTE.default.linkhandler {
 	 */
 	function main_rte($wiz=1)	{
 		global $LANG, $BACK_PATH;
+		
+		#t3lib_div::debug($_POST);
+		#t3lib_div::debug($_GET);
 
 			// Starting content:
 		$content=$this->doc->startPage($LANG->getLL('title',1));
@@ -1141,7 +1135,7 @@ RTE.default.linkhandler {
 			break;
 			case 'file':
 			case 'folder':
-								$foldertree             = t3lib_div::makeInstance('rteFolderTree');
+				$foldertree             = t3lib_div::makeInstance('rteFolderTree');
 				$foldertree->thisScript = $this->thisScript;
 				$tree                   = $foldertree->getBrowsableTree();
 
@@ -1239,12 +1233,12 @@ RTE.default.linkhandler {
 				}
 			break;
 			case 'page':
-			default:
 				$pagetree = t3lib_div::makeInstance('rtePageTree');
 				$pagetree->thisScript = $this->thisScript;
 				$tree=$pagetree->getBrowsableTree();
 				$cElements = $this->expandPage();
-				$cElements ='<fieldset><legend>'.$GLOBALS['LANG']->getLL('contentElements').'</legend><div style="overflow: auto; min-height: 200px;"><table><tr><td>'.$cElements.'</td></tr></table></div></fieldset>';
+				$label=$GLOBALS['LANG']->getLL('contentRecords');
+				$cElements ='<fieldset><legend>'.$label.'</legend><div style="overflow: auto; min-height: 200px;"><table><tr><td>'.$cElements.'</td></tr></table></div></fieldset>';
 				$content.= '
 
 			<!--
@@ -1339,11 +1333,9 @@ RTE.default.linkhandler {
 		$pArr = explode('|',$this->bparams);
 
 			// Create upload/create folder forms, if a path is given:
-		$fileProcessor = t3lib_div::makeInstance('t3lib_basicFileFunctions');
-		$fileProcessor->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
 		$path=$this->expandFolder;
 		if (!$path || !@is_dir($path))	{
-			$path = $fileProcessor->findTempFolder().'/';	// The closest TEMP-path is found
+			$path = $this->fileProcessor->findTempFolder().'/';	// The closest TEMP-path is found
 		}
 		if ($path!='/' && @is_dir($path))	{
 			$uploadForm=$this->uploadForm($path);
@@ -1497,7 +1489,6 @@ RTE.default.linkhandler {
 	 */
 	function expandPage()	{
 		global $BE_USER, $BACK_PATH;
-
 		$out='';
 		$expPageId = $this->expandPage;		// Set page id (if any) to expand
 			// If there is an anchor value (content element reference) in the element reference, then force an ID to expand:
@@ -2085,10 +2076,7 @@ RTE.default.linkhandler {
 	 * @return	boolean		If the input path is found in the backend users filemounts, then return true.
 	 */
 	function checkFolder($folder)	{
-		$fileProcessor = t3lib_div::makeInstance('t3lib_basicFileFunctions');
-		$fileProcessor->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
-
-		return $fileProcessor->checkPathAgainstMounts(ereg_replace('\/$','',$folder).'/') ? TRUE : FALSE;
+		return $this->fileProcessor->checkPathAgainstMounts(ereg_replace('\/$','',$folder).'/') ? TRUE : FALSE;
 	}
 
 	/**	 
@@ -2328,7 +2316,9 @@ RTE.default.linkhandler {
 			</form>';
 
 		return $code;
-	}	/**
+	}	
+	
+	/**
 	 * Get the HTML data required for a bulk selection of files of the TYPO3 Element Browser.
 	 *
 	 * @param	integer		$filesCount: Number of files currently displayed
