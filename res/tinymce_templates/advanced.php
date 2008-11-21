@@ -22,7 +22,7 @@ RTE.default.init.template_templates {
  *
  */
  
-	$LANG->includeLLFile('EXT:tinymce_rte/res/tinymce_templates/advanced.xml');
+	$LANG->includeLLFile('EXT:tinymce_rte/res/tinymce_templates/locallang_advanced.xml');
 	$this->content .= '<div style="border: 1px solid green; padding: 5px; margin: 10px 2px;">';
 	$this->content .= $LANG->getLL('author') . ": " . ($BE_USER->user['realName'] ? $BE_USER->user['realName'] : $BE_USER->user['username']);
 	$this->content .= $BE_USER->user['email'] ? '<br />' . $LANG->getLL('email') . ': <a href="mailto:'.$BE_USER->user['email'].'">'.$BE_USER->user['email'].'</a>' : '';
