@@ -829,14 +829,44 @@ RTE.default.linkhandler {
 			$P2['params']['blindLinkOptions']=$this->P['params']['blindLinkOptions'];
 
 			$addPassOnParams.=t3lib_div::implodeArrayForUrl('P',$P2);
-//					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = "' . $this->siteURL . '?id=" + value;
-
 			
 			$JScode.='
+			  function directSetHref(value) {
+					// called directly from withint the content area
+					tinyMCEPopup.execCommand("mceBeginUndoLevel");
+					
+					var inst = tinyMCE.activeEditor;
+					var elm = inst.selection.getNode();
+					elm = inst.dom.getParent(elm, "A");
+					// Create new anchor elements
+					if (elm == null) {
+						tinyMCEPopup.execCommand("CreateLink", false, "#mce_temp_url#", {skip_undo : 1});
+						var elementArray = tinymce.grep(inst.dom.select("a"), function(n) {return inst.dom.getAttrib(n, "href") == "#mce_temp_url#";});
+						for (var i=0; i<elementArray.length; i++)
+							tinyMCE.activeEditor.dom.setAttrib(elm = elementArray[i], "href", value);
+					} else
+						tinyMCE.activeEditor.dom.setAttrib(elm, "href", value);
+						
+					// Don t move caret if selection was image
+					if (elm.childNodes.length != 1 || elm.firstChild.nodeName != "IMG") {
+						inst.focus();
+						inst.selection.select(elm);
+						inst.selection.collapse(0);
+						tinyMCEPopup.storeSelection();
+					}
+
+					tinyMCEPopup.execCommand("mceEndUndoLevel");
+					return true;
+				}
+				
 				function link_insert(value,anchor)	{
 					if (!anchor) anchor = "";
 					var win = tinyMCEPopup.getWindowArg("window");
-					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = value + anchor;
+					if (win)
+						win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = value + anchor;
+					else
+						directSetHref( value + anchor );
+					  
 			';
 			//miss use bparams
 			if(t3lib_div::_GP('bparams') == 'media') {
@@ -852,7 +882,11 @@ RTE.default.linkhandler {
 				
 				function record_insert(type,value) {
 					var win = tinyMCEPopup.getWindowArg("window");
-					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = "record:" + type + ":" + value;
+					if (win)
+						win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = "record:" + type + ":" + value;
+					else 
+						directSetHref( "record:" + type + ":" + value );
+					
 					tinyMCEPopup.close();
 					return false;
 				}

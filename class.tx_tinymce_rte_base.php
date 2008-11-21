@@ -312,6 +312,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				/* <![CDATA[ */
 				function typo3filemanager(field_name, url, type, win) {
 					var tab = "";
+					// xxx on start TinyMCE seem to not make all elements relative; this ensures it
+					if ( url.indexOf("' . t3lib_div::getIndpEnv('TYPO3_SITE_URL') . '") > -1 ) url = url.substr(' . strlen( t3lib_div::getIndpEnv('TYPO3_SITE_URL') ) . ');
 					if ( (type != "image") && (type != "media") ) type = "link";
 					switch(type){
 						case "media":

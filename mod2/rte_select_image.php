@@ -261,11 +261,34 @@ class SC_rte_select_image {
 <script language="javascript" type="text/javascript">
 	function insertImage(file,width,height)	{
 		var win = tinyMCEPopup.getWindowArg("window");
-		win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = file;
+		if (win) {
+			win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = file;
+			// for image browsers: update image dimensions
+			if (win.ImageDialog.getImageData) win.ImageDialog.getImageData();
+			if (win.ImageDialog.showPreviewImage) win.ImageDialog.showPreviewImage(file);
+		} else {
+			tinyMCEPopup.execCommand("mceBeginUndoLevel");
+			var ed = tinyMCE.activeEditor;
+			var el = ed.selection.getNode();			
+			var args = {
+				"title" : "",
+				"src" : file,
+				"width" : width,
+				"height" : height
+			};			
+
+			if (el && el.nodeName == "IMG") {
+				ed.dom.setAttribs(el, args);
+			} else {
+				ed.execCommand("mceInsertContent", false, \'<img id="__mce_tmp" />\', {skip_undo : 1});
+				ed.dom.setAttribs("__mce_tmp", args);
+				ed.dom.setAttrib("__mce_tmp", "id", "");
+				ed.undoManager.add();
+			}
+			tinyMCEPopup.execCommand("mceEndUndoLevel");			
+		}
+
 		tinyMCEPopup.close();
-		// for image browsers: update image dimensions
-		if (win.ImageDialog.getImageData) win.ImageDialog.getImageData();
-		if (win.ImageDialog.showPreviewImage) win.ImageDialog.showPreviewImage(file);
 		
 		return false;
 	}
@@ -314,11 +337,34 @@ class SC_rte_select_image {
 			}
 			function insertImage(file,width,height)	{
 				var win = tinyMCEPopup.getWindowArg("window");
-				win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = file;
+				if (win) {
+					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = file;
+					// for image browsers: update image dimensions
+					if (win.ImageDialog.getImageData) win.ImageDialog.getImageData();
+					if (win.ImageDialog.showPreviewImage) win.ImageDialog.showPreviewImage(file);
+				} else {
+					tinyMCEPopup.execCommand("mceBeginUndoLevel");
+					var ed = tinyMCE.activeEditor;
+					var el = ed.selection.getNode();			
+					var args = {
+						"title" : "",
+						"src" : file,
+						"width" : width,
+						"height" : height
+					};			
+
+					if (el && el.nodeName == "IMG") {
+						ed.dom.setAttribs(el, args);
+					} else {
+						ed.execCommand("mceInsertContent", false, \'<img id="__mce_tmp" />\', {skip_undo : 1});
+						ed.dom.setAttribs("__mce_tmp", args);
+						ed.dom.setAttrib("__mce_tmp", "id", "");
+						ed.undoManager.add();
+					}
+					tinyMCEPopup.execCommand("mceEndUndoLevel");			
+				}
+
 				tinyMCEPopup.close();
-        // for image browsers: update image dimensions
-        if (win.ImageDialog.getImageData) win.ImageDialog.getImageData();
-        if (win.ImageDialog.showPreviewImage) win.ImageDialog.showPreviewImage(file);
 				
 				return false;
 			}
