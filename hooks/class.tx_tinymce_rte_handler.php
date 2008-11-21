@@ -32,7 +32,7 @@
  
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 
-class tx_tinymce_handler {
+class tx_tinymce_rte_handler {
 
 	function main($linktxt, $conf, $linkHandlerKeyword, $linkHandlerValue, $link_param, &$pObj) {
 		$this->pObj = &$pObj;
@@ -48,12 +48,17 @@ class tx_tinymce_handler {
 			return $linktxt;
 		
 		$localcObj = t3lib_div::makeInstance('tslib_cObj');
-		$recordRow = $this->getRecordRow($linkHandlerData[0], $linkHandlerData[1]);
-		$localcObj->start($recordRow, '');
+		$row = $this->getRecordRow($linkHandlerData[0], $linkHandlerData[1]);
+		
+		$localcObj->start($row, '');
 		
 		$lconf = array();
 		$lconf = $linkConfig[$linkHandlerData[0].'.'];
-
+		$lconf['ATagParams'] = $this->pObj->getATagParams($conf);
+		
+		// remove the tinymce_rte specific attributes
+		unset( $lconf['select'], $lconf['sorting'], $lconf['storage'] );
+		
 		return $localcObj->typoLink($linktxt, $lconf);
 	}
 	
@@ -65,7 +70,7 @@ class tx_tinymce_handler {
 
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/mod4/class.tx_tinymce_handler.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/mod4/class.tx_tinymce_handler.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/hooks/class.tx_tinymce_rte_handler.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/hooks/class.tx_tinymce_rte_handler.php']);
 }
 ?>

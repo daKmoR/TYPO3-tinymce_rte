@@ -1,0 +1,12 @@
+//Patch advlink to hide the class selectbox in the link popup
+--- res/tiny_mce/plugins/advlink/link.htm	Sat Nov 15 16:03:22 2008
++++ res/tiny_mce/plugins/advlink/link.htm	Mon Oct 27 15:35:04 2008
+@@ -52,7 +52,7 @@
+ 							<td nowrap="nowrap"><label id="titlelabel" for="title">{#advlink_dlg.titlefield}</label></td>
+ 							<td><input id="title" name="title" type="text" value="" /></td>
+ 						</tr>
+-						<tr>
++						<tr style="display: none;">
+ 							<td><label id="classlabel" for="classlist">{#class_name}</label></td>
+ 							<td>
+ 								 <select id="classlist" name="classlist" onchange="changeClass();">

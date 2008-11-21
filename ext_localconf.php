@@ -17,6 +17,23 @@ t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKE
 t3lib_extMgm::addTypoScript($_EXTKEY,'setup','<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/setupTSConfig.ts">',43);
 
 //add linkhandler for "record"
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['typolinkLinkHandler']['record'] = 'EXT:tinymce_rte/mod4/class.tx_tinymce_handler.php:&tx_tinymce_handler';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['typolinkLinkHandler']['record'] = 'EXT:tinymce_rte/hooks/class.tx_tinymce_rte_handler.php:&tx_tinymce_rte_handler';
+
+// Enable preStartPageHook hook
+// $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/template.php']['preStartPageHook'][] = 'EXT:' . $_EXTKEY . '/hooks/class.tx_tinymce_rte_header.php:&tx_tinymce_rte_header->preStartPageHook';
+
+// user function to force typolink creation of every link
+if (!class_exists('user_tinymce_rte')) {
+	class user_tinymce_rte {
+		function getHref($content,$conf) {
+			if (preg_match('/\w*href\s*=\s*"([^"]+)"\s*/i', $content, $regs))
+				$content = $regs[1];
+			return $content;
+		}
+		function getATagParams($content,$conf) {
+			return preg_replace('/\w*href\s*=\s*"([^"]+)"\s*/i', '', $content);
+		}
+	}
+}
 
 ?>

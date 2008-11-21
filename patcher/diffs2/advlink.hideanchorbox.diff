@@ -1,0 +1,12 @@
+//Patch advlink to hide the anchor selectbox in the link popup
+--- res/tiny_mce/plugins/advlink/link.htm	Sat Nov 15 16:03:22 2008
++++ res/tiny_mce/plugins/advlink/link.htm	Mon Oct 27 15:35:04 2008
+@@ -40,7 +40,7 @@
+ 							<td class="column1"><label for="linklisthref">{#advlink_dlg.list}</label></td>
+ 							<td colspan="2" id="linklisthrefcontainer">&nbsp;</td>
+ 						</tr>
+-						<tr>
++						<tr style="display: none;">
+ 							<td class="column1"><label for="anchorlist">{#advlink_dlg.anchor_names}</label></td>
+ 							<td colspan="2" id="anchorlistcontainer">&nbsp;</td>
+ 						</tr>

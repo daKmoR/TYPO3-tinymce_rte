@@ -35,16 +35,6 @@ require_once(PATH_t3lib.'class.t3lib_cs.php');
 class tx_tinymce_rte_base extends t3lib_rteapi {
 
 	/**
-	 * Returns true if the RTE is available. Here you check if the browser requirements are met.
-	 * If there are reasons why the RTE cannot be displayed you simply enter them as text in ->errorLog
-	 *
-	 * @return	boolean		TRUE if this RTE object offers an RTE in the current browser environment
-	 */
-	function isAvailable()	{
-		return true;
-	}
-
-	/**
 	 * Draws the RTE
 	 *
 	 * @param	object	Reference to parent object, which is an instance of the TCEforms.
@@ -60,26 +50,58 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @return	string		HTML code for RTE!
 	 */
 	function drawRTE($parentObject, $table, $field, $row, $PA, $specConf, $thisConfig, $RTEtypeVal, $RTErelPath, $thePidValue) {
+		$code = '';
+		
+		$config = $this->init($thisConfig, $parentObject->RTEcounter);
+		$config = $this->fixTinyMCETemplates($config, $row['pid']);
+		
+		// include core and typo3filemanager only the first time
+		if ( $parentObject->RTEcounter == 1 ) {
+			$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
+			$code .= $this->getCoreScript( $config );
+		}
+		
+		$code .= $this->getInitScript( $config['init.'] );
+		
+		//loads the current Value and create the textarea
+		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
+		$code .= $this->triggerField($PA['itemFormElName']);
+		$code .= '<textarea id="RTEarea'.$parentObject->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
+		
+		return $code;
+	}
+	
+	/**
+	 * Returns true if the RTE is available. Here you check if the browser requirements are met.
+	 * If there are reasons why the RTE cannot be displayed you simply enter them as text in ->errorLog
+	 *
+	 * @return	boolean		TRUE if this RTE object offers an RTE in the current browser environment
+	 */
+	function isAvailable()	{
+		return true;
+	}
+	
+	/**
+	 * initial all the values for the RTE
+	 * 
+	 * @param	array		config to use
+	 * @param	array		rteId (a counter)
+	 * @return	array		initiated config
+	 */	
+	function init($thisConfig, $rteId = 1) {
 		global $LANG;
 		if (TYPO3_MODE == 'BE') global $BE_USER;
-		$code = "";
 		
 		if ( TYPO3_branch == 4.1 && !t3lib_extMgm::isLoaded('tinymce_rte_patch41') )
 			die('for TYPO3 4.1 you need to install the extension tinymce_rte_patch41');
 
-		// set a uniq rte id.
-		$rteID = (TYPO3_MODE == 'BE') ? $parentObject->RTEcounter : $parentObject->cObj->data['uid'] . $parentObject->RTEcounter;
-
-		//loads the current Value
-		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
-
 		// get the language (also checks if lib is called from FE or BE, which might of use later.)
-		$lang = (TYPO3_MODE == 'FE') ? $GLOBALS['TSFE'] : $GLOBALS['LANG'];
-		$this->language = $lang->lang;
+		$LANG = (TYPO3_MODE == 'FE') ? $GLOBALS['TSFE'] : $GLOBALS['LANG'];
+		$this->language = $LANG->lang;
 
 		// language conversion from TLD to iso631
-		if ( array_key_exists($this->language, $lang->csConvObj->isoArray) )
-			$this->language = $lang->csConvObj->isoArray[$this->language];
+		if ( array_key_exists($this->language, $LANG->csConvObj->isoArray) )
+			$this->language = $LANG->csConvObj->isoArray[$this->language];
 
 		// check if TinyMCE language file exists
 		$langpath = (t3lib_extmgm::isLoaded($thisConfig['languagesExtension'])) ? t3lib_extMgm::siteRelPath($thisConfig['languagesExtension']) : t3lib_extMgm::siteRelPath('tinymce_rte') . 'res/';
@@ -90,82 +112,86 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		if (!is_array($BE_USER->userTS['RTE.']['default.']))
 		  $BE_USER->userTS['RTE.']['default.'] = array();
 
-		$this->conf = array( 'init.' => array(
+		$config = array( 'init.' => array(
 			'language' => $this->language,
 			'document_base_url' => t3lib_div::getIndpEnv('TYPO3_SITE_URL'),
-			'elements' => 'RTEarea' . $rteID
+			'elements' => 'RTEarea' . $rteId
 		));
 		
-		$this->conf = $this->array_merge_recursive_override($this->conf, $thisConfig);
-		$this->conf = $this->array_merge_recursive_override($this->conf, $BE_USER->userTS['RTE.']['default.']);
+		$config = $this->array_merge_recursive_override($config, $thisConfig);
+		$config = $this->array_merge_recursive_override($config, $BE_USER->userTS['RTE.']['default.']);
 
 		//resolve EXT pathes for these values
-		$this->conf['init.']['spellchecker_rpc_url'] = $this->getPath($this->conf['init.']['spellchecker_rpc_url']);
-		$this->conf['tiny_mcePath'] = $this->getPath($this->conf['tiny_mcePath']);
-		$this->conf['tiny_mceGzipPath'] = $this->getPath($this->conf['tiny_mceGzipPath']);
-		$this->conf['callbackJavascriptFile'] = $this->getPath($this->conf['callbackJavascriptFile']);
+		$config['init.']['spellchecker_rpc_url'] = $this->getPath($config['init.']['spellchecker_rpc_url']);
+		$config['tiny_mcePath'] = $this->getPath($config['tiny_mcePath']);
+		$config['tiny_mceGzipPath'] = $this->getPath($config['tiny_mceGzipPath']);
 		
 		//do not us the default linkhandler config for tt_news unless it's loaded
 		if ( !t3lib_extmgm::isLoaded('tt_news') )
-			unset($this->conf['linkhandler.']['tt_news.']);
+			unset($config['linkhandler.']['tt_news.']);
+			
+		return $config;
+	}	
+	
+	/**
+	 * including of all nessecary core files (gzip or seperate, additional language files, callbackJS)
+	 * 
+	 * @param	array		config to use
+	 * @return	array		code incl. script tags
+	 */
+	function getCoreScript( $config ) {
+		$code = '';
 		
-		$loaded = ( t3lib_extmgm::isLoaded($this->conf['languagesExtension']) ) ? 1 : 0;
+		if ( $config['callbackJavascriptFile'] != '' ) { //add callback javascript file
+			$config['callbackJavascriptFile'] = $this->getPath($config['callbackJavascriptFile']);
+			$code .= '<script type="text/javascript" src="' . $config['callbackJavascriptFile'] . '"></script>';
+		}			
 
-		// add callback javascript file
-		if ($this->conf['callbackJavascriptFile'] !== '') {
-			$code = '
-				<script type="text/javascript" src="' . $this->conf['callbackJavascriptFile'] . '"></script>
-			';
-		}
-
-		if ($this->conf['gzip'])
+		$loaded = ( t3lib_extmgm::isLoaded($config['languagesExtension']) ) ? 1 : 0;
+		if ($config['gzip'])
 			$code .= '
-				<script type="text/javascript" src="' . $this->conf['tiny_mceGzipPath'] . '"></script>
+				<script type="text/javascript" src="' . $config['tiny_mceGzipPath'] . '"></script>
 				<script type="text/javascript">
 				tinyMCE_GZ.init({
-					plugins : "' . $this->conf['init.']['plugins'] . '",
+					plugins : "' . $config['init.']['plugins'] . '",
 					themes : "advanced",
-					languages : "' . $this->conf['init.']['language'] .'",
-					disk_cache : ' . $this->conf['gzipFileCache'] . ',
-					langExt : "' . $this->conf['languagesExtension'] . '",
+					languages : "' . $config['init.']['language'] .'",
+					disk_cache : ' . $config['gzipFileCache'] . ',
+					langExt : "' . $config['languagesExtension'] . '",
 					langExtLoaded : ' . $loaded  . ',
 					debug : false
 				});
 				</script>
 			';
 		else {
-		  $code .= '<script type="text/javascript" src="' . $this->conf['tiny_mcePath'] . '"></script>';
-			if ( t3lib_extmgm::isLoaded($this->conf['languagesExtension']) && ($this->language != 'en') && ($this->language != 'de') ) {
+		  $code .= '<script type="text/javascript" src="' . $config['tiny_mcePath'] . '"></script>';
+			if ( t3lib_extmgm::isLoaded($config['languagesExtension']) && ($config['init.']['language'] != 'en') && ($config['init.']['language'] != 'de') ) {
 				$code .= '<script type="text/javascript">';
-				$code .= $this->loadLanguageExtension($this->language, $this->conf['init.']['plugins'], $this->getPath('EXT:' . $this->conf['languagesExtension'] .'/tiny_mce/') );
+				$code .= $this->loadLanguageExtension($config['init.']['language'], $config['init.']['plugins'], $this->getPath('EXT:' . $config['languagesExtension'] .'/tiny_mce/') );
 				$code .= '</script>';
 			}
 		}
-
-		if ($parentObject->RTEcounter > 1)
-			$code = ""; //don't reinclude the core js if there is already another RTE
-
-		if ( TYPO3_MODE == 'FE' ) {
-			$GLOBALS['TSFE']->additionalHeaderData['tinymce_rte'] = $code; // put core js into page header; prevents double inclusion;
-			$code = '';
-		}
-
-		$code .= '
+		
+		return $code;
+		
+	}
+	
+	/**
+	 * create the init code for the RTE
+	 * 
+	 * @param	array		config to use
+	 * @return	array		code incl. script tags
+	 */
+	function getInitScript( $config ) {
+		$code = '
 			<script type="text/javascript">
 			/* <![CDATA[ */
 				tinyMCE.init(
-					' . $this->parseConfig($this->conf['init.']) .  '
+					' . $this->parseConfig($config) .  '
 				);
 			/* ]]> */
 			</script>
 		';
-
-		if (TYPO3_MODE == 'BE')
-			$code .= $this->getFileDialogJS( $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
-
-		$code .= $this->triggerField($PA['itemFormElName']);
-		$code .= '<textarea id="RTEarea'.$rteID.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
-
 		return $code;
 	}
 	
@@ -238,11 +264,48 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	}
 	
 	/**
+	 * resolves numerous pathes, creates a seperate array for the Templates inclusion, removes unnecessary code in the init part
+	 * 
+	 * @param	array		RTE config array
+	 * @param	int		current page id		
+	 * @return	string	the "fixed" RTE config
+	 */	
+	function fixTinyMCETemplates($config, $pageId) {
+	  $init_templates = array();
+		$templates = array();
+	  if ( is_array($config['init.']['template_templates.']) ) {
+			ksort($config['init.']['template_templates.']);
+		  $i = 0;
+		  foreach( $config['init.']['template_templates.'] as $template ) {
+				$useInclude = false;
+				if ( $template['include'] ) {
+					if ( $template['src'] == '' ) $template['src'] = 'EXT:tinymce_rte/mod5/TinyMCETemplate.php';
+					$templates[$i] = array( 'include' => $this->getPath($template['include'], 1) );
+					unset($template['include']);
+					$useInclude = true;
+				}
+				$init_templates[$i.'.'] = $template;
+			  $init_templates[$i.'.']['src'] = $this->getPath($template['src']);
+				if ( $useInclude ) {
+					$init_templates[$i.'.']['src'] .= strpos($init_templates[$i.'.']['src'], '?') ? '&' : '?';
+					$init_templates[$i.'.']['src'] .= 'pageId=' . $pageId . '&templateId=' . $i;
+				}
+				$i++;
+			}
+			$config['init.']['template_templates.'] = array();
+			$config['init.']['template_templates.'] = $init_templates;
+		}
+		$config['TinyMCE_templates.'] = $templates;
+		
+		return $config;
+	}
+	
+	/**
 	 * creates the javascript code (incl. <script> tags) for the typo3filemanager
 	 * 
 	 * @return	string	the javascript code to allow selection of pages in a TYPO3 dialog
 	 */
-	function getFileDialogJS($path, $pObj, $table, $field, $row) {
+	function getFileDialogJS($config, $path, $pObj, $table, $field, $row) {
 		$msg = "";
 		$msg .='
 			<script language="javascript" type="text/javascript">
@@ -256,7 +319,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 						case "link":
 							var expPage = "";
 							if (tab == "")
-								tab = "' . $this->conf['typo3filemanager.']['defaultTab'] . '";
+								tab = "' . $config['typo3filemanager.']['defaultTab'] . '";
 							if ( url.indexOf("fileadmin") > -1 ) tab = "file";
 							if ( (url.indexOf("http://") > -1) || (url.indexOf("ftp://") > -1) || (url.indexOf("https://") > -1) ) tab = "url";
 							if ( url.indexOf("@") > -1 ) tab = "mail";
@@ -270,15 +333,15 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 								current = "&expandFolder=' . rawurlencode($this->getPath('./fileadmin/',1)) . '";
 								tab = "magic";
 							}
-							if ( url == "" ) tab = "' . $this->conf['typo3filemanager.']['defaultImageTab'] . '";
+							if ( url == "" ) tab = "' . $config['typo3filemanager.']['defaultImageTab'] . '";
 							template_file = "'.$path.'mod2/rte_select_image.php?act="+tab+current+"&RTEtsConfigParams='.$table.'%3A136%3A'.$field.'%3A29%3Atext%3A'.$row["pid"].'%3A";
 							break;
 					}
 
 					tinyMCE.activeEditor.windowManager.open({
 						file : template_file,
-						width : ' . $this->conf['typo3filemanager.']['window.']['width'] . ',
-						height : ' . $this->conf['typo3filemanager.']['window.']['height'] . ',
+						width : ' . $config['typo3filemanager.']['window.']['width'] . ',
+						height : ' . $config['typo3filemanager.']['window.']['height'] . ',
 						resizable : "yes",
 						inline : "yes",
 						close_previous : "no"

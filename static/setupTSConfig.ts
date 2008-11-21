@@ -24,3 +24,15 @@ lib.parseFunc_RTE {
 	# externalBlocks.ol.stdWrap.parseFunc.makelinks = 0
 	
 }
+
+# function to allow costum link attributes
+lib.parseFunc.tags.a = TEXT
+lib.parseFunc.tags.a {
+  current = 1
+  typolink.parameter.data = parameters : allParams
+  typolink.parameter.postUserFunc = user_tinymce_rte->getHref
+  typolink.ATagParams.data = parameters : allParams
+  typolink.ATagParams.postUserFunc = user_tinymce_rte->getATagParams
+}
+
+lib.parseFunc_RTE.tags.a < lib.parseFunc.tags.a

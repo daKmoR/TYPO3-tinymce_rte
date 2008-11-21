@@ -35,6 +35,20 @@ if (intval(phpversion())>=5 || TYPO3_branch>=4.2) {
  */
 
 class ext_update {
+	var $desc = array(
+		'required' => array(
+			'title' => 'TinyMCE/TYPO3 compability patches',
+			'desc' => 'If you manually update the TinyMCE code to a new version, you will need to apply the patches below to the newly installed files, in order to make them compatible with TYPO3.<br />NOTE: The TYPO3 TinyMCE RTE extension is ALWAYS shipped with these patches installed. So if you have downloaded it from TER, you don\'t need to apply these patches.'
+		),
+		'optional' => array(
+			'title' => 'TinyMCE/TYPO3 optional patches',
+			'desc' => 'These patches are optional, and IS NOT applied to the TinyMCE RTE as default, but some you can to apply later if you need/want.'
+		),
+		'clearcache' => array(
+			'title' => 'Clear gzip cache',
+			'desc' => 'When you change parts of the TinyMCE installation manually, or install language packs, the cached gzip files still contains the old settings. In order to activate the new settings, the gzip cache must be cleared. If that doesn\'t help, try clearing the browser cache too.'
+		),
+	);
 
 	/**
 	 * Main function, returning the HTML content of the module
@@ -49,21 +63,22 @@ class ext_update {
 			return '<div style="padding-top: 10px;"></div><p>Updater <strong>requires</strong> PHP5 and TYPO3 v4.2+</p>';
 		}
 		
-		$this->diffPath = t3lib_extMgm::extPath('tinymce_rte').'patcher/diffs/';
+		$this->diffPath['required'] = t3lib_extMgm::extPath('tinymce_rte').'patcher/diffs/';
+		$this->diffPath['optional'] = t3lib_extMgm::extPath('tinymce_rte').'patcher/diffs2/';
 		$this->filePath = t3lib_extMgm::extPath('tinymce_rte');
 		
-		if (t3lib_div::_GP('update')) {
+		if (t3lib_div::_GP('update') && $descKey=t3lib_div::_GP('desckey')) {
 			$content = '<h2 class="typo3-tstemplate-ceditor-subcat">Applying TinyMCE/TYPO3 compability patches</h2>';
-			$patches = t3lib_div::_GP('patch');
+			$patches = t3lib_div::_GP($descKey.'patch');
 			$updated = false;
 			foreach ($patches as $patchName => $value) {
 				if ($value = intval($value)) {
-					$content .= $this->appplyPatch($patchName,$this->diffPath,$value-1);
+					$content .= $this->appplyPatch($patchName,$this->diffPath[$descKey],$value-1);
 					$updated = true;
 				}
 			}
 			$content .= '<div style="padding-top: 10px;"></div>';
-			$content .= ($updated) ? 'Patching done..' : 'Noting selected to patch..';
+			$content .= ($updated) ? 'Patching done..' : 'Nothing selected to patch..';
 			$content .= '<div style="padding-top: 25px;"></div><a href="'.htmlspecialchars(t3lib_div::linkThisScript()).'" class="typo3-goBack"><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/goback.gif','width="14" height="14"').' alt="" />Go back</a>';
 			// Remove cache files
 			$this->removeCachedFiles();
@@ -79,17 +94,20 @@ class ext_update {
 			$content .= '
 				<script type="text/javascript">
 					/* <![CDATA[ */
-					function difftoggle(val) {
+					function difftoggle(val,descKey) {
 						els = document.getElementsByTagName("select");
+						var matchregexp = new RegExp("^"+descKey+"patch");
 						for (var i=0;i<els.length;i++) {
-							if (els[i].name.match(/^patch/)) els[i].selectedIndex = val;
+							if (els[i].name.match(matchregexp)) els[i].selectedIndex = val;
 						}
 						return false;
 					}
 				/* ]]> */
 				</script>';
 			// display form
-			$content .= $this->displayDiffs($this->diffPath);
+			$content .= $this->displayDiffs($this->diffPath['required'],'required');
+			$content .= $this->displayDiffs($this->diffPath['optional'],'optional');
+			$content .= $this->displayRemoveCache();
 		}
 		return $content;
 	}
@@ -101,7 +119,7 @@ class ext_update {
 		if (!count($diffArray)) return 'No diff data found in '.$patchName.'.diff';
 		$content .= '<h3>'.($rev ? 'Unpatching' : 'Patching').' file "'.$diffArray['destinationfile'].'"</h3>';
 		$fileExt = strtolower(pathinfo($diffArray['destinationfile'],PATHINFO_EXTENSION));
-		if ($fileExt=='js' && $rev) {
+		if ($fileExt=='js' && $rev && $diffArray['sourcefile']!=$diffArray['destinationfile']) {
 			// If unpatch is selected, and the file is a javascript file,
 			// Then the .src file is just copied into the destination instead of unpatching.
 			// Unpatching of .js files is not possible due to the minifying of the javascripts.
@@ -120,7 +138,7 @@ class ext_update {
 				return $content;
 			}
 		}
-		if ($fileExt=='js') {
+		if ($fileExt=='js' && $diffArray['sourcefile']!=$diffArray['destinationfile']) {
 			// Minify data if extension is .js
 			$patchedData = JSMin::minify($patchedData);
 		}
@@ -128,7 +146,7 @@ class ext_update {
 		return $content;
 	}
 	
-	function displayDiffs($diffPath) {
+	function displayDiffs($diffPath,$descKey) {
 		$diffFiles =  t3lib_div::getFilesInDir($diffPath,'diff',0,'1');
 		if (!count($diffFiles)) return false;
 		$content = '';
@@ -148,7 +166,7 @@ class ext_update {
 			$content .= '
 	<dd>
 		<div class="typo3-tstemplate-ceditor-row">
-			<select name="patch['.$name.']">
+			<select name="'.$descKey.'patch['.$name.']">
 				<option value="0" selected="selected">Do nothing</option>
 				<option value="1">Patch file</option>
 				<option value="2">Unpatch file</option>
@@ -158,43 +176,25 @@ class ext_update {
 </dl>';
 		}
 		if (!$content) return false;
-		$content = '<h2 class="typo3-tstemplate-ceditor-subcat">TinyMCE/TYPO3 compability patches</h2>' .
+		$content = '<div style="padding-top: 10px;"></div><h2 class="typo3-tstemplate-ceditor-subcat bgColor5">'.$this->desc[$descKey]['title'].'</h2>' .
+'<div style="padding-bottom: 10px;">'.$this->desc[$descKey]['desc'].'</div>'.
 			$content .
-			'<input type="button" name="patchall" value="Select Patch all" onclick="return difftoggle(1)" /> ' .
-			'<input type="button" name="unpatchall" value="Select Unpatch all" onclick="return difftoggle(2)" /> ' .
-			'<input type="button" name="resetall" value="Reset all" onclick="return difftoggle(0)" /> ' .
-			'<input name="update" value="Update" type="submit" style="font-weight: bold;"/>' .
-			$this->displayRemoveCache() .
-			$this->displayDetails();
-		return '<form name="tinymcepatcher_form" action="'.htmlspecialchars(t3lib_div::linkThisScript()).'" method="post">'.$content.'</form>';
+			'<input type="button" name="patchall" value="Select Patch all" onclick="return difftoggle(1,\''.$descKey.'\')" /> ' .
+			'<input type="button" name="unpatchall" value="Select Unpatch all" onclick="return difftoggle(2,\''.$descKey.'\')" /> ' .
+			'<input type="button" name="resetall" value="Reset all" onclick="return difftoggle(0,\''.$descKey.'\')" /> ' .
+			'<input name="update" value="Update" type="submit" style="font-weight: bold;"/>
+			<input type="hidden" name="desckey" value="'.$descKey.'" />';
+		return '<form name="'.$descKey.'_form" action="'.htmlspecialchars(t3lib_div::linkThisScript()).'" method="post">'.$content.'</form>';
 		
 	}
 	
 	function displayRemoveCache() {
-		$content = '<div style="padding-top: 10px;"></div><h2 class="typo3-tstemplate-ceditor-subcat">Clearing gzip cache</h2>
-		When you change parts of the TinyMCE installation manually, or install language packs, the cached gzip files still contains the old settings. In order to activate the new settings, the gzip cache must be cleared. After clearing the gzip cache, the BE/browser must be refreshed/reloaded.<br />
- 		<div style="padding-top: 10px;"></div><input name="clear" value="Clear gzip cache" type="submit" style="font-weight: bold;"/>';
+		$content = '<div style="padding-top: 10px;"></div><h2 class="typo3-tstemplate-ceditor-subcat bgColor5">'.$this->desc['clearcache']['title'].'</h2>
+		'.$this->desc['clearcache']['desc'].'<br />
+ 		<div style="padding-top: 10px;"><input name="clear" value="Clear gzip cache" type="submit" style="font-weight: bold;"/></div>';
 		return $content;
 	}
 	
-	function displayDetails() {
-		$content = '<h3 class="uppercase">Details:</h3>
-<table border="0" cellpadding="1" cellspacing="2">
-	<tbody>
-		<tr class="bgColor5">
-			<td><strong>General information:</strong></td>
-		</tr>
-		<tr class="bgColor4" >
-			<td>If you manually update the TinyMCE code to a new version, you will need to apply the above patches to the newly installed files, in order to make them compatible with TYPO3.</td>
-		</tr>
-		<tr class="bgColor4">
-			<td>NOTE: The TYPO3 TinyMCE RTE extension is ALWAYS shipped with the patches installed. So if you have downloaded it from TER, you don\'t need to apply the patches.</td>
-		</tr>
-	</tbody>
-</table>';
-		return $content;
-	}
-
 	/**
 	 * Removes TinyMCE gzip cache files and TYPO3 cache files.
 	 *

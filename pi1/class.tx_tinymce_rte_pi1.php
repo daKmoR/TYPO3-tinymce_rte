@@ -73,8 +73,24 @@ class tx_tinymce_rte_pi1 extends tx_tinymce_rte_base {
 		} else {
 			$tmpConf = $rteConfig;
 		}
+		
+		// set a uniq rte id.
+		$this->rteId = $parentObject->cObj->data['uid'] . $parentObject->RTEcounter;
 
-		return parent::drawRTE($parentObject,$table,$field,$row,$PA,$specConf,$tmpConf,$RTEtypeVal,$RTErelPath,$thePidValue);
+		$config = $this->init($tmpConf, $this->rteId);
+		$config = $this->fixTinyMCETemplates($config, $GLOBALS['TSFE']->page['uid']);
+		
+		if ( $parentObject->RTEcounter == 1 )
+			$GLOBALS['TSFE']->additionalHeaderData['tinymce_rte'] = $this->getCoreScript( $config );
+		
+		$code .= $this->getInitScript( $config['init.'] );
+		
+		//loads the current Value and create the textarea
+		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
+		$code .= $this->triggerField($PA['itemFormElName']);
+		$code .= '<textarea id="RTEarea'.$this->rteId.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
+		
+		return $code;
 	}
 
 }
