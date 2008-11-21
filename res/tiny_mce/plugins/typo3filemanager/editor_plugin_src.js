@@ -6,7 +6,7 @@
 
 (function() {
 	// Load plugin specific language pack
-	tinymce.PluginManager.requireLangPack('typo3filemanger');
+	tinymce.PluginManager.requireLangPack('typo3filemanager');
 
 	tinymce.create('tinymce.plugins.typo3filemanagerPlugin', {
 		/**
@@ -32,7 +32,7 @@
 			});
 
 			ed.addButton('typo3link', {
-				title : 'typo3filemanger.link_desc',
+				title : 'typo3filemanager.link_desc',
 				cmd : 'mcetypo3link',
 				image : url + '/img/typo3link.gif'
 			});
@@ -56,7 +56,7 @@
 			});
 
 			ed.addButton('typo3image', {
-				title : 'typo3filemanger.image_desc',
+				title : 'typo3filemanager.image_desc',
 				cmd : 'mcetypo3image',
 				image : url + '/img/typo3image.gif'
 			});

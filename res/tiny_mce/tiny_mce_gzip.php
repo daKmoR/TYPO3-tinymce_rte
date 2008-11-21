@@ -121,6 +121,7 @@
 		$content .= getFileContents("plugins/" . $plugin . "/editor_plugin" . $suffix . ".js");
 
 		foreach ($languages as $lang) {
+			$content .= getFileContents($langTinyMcePath . "plugins/" . $plugin . "/langs/" . $lang . ".js");
 			$content .= getFileContents($langTinyMcePath . "plugins/" . $plugin . "/langs/" . $lang . "_dlg.js");
 		}
 	}
