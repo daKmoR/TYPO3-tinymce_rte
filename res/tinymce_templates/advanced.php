@@ -6,6 +6,7 @@
  * $this->pageId // the current page (for BE only)
  * $this->templateId // what template is currently selected
  * $this->conf //the RTE config
+ * $this->sys_language_uid //uid of the current language
  * $tinymce_rte // an instance of the tinymce_rte baseClass
  * 
  * Example on how to include it:

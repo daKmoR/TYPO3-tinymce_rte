@@ -53,7 +53,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$code = '';
 		
 		$config = $this->init($thisConfig, $parentObject->RTEcounter);
-		$config = $this->fixTinyMCETemplates($config, $row['pid']);
+		$config = $this->fixTinyMCETemplates($config, $row);
 		
 		// include core and typo3filemanager only the first time
 		if ( $parentObject->RTEcounter == 1 ) {
@@ -270,7 +270,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @param	int		current page id		
 	 * @return	string	the "fixed" RTE config
 	 */	
-	function fixTinyMCETemplates($config, $pageId) {
+	function fixTinyMCETemplates($config, $row) {
 	  $init_templates = array();
 		$templates = array();
 	  if ( is_array($config['init.']['template_templates.']) ) {
@@ -288,7 +288,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			  $init_templates[$i.'.']['src'] = $this->getPath($template['src']);
 				if ( $useInclude ) {
 					$init_templates[$i.'.']['src'] .= strpos($init_templates[$i.'.']['src'], '?') ? '&' : '?';
-					$init_templates[$i.'.']['src'] .= 'pageId=' . $pageId . '&templateId=' . $i;
+					$init_templates[$i.'.']['src'] .= 'pageId=' . $row['pid'] . '&templateId=' . $i . '&sys_language_uid=' . $row['sys_language_uid'];
 				}
 				$i++;
 			}

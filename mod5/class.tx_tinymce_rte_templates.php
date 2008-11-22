@@ -44,19 +44,23 @@ class tx_tinymce_rte_templates {
 	function init() {
 		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
 		
-		if( !t3lib_div::_GP('pageId') || !t3lib_div::_GP('templateId') ) {
-			die('if you want to us this mod you need at least to define pageId and templateId as GET parameter. Example path/to/TinyMCETemplate.php?pageid=7&templateId=12');
+		if( !t3lib_div::_GP('pageId') || !t3lib_div::_GP('templateId') || (t3lib_div::_GP('sys_language_uid') < 0) || (t3lib_div::_GP('sys_language_uid') == "")  ) {
+			die('if you want to us this mod you need at least to define pageId, templateId and sys_language_uid as GET parameter. Example path/to/TinyMCETemplate.php?pageid=7&templateId=12&sys_language_uid=0');
 		}
 		
 		$this->pageId = t3lib_div::_GP('pageId');
 		$this->templateId = t3lib_div::_GP('templateId');
+		$this->sys_language_uid = t3lib_div::_GP('sys_language_uid');
 		
 		$this->conf = t3lib_BEfunc::getPagesTSconfig( $this->pageId );
+		
 		$this->conf = $this->conf['RTE.']['default.'];
 		
 		$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
 		$this->conf = $tinymce_rte->init( $this->conf );
-		$this->conf = $tinymce_rte->fixTinyMCETemplates( $this->conf, $this->pageId );
+		$row = array('pid' => $this->pageId, 'sys_language_uid' => $this->sys_language_uid );
+		
+		$this->conf = $tinymce_rte->fixTinyMCETemplates( $this->conf, $row );
 		
 		if ( is_array($this->conf['TinyMCE_templates.'][$this->templateId]) && is_file($this->conf['TinyMCE_templates.'][$this->templateId]['include']) )
 		  include_once($this->conf['TinyMCE_templates.'][$this->templateId]['include']);
