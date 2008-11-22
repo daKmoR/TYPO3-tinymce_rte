@@ -40,6 +40,7 @@ class tx_tinymce_rte_templates {
 	var $content = '';
 	var $pageId = 0;
 	var $templateId = 0;
+	var $sys_language_uid = 0;
 	
 	function init() {
 		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
@@ -53,8 +54,15 @@ class tx_tinymce_rte_templates {
 		$this->sys_language_uid = t3lib_div::_GP('sys_language_uid');
 		
 		$this->conf = t3lib_BEfunc::getPagesTSconfig( $this->pageId );
-		
 		$this->conf = $this->conf['RTE.']['default.'];
+		
+		// xxx - improve me, what about default language (howto set to 'de')? there is no need for 2 db query...
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('static_lang_isocode', 'sys_language', 'uid = ' . $this->sys_language_uid);
+		if ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res) )	{
+			$res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('lg_typo3', 'static_languages', 'uid = ' . $row['static_lang_isocode']);
+			if ( $row2 = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res2) )
+				$LANG->init( $row2['lg_typo3'] );
+		}
 		
 		$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
 		$this->conf = $tinymce_rte->init( $this->conf );
