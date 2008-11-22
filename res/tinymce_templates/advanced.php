@@ -3,6 +3,7 @@
 /**
  * some usual TYPO3 stuff you might use $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS
  * additional nice things:
+ * $LANG is set to the actual language of the current CE (so in a multilanguage site you don't need to worry about it)
  * $this->pageId // the current page (for BE only)
  * $this->templateId // what template is currently selected
  * $this->conf //the RTE config
@@ -13,7 +14,6 @@
 RTE.default.init.template_templates {
 	 0 {
 		title = TYPO3 mod
-		src = EXT:tinymce_rte/mod5/TinyMCETemplate.php
 		description = Use an TYPO3 mod to get data easily into the the TinyMCE Template System
 		include = EXT:tinymce_rte/res/tinymce_templates/advanced.php
 	}
