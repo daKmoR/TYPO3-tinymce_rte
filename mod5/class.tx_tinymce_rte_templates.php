@@ -40,34 +40,28 @@ class tx_tinymce_rte_templates {
 	var $content = '';
 	var $pageId = 0;
 	var $templateId = 0;
-	var $sys_language_uid = 0;
+	var $ISOcode = 0;
 	
 	function init() {
 		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
 		
-		if( !t3lib_div::_GP('pageId') || !t3lib_div::_GP('templateId') || (t3lib_div::_GP('sys_language_uid') < 0) || (t3lib_div::_GP('sys_language_uid') == "")  ) {
-			die('if you want to us this mod you need at least to define pageId, templateId and sys_language_uid as GET parameter. Example path/to/TinyMCETemplate.php?pageId=7&templateId=2&sys_language_uid=0');
+		if( !t3lib_div::_GP('pageId') || !t3lib_div::_GP('templateId') || (t3lib_div::_GP('ISOcode') < 0) || (t3lib_div::_GP('ISOcode') == "")  ) {
+			die('if you want to us this mod you need at least to define pageId, templateId and ISOcode as GET parameter. Example path/to/TinyMCETemplate.php?pageId=7&templateId=2&ISOcode=en');
 		}
 		
 		$this->pageId = t3lib_div::_GP('pageId');
 		$this->templateId = t3lib_div::_GP('templateId');
-		$this->sys_language_uid = t3lib_div::_GP('sys_language_uid');
+		$this->ISOcode = t3lib_div::_GP('ISOcode');
 		
 		$this->conf = t3lib_BEfunc::getPagesTSconfig( $this->pageId );
 		$this->conf = $this->conf['RTE.']['default.'];
 		
-		// xxx - improve me, what about default language (howto set to 'de')? there is no need for 2 db query...
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('static_lang_isocode', 'sys_language', 'uid = ' . $this->sys_language_uid);
-		if ( $row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res) )	{
-			$res2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('lg_typo3', 'static_languages', 'uid = ' . $row['static_lang_isocode']);
-			if ( $row2 = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res2) )
-				$LANG->init( $row2['lg_typo3'] );
-		}
+		$LANG->init( strtolower($this->ISOcode) );
 		
 		$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
 		$this->conf = $tinymce_rte->init( $this->conf );
 		
-		$row = array('pid' => $this->pageId, 'sys_language_uid' => $this->sys_language_uid );
+		$row = array('pid' => $this->pageId, 'ISOcode' => $this->ISOcode );
 		$this->conf = $tinymce_rte->fixTinyMCETemplates( $this->conf, $row );
 		
 		if ( is_array($this->conf['TinyMCE_templates.'][$this->templateId]) && is_file($this->conf['TinyMCE_templates.'][$this->templateId]['include']) )

@@ -53,6 +53,11 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$code = '';
 		
 		$config = $this->init($thisConfig, $parentObject->RTEcounter);
+
+		$row['ISOcode'] = $parentObject->cachedLanguageFlag[$table . ':' . $row['uid']][$row['sys_language_uid']]['ISOcode'];
+		if ( !$row['ISOcode'] )
+			$row['ISOcode'] = (strtolower($config['template_default_lang']) == 'en') ? 'default' : $config['template_default_lang'];
+		
 		$config = $this->fixTinyMCETemplates($config, $row);
 		
 		// include core and typo3filemanager only the first time
@@ -288,7 +293,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			  $init_templates[$i.'.']['src'] = $this->getPath($template['src']);
 				if ( $useInclude ) {
 					$init_templates[$i.'.']['src'] .= strpos($init_templates[$i.'.']['src'], '?') ? '&' : '?';
-					$init_templates[$i.'.']['src'] .= 'pageId=' . $row['pid'] . '&templateId=' . $i . '&sys_language_uid=' . $row['sys_language_uid'];
+					$init_templates[$i.'.']['src'] .= 'pageId=' . $row['pid'] . '&templateId=' . $i . '&ISOcode=' . $row['ISOcode'];
 				}
 				$i++;
 			}

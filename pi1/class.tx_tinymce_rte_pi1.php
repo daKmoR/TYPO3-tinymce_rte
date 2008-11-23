@@ -78,7 +78,8 @@ class tx_tinymce_rte_pi1 extends tx_tinymce_rte_base {
 		$this->rteId = $parentObject->cObj->data['uid'] . $parentObject->RTEcounter;
 
 		$config = $this->init($tmpConf, $this->rteId);
-		$config = $this->fixTinyMCETemplates($config, $GLOBALS['TSFE']->page['uid']);
+		$row = array('pid' => $GLOBALS['TSFE']->page['uid'], 'ISOcode' => $this->language);
+		$config = $this->fixTinyMCETemplates($config, $row);
 		
 		if ( $parentObject->RTEcounter == 1 )
 			$GLOBALS['TSFE']->additionalHeaderData['tinymce_rte'] = $this->getCoreScript( $config );

@@ -26,6 +26,8 @@ RTE.default {
 	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
 	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
 	callbackJavascriptFile =
+	# set the default language to be used with the templates
+	template_default_lang = en
 	linkhandler {
 		tt_news {
 			# id of the Single News Page
