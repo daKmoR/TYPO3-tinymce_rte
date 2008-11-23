@@ -46,7 +46,7 @@ RTE.default.init {
 	content_css = fileadmin/templates/main/css/screen.css
 	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,template,spellchecker
 	theme_advanced_buttons1 = newdocument,|,undo,redo,|,bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,pastetext,pasteword,|,search,replace,|,fullscreen
-	theme_advanced_buttons2 = link,unlink,image,|,attribs,styleprops,anchor,charmap,tablecontrols
+	theme_advanced_buttons2 = link,unlink,image,|,attribs,styleprops,anchor,charmap,media,tablecontrols
 	theme_advanced_buttons3 = code,forecolor,backcolor,strikethrough,sub,sup,|,bullist,numlist,|,outdent,indent,|,cleanup,nonbreaking,blockquote,|,insertlayer,moveforward,movebackward,absolute
 	theme_advanced_buttons4 = styleselect,|,formatselect,|,fontselect,|,fontsizeselect
 	theme_advanced_resizing = true
