@@ -53,10 +53,12 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$code = '';
 		
 		$config = $this->init($thisConfig, $parentObject->RTEcounter);
-
+		
 		$row['ISOcode'] = $parentObject->cachedLanguageFlag[$table . ':' . $row['uid']][$row['sys_language_uid']]['ISOcode'];
-		if ( !$row['ISOcode'] )
-			$row['ISOcode'] = (strtolower($config['template_default_lang']) == 'en') ? 'default' : $config['template_default_lang'];
+		if ( !$row['ISOcode'] ) {
+			$setupTS = $this->getSetupTS( $row['pid'] );
+			$row['ISOcode'] = (strtolower($setupTS['config.']['language']) == 'en') ? 'default' : $setupTS['config.']['language'];
+		}
 		
 		$config = $this->fixTinyMCETemplates($config, $row);
 		
@@ -266,6 +268,17 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			tinymce.ScriptLoader.load("' . $path . '/langs/' . $lang . '.js");
 		';
 		return $msg;
+	}
+	
+	function getSetupTS($pageUid) {
+		$sysPageObj = t3lib_div::makeInstance('t3lib_pageSelect');
+		$rootLine = $sysPageObj->getRootLine($pageUid);
+		$TSObj = t3lib_div::makeInstance('t3lib_tsparser_ext');
+		$TSObj->tt_track = 0;
+		$TSObj->init();
+		$TSObj->runThroughTemplates($rootLine);
+		$TSObj->generateConfig();
+		return $TSObj->setup;
 	}
 	
 	/**
