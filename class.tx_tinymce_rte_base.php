@@ -312,7 +312,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			  $init_templates[$i.'.']['src'] = $this->getPath($template['src']);
 				if ( $useInclude ) {
 					$init_templates[$i.'.']['src'] .= strpos($init_templates[$i.'.']['src'], '?') ? '&' : '?';
-					$init_templates[$i.'.']['src'] .= 'pageId=' . $row['pid'] . '&templateId=' . $i . '&ISOcode=' . $row['ISOcode'];
+					$init_templates[$i.'.']['src'] .= 'pageId=' . $row['pid'] . '&templateId=' . $i . '&ISOcode=' . $row['ISOcode'] . '&mode=' . TYPO3_MODE;
 				}
 				$i++;
 			}

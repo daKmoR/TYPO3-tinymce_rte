@@ -45,7 +45,7 @@ class tx_tinymce_rte_templates {
 	function init() {
 		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
 		
-		if( !t3lib_div::_GP('pageId') || !t3lib_div::_GP('templateId') || (t3lib_div::_GP('ISOcode') < 0) || (t3lib_div::_GP('ISOcode') == "")  ) {
+		if( (t3lib_div::_GP('pageId') < 0) || (t3lib_div::_GP('pageId') == '') || (t3lib_div::_GP('templateId') < 0) || (t3lib_div::_GP('templateId') == '') || (t3lib_div::_GP('ISOcode') == '')  ) {
 			die('if you want to us this mod you need at least to define pageId, templateId and ISOcode as GET parameter. Example path/to/TinyMCETemplate.php?pageId=7&templateId=2&ISOcode=en');
 		}
 		
@@ -54,7 +54,11 @@ class tx_tinymce_rte_templates {
 		$this->ISOcode = t3lib_div::_GP('ISOcode');
 		
 		$this->pageTSconfig = t3lib_BEfunc::getPagesTSconfig( $this->pageId );
-		$this->conf = $this->pageTSconfig['RTE.']['default.'];
+		
+		if ( t3lib_div::_GP('mode') != 'FE' )
+			$this->conf = $this->pageTSconfig['RTE.']['default.'];
+		else
+			$this->conf = $this->pageTSconfig['RTE.']['default.']['FE.'];
 		
 		$LANG->init( strtolower($this->ISOcode) );
 		
@@ -64,8 +68,11 @@ class tx_tinymce_rte_templates {
 		$row = array('pid' => $this->pageId, 'ISOcode' => $this->ISOcode );
 		$this->conf = $tinymce_rte->fixTinyMCETemplates( $this->conf, $row );
 		
-		if ( is_array($this->conf['TinyMCE_templates.'][$this->templateId]) && is_file($this->conf['TinyMCE_templates.'][$this->templateId]['include']) )
-		  include_once($this->conf['TinyMCE_templates.'][$this->templateId]['include']);
+		if ( is_array($this->conf['TinyMCE_templates.'][$this->templateId]) && ($this->conf['TinyMCE_templates.'][$this->templateId]['include'] != '') )
+		  if ( is_file($this->conf['TinyMCE_templates.'][$this->templateId]['include']) )
+				include_once($this->conf['TinyMCE_templates.'][$this->templateId]['include']);
+			else 
+				die('no file found at include path');
 		
 	}
 	
