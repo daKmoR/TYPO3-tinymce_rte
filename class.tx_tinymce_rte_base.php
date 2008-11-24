@@ -55,18 +55,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$config = $this->init($thisConfig, $parentObject->RTEcounter);
 		
 		$row['ISOcode'] = $parentObject->cachedLanguageFlag[$table . ':' . $row['uid']][$row['sys_language_uid']]['ISOcode'];
-		print_r($row);
-		echo "<hr />";
 		if ( !$row['ISOcode'] ) {
 			$setupTS = $this->getSetupTS( $row['pid'] );
-		print_r($setupTS['config.']['language']);
-		echo "<hr />";
-			
 			$row['ISOcode'] = ( (strtolower($setupTS['config.']['language']) == 'en') || !$setupTS['config.']['language'] ) ? 'default' : $setupTS['config.']['language'];
 		}
-		
-		print_r($row);
-		die();
 		
 		$config = $this->fixTinyMCETemplates($config, $row);
 		
@@ -278,6 +270,12 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		return $msg;
 	}
 	
+	/**
+	 * returns the setupTSconfig for a given id
+	 * 
+	 * @param	int		current page id		
+	 * @return	string	the corresponding setupTSconfig
+	 */		
 	function getSetupTS($pageUid) {
 		$sysPageObj = t3lib_div::makeInstance('t3lib_pageSelect');
 		$rootLine = $sysPageObj->getRootLine($pageUid);
@@ -305,7 +303,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		  foreach( $config['init.']['template_templates.'] as $template ) {
 				$useInclude = false;
 				if ( $template['include'] ) {
-					if ( $template['src'] == '' ) $template['src'] = 'EXT:tinymce_rte/mod5/TinyMCETemplate.php';
+					if ( $template['src'] == '' ) $template['src'] = 'EXT:tinymce_rte/mod4/TinyMCETemplate.php';
 					$templates[$i] = array( 'include' => $this->getPath($template['include'], 1) );
 					unset($template['include']);
 					$useInclude = true;

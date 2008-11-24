@@ -53,8 +53,8 @@ class tx_tinymce_rte_templates {
 		$this->templateId = t3lib_div::_GP('templateId');
 		$this->ISOcode = t3lib_div::_GP('ISOcode');
 		
-		$this->conf = t3lib_BEfunc::getPagesTSconfig( $this->pageId );
-		$this->conf = $this->conf['RTE.']['default.'];
+		$this->pageTSconfig = t3lib_BEfunc::getPagesTSconfig( $this->pageId );
+		$this->conf = $this->pageTSconfig['RTE.']['default.'];
 		
 		$LANG->init( strtolower($this->ISOcode) );
 		
@@ -75,8 +75,8 @@ class tx_tinymce_rte_templates {
 	
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/mod5/class.tx_tinymce_rte_templates.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/mod5/class.tx_tinymce_rte_templates.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/mod4/class.tx_tinymce_rte_templates.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce_rte/mod4/class.tx_tinymce_rte_templates.php']);
 }
 	
 ?>

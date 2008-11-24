@@ -4,10 +4,13 @@
  * some usual TYPO3 stuff you might use $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS
  * additional nice things:
  * $LANG is set to the actual language of the current CE (so in a multilanguage site you don't need to worry about it)
- * $this->pageId // the current page (for BE only)
+ * $this->pageId // the current page
  * $this->templateId // what template is currently selected
  * $this->conf //the RTE config
+ * $this->pageTSconfig //complete pageTSconfig
  * $tinymce_rte // an instance of the tinymce_rte baseClass
+ * for example if you need the complete setupTSconfig do
+ *  $setupTSconfig = $tinymce_rte->getSetupTS( $this->pageId );
  * 
  * Example on how to include it:
 RTE.default.init.template_templates {
