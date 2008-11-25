@@ -8,9 +8,9 @@
  * $this->templateId // what template is currently selected
  * $this->conf //the RTE config
  * $this->pageTSconfig //complete pageTSconfig
- * $tinymce_rte // an instance of the tinymce_rte baseClass
+ * $this->tinymce_rte // an instance of the tinymce_rte baseClass
  * for example if you need the complete setupTSconfig do
- *  $setupTSconfig = $tinymce_rte->getSetupTS( $this->pageId );
+ *  $setupTSconfig = $this->tinymce_rte->getSetupTS( $this->pageId );
  * 
  * Example on how to include it:
 RTE.default.init.template_templates {

@@ -41,6 +41,7 @@ class tx_tinymce_rte_templates {
 	var $pageId = 0;
 	var $templateId = 0;
 	var $ISOcode = 0;
+	var $tinymce_rte = null;
 	
 	function init() {
 		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
@@ -62,11 +63,11 @@ class tx_tinymce_rte_templates {
 		
 		$LANG->init( strtolower($this->ISOcode) );
 		
-		$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
-		$this->conf = $tinymce_rte->init( $this->conf );
+		$this->tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
+		$this->conf = $this->tinymce_rte->init( $this->conf );
 		
 		$row = array('pid' => $this->pageId, 'ISOcode' => $this->ISOcode );
-		$this->conf = $tinymce_rte->fixTinyMCETemplates( $this->conf, $row );
+		$this->conf = $this->tinymce_rte->fixTinyMCETemplates( $this->conf, $row );
 		
 		if ( is_array($this->conf['TinyMCE_templates.'][$this->templateId]) && ($this->conf['TinyMCE_templates.'][$this->templateId]['include'] != '') )
 		  if ( is_file($this->conf['TinyMCE_templates.'][$this->templateId]['include']) )
