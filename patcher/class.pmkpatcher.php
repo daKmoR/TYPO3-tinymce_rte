@@ -95,19 +95,10 @@ class pmkpatcher {
 		return ($diffArray) ? $diffArray : $patcher->errorMsg;
 	}
 	
-	public static function zapplyDiff($diffArrays,$path='',$rev=false) {
-		$patcher = new pmkpatcher($path);
-		foreach ($diffArrays as $diffArray) {
-			$patchedData = $patcher->_applyDiff($diffArray,$rev);
-			if ($patchedData)
-			return ($patchedData) ? array('patcheddata' => $patchedData) : $patcher->errorMsg;
-		}
-	}
-	
 	public static function applyDiff($diffArray,$path='',$rev=false) {
 		$patcher = new pmkpatcher($path);
 		$patchedData = $patcher->_applyDiff($diffArray,$rev);
-		return is_array($patchedData) ? $patchedData : $patcher->errorMsg;
+		return ($patchedData) ? array('patcheddata' => $patchedData) : $patcher->errorMsg;
 	}
 	// -- Public Instance Methods ------------------------------------------------
 	
@@ -121,125 +112,96 @@ class pmkpatcher {
 		
 		$lines = preg_split('/\r\n|\r|\n/', $diffFile);
 		$diffArray = array();
-		reset($lines);
-		$line = current($lines);
-		$counter = 0;
-		while ($line!==false) {
-			// Continue looping until we find --- at the beginning of a line.
+		$comment = array();
+		foreach ($lines as $line) {
+			// Continue looping until we find ---- at the beginning of a line.
 			// Everything before that is treated as a comment.
-			$comment = array();
-			while (!preg_match('/^---/', $line) && $line!==false) {
-/*
-				// copy file hack
-				if (preg_match('/Property changes on:\s(.*)/i', $line, $regs)) {
-					$destfile = $regs[1];
-				}
-*/
+			if (!preg_match('/^---/', $line)) {
 				$comment[] = preg_replace('%^//\s*%', '', $line);
-				$line = next($lines);
+				continue;
 			}
-			
+			$this->comment = $diffArray['comment'] = $comment;
 			if (preg_match('/^--- ([^\t]*)/', $line, $regs)) {
-				$sourceFile = $regs[1];
+				$this->sourceFile = $diffArray['sourcefile'] = $regs[1];
 			} else {
-				if ($line===false) continue; // EOF
 				// No source filename specified.
 				$this->errorMsg = 'No source filename specified.<br />';
 				return false;
 			}
-			
-			$line = next($lines);
+			$line = current($lines);
 			if (preg_match('/^\+\+\+ ([^\t]*)/', $line, $regs)) {
-				$destinationFile = $regs[1];
+				$this->destinationFile = $diffArray['destinationfile'] = $regs[1];
 			} else {
-				if ($line===false) continue; // EOF
 				// No destination filename specified.
 				$this->errorMsg = 'No destination filename specified.<br />';
 				return false;
 			}
-/*			
-			$diffArray['diff'][$counter][] = array(
-				'comment' => $comment,
-				'sourcefile' => $sourceFile,
-				'destinationfile' => $destinationFile
-			);
-*/			
 			$line = next($lines);
-			while (preg_match('/^@@\s+-(\d+)(,(\d+))?\s+\+(\d+)(,(\d+))?\s+@@$/', $line, $regs) && !preg_match('/^---/', $line) && $line!==false) {
+			$range = array();
+			while (preg_match('/^@@\s+-(\d+)(,(\d+))?\s+\+(\d+)(,(\d+))?\s+@@$/', $line, $regs) || $line!==false) {
 				$srcline = intval($regs[4]);
-				$srcsize = $pc = (!isset($regs[6])) ? 1 : intval($regs[6]);
+				$srcsize = ($regs[6]==='') ? 1 : intval($regs[6]);
 				$dstline = intval($regs[1]);
-				$dstsize = $mc = (!$regs[3]) ? 1 : intval($regs[3]);
-				
-				$diffArray[$counter]['comment'] = $comment;
-				$diffArray[$counter]['sourcefile'] = $sourceFile;
-				$diffArray[$counter]['destinationfile'] = $destinationFile;
-				
+				$dstsize = ($regs[3]==='') ? 1 : intval($regs[3]);
+				$line = next($lines);
 				$data = array();
-				while (!($mc==0 && $pc==0) && $line!==false) {
-					$line = (string)next($lines);
-					if (!preg_match('/\+|-| /i', $line{0})) {
-						$line = prev($lines);
+				while ($line!==false) {
+					$data[] = $line;
+					$line = next($lines);
+					if (preg_match('/^@@\s+-(\d+)(,(\d+))?\s+\+(\d+)(,(\d+))?\s+@@$/', $line)) {
 						break;
 					}
-					$mc -= ($line{0}!='+' ? 1 : 0);
-					$pc -= ($line{0}!='-' ? 1 : 0);
-					$data[] = $line;
 				}
-				$diffArray[$counter]['range'][] = array(
+				$range[] = array(
 					'srcline' => $rev ? $dstline : $srcline,
 					'srcsize' => $rev ? $dstsize : $srcsize,
 					'dstline' => $rev ? $srcline : $dstline,
 					'dstsize' => $rev ? $srcsize : $dstsize,
 					'data' => $data
 				);
-				$line = next($lines);
 			}
-			$counter++;
+			$diffArray['diff'] = $range;
 		}
 		return $diffArray;
 	}
 	
 	protected function _applyDiff($diffArray, $rev=false) {
 		// Process diff data
-		foreach ($diffArray as $key => $diffParts) {
-			//$sourceFile = $this->path.($rev ? $diffParts['destinationfile'] : $diffParts['sourcefile']);
-			$sourceFile = $this->path.$diffParts['sourcefile'];
-			$source = @file_get_contents($sourceFile);
-			if (!$source) {
-				$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$sourceFile.'</p>';
+		//$sourceFile = $this->path.($rev ? $diffArray['destinationfile'] : $diffArray['sourcefile']);
+		$sourceFile = $this->path.$diffArray['sourcefile'];
+		$source = @file_get_contents($sourceFile);
+		if (!$source) {
+			$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$sourceFile.'</p>';
+			return false;
+		}
+		$sLines = preg_split('/\r\n|\r|\n/', $source);
+		$destLines = $sLines;
+		$offset = 0;
+		foreach ($diffArray['diff'] as $data) {
+			$diffPart = array_slice($this->array_filterPM($data['data'],'+',$rev),0,$data['srcsize']);
+			$comparePart = array_slice($destLines,$data['dstline']-1+$offset,count($diffPart));
+			// Compare diff part with (presumed) same part in destination file.
+			$fail = array_diff($diffPart,$comparePart);
+			if ($fail) {
+				$this->errorMsg = '<p>Error: Diff file doesn\'t match sourcefile.<br/>';
+				foreach ($fail as $linenum => $line) {
+					$this->errorMsg .= 'Line: '.$linenum.' => '.htmlspecialchars($line).'<br />';
+				}
+				$this->errorMsg .= '</p>';
 				return false;
 			}
-			$sLines = preg_split('/\r\n|\r|\n/', $source);
-			$destLines = $sLines;
-			$offset = 0;
-			foreach ($diffParts['range'] as $data) {
-				$diffPart = array_slice($this->array_filterPM($data['data'],'+',$rev),0,$data['srcsize']);
-				$comparePart = array_slice($destLines,$data['dstline']-1+$offset,count($diffPart));
-				// Compare diff part with (presumed) same part in destination file.
-				$fail = array_diff($diffPart,$comparePart);
-				if ($fail) {
-					$this->errorMsg = '<p>Error: Diff file doesn\'t match sourcefile.<br/>';
-					foreach ($fail as $linenum => $line) {
-						$this->errorMsg .= 'Line: '.$linenum.' => '.htmlspecialchars($line).'<br />';
-					}
-					$this->errorMsg .= '</p>';
-					return false;
-				}
-				else {
-					// Apply diff data to destination file.
-					$replace = $this->array_filterPM($data['data'],'-',$rev);
-					// Make sure no unwanted lines (such as extra linefeeds) is included in the replacement data
-					$replace = array_slice($replace,0,$data['srcsize']);
-					array_splice($destLines,$data['dstline']-1+$offset,$data['dstsize'],$replace);
-					$offset += $data['srcsize']-$data['dstsize'];
-				}
+			else {
+				// Apply diff data to destination file.
+				$replace = $this->array_filterPM($data['data'],'-',$rev);
+				// Make sure no unwanted lines (such as extra linefeeds) is included in the replacement data
+				$replace = array_slice($replace,0,$data['srcsize']);
+				array_splice($destLines,$data['dstline']-1+$offset,$data['dstsize'],$replace);
+				$offset += $data['srcsize']-$data['dstsize'];
 			}
-			// Get rid of the extra linefeed at the end, before returning result
-			//$destLines = array_slice($destLines,0,count($sLines)+$offset+1);
-			$diffArray[$key]['patcheddata'] = implode(chr(10),$destLines);
 		}
-		return $diffArray;
+		// Get rid of the extra linefeed at the end, before returning result
+		//$destLines = array_slice($destLines,0,count($sLines)+$offset+1);
+		return implode(chr(10),$destLines);
 	}
 	
 	protected static function array_filterPM($arr,$excl,$rev=false) {
@@ -250,6 +212,5 @@ class pmkpatcher {
 		}
 		return $res;
 	}
-
 }
 ?>

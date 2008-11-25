@@ -68,7 +68,7 @@ class ext_update {
 		$this->filePath = t3lib_extMgm::extPath('tinymce_rte');
 		
 		if (t3lib_div::_GP('update') && $descKey=t3lib_div::_GP('desckey')) {
-			$content = '<h2 class="typo3-tstemplate-ceditor-subcat">'.$this->desc[$descKey]['title'].'</h2>';
+			$content = '<h2 class="typo3-tstemplate-ceditor-subcat">Applying TinyMCE/TYPO3 compability patches</h2>';
 			$patches = t3lib_div::_GP($descKey.'patch');
 			$updated = false;
 			foreach ($patches as $patchName => $value) {
@@ -115,33 +115,34 @@ class ext_update {
 	function appplyPatch($patchName,$diffPath,$rev) {
 		$diffData = @file_get_contents($diffPath.$patchName.'.diff');
 		if (!$diffData) return 'Could not read '.$patchName.'.diff';
-		
 		$diffArray = pmkpatcher::parseDiff($diffData,$this->filePath,$rev);
-		if (!is_array($diffArray)) return 'No diff data found in '.$patchName.'.diff';
-		
-		$diffArray = pmkpatcher::applyDiff($diffArray,$this->filePath,$rev);
-		if (!is_array($diffArray)) return $diffArray;
-		
-		foreach ($diffArray as $diffParts) {
-			$content .= '<h3>'.($rev ? 'Unpatching' : 'Patching').' file "'.$diffParts['destinationfile'].'"</h3>';
-			$fileExt = strtolower(pathinfo($diffParts['destinationfile'],PATHINFO_EXTENSION));
-			if ($fileExt=='js' && $rev && $diffParts['sourcefile']!=$diffParts['destinationfile']) {
-				// If unpatch is selected, and the file is a javascript file,
-				// Then the .src file is just copied into the destination instead of unpatching.
-				// Unpatching of .js files is not possible due to the minifying of the javascripts.
-				$patchedData = @file_get_contents($this->filePath.$diffParts['sourcefile']);
-				$content .= '<p>File unpatched sucessfully.</p>';
-			}
-			else {
-				$patchedData = $diffParts['patcheddata'];
+		if (!count($diffArray)) return 'No diff data found in '.$patchName.'.diff';
+		$content .= '<h3>'.($rev ? 'Unpatching' : 'Patching').' file "'.$diffArray['destinationfile'].'"</h3>';
+		$fileExt = strtolower(pathinfo($diffArray['destinationfile'],PATHINFO_EXTENSION));
+		if ($fileExt=='js' && $rev && $diffArray['sourcefile']!=$diffArray['destinationfile']) {
+			// If unpatch is selected, and the file is a javascript file,
+			// Then the .src file is just copied into the destination instead of unpatching.
+			// Unpatching of .js files is not possible due to the minifying of the javascripts.
+			$patchedData = @file_get_contents($this->filePath.$diffArray['sourcefile']);
+			$content .= '<p>File unpatched sucessfully.</p>';
+		}
+		else {
+			$patched = pmkpatcher::applyDiff($diffArray,$this->filePath,$rev);
+			if (is_array($patched)) {
+				$patchedData = $patched['patcheddata'];
 				$content .= '<p>File '.($rev ? 'unpatched' : 'patched').' sucessfully.</p>';
 			}
-			if ($fileExt=='js' && $diffParts['sourcefile']!=$diffParts['destinationfile']) {
-				// Minify data if extension is .js
-				$patchedData = JSMin::minify($patchedData);
+			else {
+				// Error msg
+				$content .= $patched;
+				return $content;
 			}
-			file_put_contents($this->filePath.$diffParts['destinationfile'],$patchedData);
 		}
+		if ($fileExt=='js' && $diffArray['sourcefile']!=$diffArray['destinationfile']) {
+			// Minify data if extension is .js
+			$patchedData = JSMin::minify($patchedData);
+		}
+		file_put_contents($this->filePath.$diffArray['destinationfile'],$patchedData);
 		return $content;
 	}
 	
@@ -153,18 +154,16 @@ class ext_update {
 			$diffData = @file_get_contents($diffPath.$diffFile);
 			if (!$diffData) continue;
 			$diffArray = pmkpatcher::parseDiff($diffData,$this->filePath);
-			if (!is_array($diffArray)) return false;
+			if (!count($diffArray)) return false;
 			$name = htmlspecialchars(pathinfo($diffPath.$diffFile,PATHINFO_FILENAME));
 			$content .= '<dl class="typo3-tstemplate-ceditor-constant">
-	<dt class="typo3-tstemplate-ceditor-label">'.implode('<br />',$diffArray[0]['comment']).'</dt>
+	<dt class="typo3-tstemplate-ceditor-label">Patch for '.$diffArray['destinationfile'].'</dt>
 	<dt class="typo3-dimmed">['.$name.']</dt>';
-			$files = array();
-			foreach ($diffArray as $diffParts) {
-				$files[] = $diffParts['destinationfile'];
+			if (count($diffArray['comment'])) {
+			$content .= '
+	<dd>'.implode('<br />',$diffArray['comment']).'</dd>';
 			}
 			$content .= '
-	<dd>The following file'.(count($files)>1 ? 's are':' is').' patched:<br />'.implode('<br />',$files).'</dd>';
-		$content .= '
 	<dd>
 		<div class="typo3-tstemplate-ceditor-row">
 			<select name="'.$descKey.'patch['.$name.']">
