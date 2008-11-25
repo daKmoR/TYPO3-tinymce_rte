@@ -3,7 +3,7 @@
 ########################################################################
 # Extension Manager/Repository config file for ext: "tinymce_rte"
 #
-# Auto generated 24-11-2008 21:12
+# Auto generated 24-11-2008 21:21
 #
 # Manual updates:
 # Only the data in the array - anything else is removed by next write.
@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'description' => 'a straight TinyMCE port for TYPO3 (partly based on tinyrte)',
 	'category' => 'be',
 	'shy' => 0,
-	'version' => '0.1.4',
+	'version' => '0.2.0',
 	'dependencies' => 'cms',
 	'conflicts' => 'rtehtmlarea,tinyrte,linkhandler',
 	'priority' => '',
