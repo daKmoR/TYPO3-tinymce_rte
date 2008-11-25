@@ -150,35 +150,37 @@ class pmkpatcher {
 				$diffArray[$counter]['action'] = $regs[1];
 				$line = next($lines);
 			}
-			while (preg_match('/^@@\s+-(\d+)(,(\d+))?\s+\+(\d+)(,(\d+))?\s+@@$/', $line, $regs) && !preg_match('/^---/', $line) && $line!==false) {
-				$srcline = intval($regs[4]);
-				$srcsize = $pc = (!isset($regs[6])) ? 1 : intval($regs[6]);
-				$dstline = intval($regs[1]);
-				$dstsize = $mc = (!$regs[3]) ? 1 : intval($regs[3]);
-				
-				$diffArray[$counter]['comment'] = $comment;
-				$diffArray[$counter]['sourcefile'] = $sourceFile;
-				$diffArray[$counter]['destinationfile'] = $destinationFile;
-				
-				$data = array();
-				while (!($mc==0 && $pc==0) && $line!==false) {
-					$line = (string)next($lines);
-					if (!preg_match('/\+|-| /i', $line{0})) {
-						$line = prev($lines);
-						break;
+			else {
+				while (preg_match('/^@@\s+-(\d+)(,(\d+))?\s+\+(\d+)(,(\d+))?\s+@@$/', $line, $regs) && !preg_match('/^---/', $line) && $line!==false) {
+					$srcline = intval($regs[4]);
+					$srcsize = $pc = (!isset($regs[6])) ? 1 : intval($regs[6]);
+					$dstline = intval($regs[1]);
+					$dstsize = $mc = (!$regs[3]) ? 1 : intval($regs[3]);
+					
+					$diffArray[$counter]['comment'] = $comment;
+					$diffArray[$counter]['sourcefile'] = $sourceFile;
+					$diffArray[$counter]['destinationfile'] = $destinationFile;
+					
+					$data = array();
+					while (!($mc==0 && $pc==0) && $line!==false) {
+						$line = (string)next($lines);
+						if (!preg_match('/\+|-| /i', $line{0})) {
+							$line = prev($lines);
+							break;
+						}
+						$mc -= ($line{0}!='+' ? 1 : 0);
+						$pc -= ($line{0}!='-' ? 1 : 0);
+						$data[] = $line;
 					}
-					$mc -= ($line{0}!='+' ? 1 : 0);
-					$pc -= ($line{0}!='-' ? 1 : 0);
-					$data[] = $line;
+					$diffArray[$counter]['range'][] = array(
+						'srcline' => $rev ? $dstline : $srcline,
+						'srcsize' => $rev ? $dstsize : $srcsize,
+						'dstline' => $rev ? $srcline : $dstline,
+						'dstsize' => $rev ? $srcsize : $dstsize,
+						'data' => $data
+					);
+					$line = next($lines);
 				}
-				$diffArray[$counter]['range'][] = array(
-					'srcline' => $rev ? $dstline : $srcline,
-					'srcsize' => $rev ? $dstsize : $srcsize,
-					'dstline' => $rev ? $srcline : $dstline,
-					'dstsize' => $rev ? $srcsize : $dstsize,
-					'data' => $data
-				);
-				$line = next($lines);
 			}
 			$counter++;
 		}
