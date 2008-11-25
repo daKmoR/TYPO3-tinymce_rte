@@ -92,16 +92,7 @@ class pmkpatcher {
 	public static function parseDiff($diffFile,$path='',$rev=false) {
 		$patcher = new pmkpatcher($path);
 		$diffArray = $patcher->_parseDiff($diffFile,$rev);
-		return ($diffArray) ? $diffArray : $patcher->errorMsg;
-	}
-	
-	public static function zapplyDiff($diffArrays,$path='',$rev=false) {
-		$patcher = new pmkpatcher($path);
-		foreach ($diffArrays as $diffArray) {
-			$patchedData = $patcher->_applyDiff($diffArray,$rev);
-			if ($patchedData)
-			return ($patchedData) ? array('patcheddata' => $patchedData) : $patcher->errorMsg;
-		}
+		return is_array($diffArray) ? $diffArray : $patcher->errorMsg;
 	}
 	
 	public static function applyDiff($diffArray,$path='',$rev=false) {
@@ -129,12 +120,6 @@ class pmkpatcher {
 			// Everything before that is treated as a comment.
 			$comment = array();
 			while (!preg_match('/^---/', $line) && $line!==false) {
-/*
-				// copy file hack
-				if (preg_match('/Property changes on:\s(.*)/i', $line, $regs)) {
-					$destfile = $regs[1];
-				}
-*/
 				$comment[] = preg_replace('%^//\s*%', '', $line);
 				$line = next($lines);
 			}
@@ -147,7 +132,6 @@ class pmkpatcher {
 				$this->errorMsg = 'No source filename specified.<br />';
 				return false;
 			}
-			
 			$line = next($lines);
 			if (preg_match('/^\+\+\+ ([^\t]*)/', $line, $regs)) {
 				$destinationFile = $regs[1];
@@ -157,14 +141,15 @@ class pmkpatcher {
 				$this->errorMsg = 'No destination filename specified.<br />';
 				return false;
 			}
-/*			
-			$diffArray['diff'][$counter][] = array(
-				'comment' => $comment,
-				'sourcefile' => $sourceFile,
-				'destinationfile' => $destinationFile
-			);
-*/			
 			$line = next($lines);
+			// Parse custom marker for adding or removing binary files
+			if (preg_match('/^@@\s*(add|remove)file\s*@@$/', $line, $regs) && $line!==false) {
+				$diffArray[$counter]['comment'] = $comment;
+				$diffArray[$counter]['sourcefile'] = $sourceFile;
+				$diffArray[$counter]['destinationfile'] = $destinationFile;
+				$diffArray[$counter]['action'] = $regs[1];
+				$line = next($lines);
+			}
 			while (preg_match('/^@@\s+-(\d+)(,(\d+))?\s+\+(\d+)(,(\d+))?\s+@@$/', $line, $regs) && !preg_match('/^---/', $line) && $line!==false) {
 				$srcline = intval($regs[4]);
 				$srcsize = $pc = (!isset($regs[6])) ? 1 : intval($regs[6]);
@@ -203,41 +188,58 @@ class pmkpatcher {
 	protected function _applyDiff($diffArray, $rev=false) {
 		// Process diff data
 		foreach ($diffArray as $key => $diffParts) {
-			//$sourceFile = $this->path.($rev ? $diffParts['destinationfile'] : $diffParts['sourcefile']);
-			$sourceFile = $this->path.$diffParts['sourcefile'];
-			$source = @file_get_contents($sourceFile);
-			if (!$source) {
-				$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$sourceFile.'</p>';
-				return false;
-			}
-			$sLines = preg_split('/\r\n|\r|\n/', $source);
-			$destLines = $sLines;
-			$offset = 0;
-			foreach ($diffParts['range'] as $data) {
-				$diffPart = array_slice($this->array_filterPM($data['data'],'+',$rev),0,$data['srcsize']);
-				$comparePart = array_slice($destLines,$data['dstline']-1+$offset,count($diffPart));
-				// Compare diff part with (presumed) same part in destination file.
-				$fail = array_diff($diffPart,$comparePart);
-				if ($fail) {
-					$this->errorMsg = '<p>Error: Diff file doesn\'t match sourcefile.<br/>';
-					foreach ($fail as $linenum => $line) {
-						$this->errorMsg .= 'Line: '.$linenum.' => '.htmlspecialchars($line).'<br />';
-					}
-					$this->errorMsg .= '</p>';
+			if (isset($diffParts['range'])) {
+				//$sourceFile = $this->path.($rev ? $diffParts['destinationfile'] : $diffParts['sourcefile']);
+				$sourceFile = $this->path.$diffParts['sourcefile'];
+				$source = @file_get_contents($sourceFile);
+				if (!$source) {
+					$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$sourceFile.'</p>';
 					return false;
 				}
+				$sLines = preg_split('/\r\n|\r|\n/', $source);
+				$destLines = $sLines;
+				$offset = 0;
+				foreach ($diffParts['range'] as $data) {
+					$diffPart = array_slice($this->array_filterPM($data['data'],'+',$rev),0,$data['srcsize']);
+					$comparePart = array_slice($destLines,$data['dstline']-1+$offset,count($diffPart));
+					// Compare diff part with (presumed) same part in destination file.
+					$fail = array_diff($diffPart,$comparePart);
+					if ($fail) {
+						$this->errorMsg = '<p>Error: Diff file doesn\'t match sourcefile.<br/>';
+						foreach ($fail as $linenum => $line) {
+							$this->errorMsg .= 'Line: '.$linenum.' => '.htmlspecialchars($line).'<br />';
+						}
+						$this->errorMsg .= '</p>';
+						return false;
+					}
+					else {
+						// Apply diff data to destination file.
+						$replace = $this->array_filterPM($data['data'],'-',$rev);
+						// Make sure no unwanted lines (such as extra linefeeds) is included in the replacement data
+						$replace = array_slice($replace,0,$data['srcsize']);
+						array_splice($destLines,$data['dstline']-1+$offset,$data['dstsize'],$replace);
+						$offset += $data['srcsize']-$data['dstsize'];
+					}
+				}
+				// Get rid of the extra linefeed at the end, before returning result
+				//$destLines = array_slice($destLines,0,count($sLines)+$offset+1);
+				$diffArray[$key]['patcheddata'] = implode(chr(10),$destLines);
+			}
+			else {
+				// Process custom marker for adding or removing binary files
+				$action = $diffParts['action'];
+				if ($rev) $action = $action=='add' ? 'remove' : 'add';
+				if ($action=='add') {
+					$file = $this->path.$diffParts['sourcefile'];
+				}
 				else {
-					// Apply diff data to destination file.
-					$replace = $this->array_filterPM($data['data'],'-',$rev);
-					// Make sure no unwanted lines (such as extra linefeeds) is included in the replacement data
-					$replace = array_slice($replace,0,$data['srcsize']);
-					array_splice($destLines,$data['dstline']-1+$offset,$data['dstsize'],$replace);
-					$offset += $data['srcsize']-$data['dstsize'];
+					$file = $this->path.$diffParts['destinationfile'];
+				}
+				if (!file_exists($file) || !is_file($file)) {
+					$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$file.'</p>';
+					return false;
 				}
 			}
-			// Get rid of the extra linefeed at the end, before returning result
-			//$destLines = array_slice($destLines,0,count($sLines)+$offset+1);
-			$diffArray[$key]['patcheddata'] = implode(chr(10),$destLines);
 		}
 		return $diffArray;
 	}

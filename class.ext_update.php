@@ -123,24 +123,48 @@ class ext_update {
 		if (!is_array($diffArray)) return $diffArray;
 		
 		foreach ($diffArray as $diffParts) {
-			$content .= '<h3>'.($rev ? 'Unpatching' : 'Patching').' file "'.$diffParts['destinationfile'].'"</h3>';
-			$fileExt = strtolower(pathinfo($diffParts['destinationfile'],PATHINFO_EXTENSION));
-			if ($fileExt=='js' && $rev && $diffParts['sourcefile']!=$diffParts['destinationfile']) {
-				// If unpatch is selected, and the file is a javascript file,
-				// Then the .src file is just copied into the destination instead of unpatching.
-				// Unpatching of .js files is not possible due to the minifying of the javascripts.
-				$patchedData = @file_get_contents($this->filePath.$diffParts['sourcefile']);
-				$content .= '<p>File unpatched sucessfully.</p>';
+			if (isset($diffParts['patcheddata'])) {
+				$content .= '<h3>'.($rev ? 'Unpatching' : 'Patching').' file "'.$diffParts['destinationfile'].'"</h3>';
+				$fileExt = strtolower(pathinfo($diffParts['destinationfile'],PATHINFO_EXTENSION));
+				if ($fileExt=='js' && $rev && $diffParts['sourcefile']!=$diffParts['destinationfile']) {
+					// If unpatch is selected, and the file is a javascript file,
+					// Then the .src file is just copied into the destination instead of unpatching.
+					// Unpatching of .js files is not possible due to the minifying of the javascripts.
+					$patchedData = @file_get_contents($this->filePath.$diffParts['sourcefile']);
+					$content .= '<p>File unpatched sucessfully.</p>';
+				}
+				else {
+					$patchedData = $diffParts['patcheddata'];
+					$content .= '<p>File '.($rev ? 'unpatched' : 'patched').' sucessfully.</p>';
+				}
+				if ($fileExt=='js' && $diffParts['sourcefile']!=$diffParts['destinationfile']) {
+					// Minify data if extension is .js
+					$patchedData = JSMin::minify($patchedData);
+				}
+				file_put_contents($this->filePath.$diffParts['destinationfile'],$patchedData);
 			}
 			else {
-				$patchedData = $diffParts['patcheddata'];
-				$content .= '<p>File '.($rev ? 'unpatched' : 'patched').' sucessfully.</p>';
+				// Process custom marker for adding or removing binary files
+				$action = $diffParts['action'];
+				if ($rev) $action = $action=='add' ? 'remove' : 'add';
+				$content .= '<h3>'.($rev ? 'Removing' : 'Adding').' file "'.$diffParts['destinationfile'].'"</h3>';
+				if ($action=='add') {
+					if (!@copy($this->filePath.$diffParts['sourcefile'], $this->filePath.$diffParts['destinationfile'])) {
+						$content .= '<p>Failed to add file: '.$diffParts['destinationfile'].'</p>';
+					}
+					else {
+						$content .= '<p>File added sucessfully.</p>';
+					}
+				}
+				else {
+					if (!@unlink($this->filePath.$diffParts['destinationfile'])) {
+						$content .= '<p>Failed to remove file: '.$diffParts['destinationfile'].'</p>';
+					}
+					else {
+						$content .= '<p>File removed sucessfully.</p>';
+					}
+				}
 			}
-			if ($fileExt=='js' && $diffParts['sourcefile']!=$diffParts['destinationfile']) {
-				// Minify data if extension is .js
-				$patchedData = JSMin::minify($patchedData);
-			}
-			file_put_contents($this->filePath.$diffParts['destinationfile'],$patchedData);
 		}
 		return $content;
 	}
@@ -163,7 +187,7 @@ class ext_update {
 				$files[] = $diffParts['destinationfile'];
 			}
 			$content .= '
-	<dd>The following file'.(count($files)>1 ? 's are':' is').' patched:<br />'.implode('<br />',$files).'</dd>';
+	<dd>The following file'.(count($files)>1 ? 's':'').' will be modified:<br />'.implode('<br />',$files).'</dd>';
 		$content .= '
 	<dd>
 		<div class="typo3-tstemplate-ceditor-row">
