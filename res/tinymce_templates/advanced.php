@@ -29,6 +29,7 @@ RTE.default.init.template_templates {
 	$this->content .= '<div style="border: 1px solid green; padding: 5px; margin: 10px 2px;">';
 	$this->content .= $LANG->getLL('author') . ": " . ($BE_USER->user['realName'] ? $BE_USER->user['realName'] : $BE_USER->user['username']);
 	$this->content .= $BE_USER->user['email'] ? '<br />' . $LANG->getLL('email') . ': <a href="mailto:'.$BE_USER->user['email'].'">'.$BE_USER->user['email'].'</a>' : '';
+	$this->content .= '</div>';
 	
 	$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 		'uid, title',
@@ -51,6 +52,5 @@ RTE.default.init.template_templates {
 		$this->content .= '<tr><td>' . $row['uid'] . '</td><td>' . $row['title'] . '</td></tr>';
 	}	
 	$this->content .= '</table>';
-	$this->content .= '</div>';
 
 ?>

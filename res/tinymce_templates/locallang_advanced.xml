@@ -6,12 +6,12 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="author">Author</label>
-			<label index="email">Email</label>
+			<label index="author">english Author</label>
+			<label index="email">english Email</label>
 		</languageKey>
 		<languageKey index="de" type="array">
-			<label index="author">Autor</label>
-			<label index="email">E-Mail</label>
+			<label index="author">german Autor</label>
+			<label index="email">german E-Mail</label>
 		</languageKey>		
 	</data>
 </T3locallang>
