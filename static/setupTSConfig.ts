@@ -25,14 +25,20 @@ lib.parseFunc_RTE {
 	
 }
 
-# function to allow costum link attributes
+# function to allow custom link attributes
 lib.parseFunc.tags.a = TEXT
 lib.parseFunc.tags.a {
   current = 1
+  if.isTrue.current = 1
   typolink.parameter.data = parameters : allParams
   typolink.parameter.postUserFunc = user_tinymce_rte->getHref
   typolink.ATagParams.data = parameters : allParams
   typolink.ATagParams.postUserFunc = user_tinymce_rte->getATagParams
 }
-
 lib.parseFunc_RTE.tags.a < lib.parseFunc.tags.a
+
+lib.parseFunc.tags.link.if.isTrue.current = 1
+lib.parseFunc_RTE.tags.link.if.isTrue.current = 1
+
+
+ 
