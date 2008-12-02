@@ -137,33 +137,52 @@ class ext_update {
 					$patchedData = $diffParts['patcheddata'];
 					$content .= '<p>File '.($rev ? 'unpatched' : 'patched').' sucessfully.</p>';
 				}
-				if ($fileExt=='js' && $diffParts['sourcefile']!=$diffParts['destinationfile']) {
+				if ($fileExt=='js' && $diffParts['sourcefile']!=$diffParts['destinationfile'] && $diffParts['sourcefile']!='/dev/null' ) {
 					// Minify data if extension is .js
 					$patchedData = JSMin::minify($patchedData);
 				}
+				@mkdir( dirname($this->filePath.$diffParts['destinationfile']), 0777, 1 );
 				file_put_contents($this->filePath.$diffParts['destinationfile'],$patchedData);
 			}
 			else {
 				// Process custom marker for adding or removing binary files
-				$action = $diffParts['action'];
-				if ($rev) $action = $action=='add' ? 'remove' : 'add';
+				$type = $diffParts['type'];
 				$content .= '<h3>'.($rev ? 'Removing' : 'Adding').' file "'.$diffParts['destinationfile'].'"</h3>';
-				if ($action=='add') {
-					if (!@copy($this->filePath.$diffParts['sourcefile'], $this->filePath.$diffParts['destinationfile'])) {
-						$content .= '<p>Failed to add file: '.$diffParts['destinationfile'].'</p>';
-					}
-					else {
-						$content .= '<p>File added sucessfully.</p>';
+				
+				if ($type == 'binary-file') {
+					if ( $diffParts['sourcefile'] && $diffParts['destinationfile']!='/dev/null' ) {
+						//make undo copy if file exists
+						if (file_exists($this->path.$diffParts['sourcefile']) || is_file($this->path.$diffParts['sourcefile'])) {
+							@mkdir(dirname($this->filePath.$diffParts['sourcefile']) . '/undo/', 0777, 1);
+							if (!@copy($this->filePath.$diffParts['destinationfile'], dirname($this->filePath.$diffParts['sourcefile']) . '/undo/' . basename($this->filePath.$diffParts['sourcefile']) ))
+								$content .= '<p>Failed to add undo file: '.$diffParts['destinationfile'].'</p>';
+							else
+								$content .= '<p>Undo file added sucessfully.</p>';
+						}
+						
+						@mkdir( dirname($this->filePath.$diffParts['destinationfile']), 0777, 1 );
+						if (!@copy($this->filePath.$diffParts['sourcefile'], $this->filePath.$diffParts['destinationfile']))
+							$content .= '<p>Failed to add file: '.$diffParts['destinationfile'].'</p>';
+						else
+							$content .= '<p>File added sucessfully.</p>';
+							
+					} elseif ($diffParts['destinationfile']=='/dev/null') {
+						if (!@unlink($this->filePath.$diffParts['sourcefile']))
+							$content .= '<p>Failed to remove file: '.$diffParts['sourcefile'].'</p>';
+						else
+							$content .= '<p>File removed sucessfully.</p>';
 					}
 				}
-				else {
-					if (!@unlink($this->filePath.$diffParts['destinationfile'])) {
-						$content .= '<p>Failed to remove file: '.$diffParts['destinationfile'].'</p>';
-					}
-					else {
-						$content .= '<p>File removed sucessfully.</p>';
+				
+				if (!$type) {
+					if ($diffParts['sourcefile']=='/dev/null') {
+						if (!@unlink($this->filePath.$diffParts['destinationfile']))
+							$content .= '<p>Failed to remove file: '.$diffParts['destinationfile'].'</p>';
+						else
+							$content .= '<p>File removed sucessfully.</p>';
 					}
 				}
+				
 			}
 		}
 		return $content;

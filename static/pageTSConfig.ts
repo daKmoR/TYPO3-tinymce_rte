@@ -5,7 +5,7 @@ RTE.default {
 	# do you want to create a single gzip file for the rte (much faster)
 	gzip = 1
 	# Should the gzip file saved in typo3temp/tinymce_rte/ for further use (faster)
-	gzipFileCache = 1
+	gzipFileCache = 0
 	typo3filemanager {
 		# width/height of the typo3filemanger popup
 		window.width = 600

@@ -143,11 +143,11 @@ class pmkpatcher {
 			}
 			$line = next($lines);
 			// Parse custom marker for adding or removing binary files
-			if (preg_match('/^@@\s*(add|remove)file\s*@@$/', $line, $regs) && $line!==false) {
+			if (preg_match('/^@@\s*(binary-file)\s*@@$/', $line, $regs) && $line!==false) {
 				$diffArray[$counter]['comment'] = $comment;
 				$diffArray[$counter]['sourcefile'] = $sourceFile;
 				$diffArray[$counter]['destinationfile'] = $destinationFile;
-				$diffArray[$counter]['action'] = $regs[1];
+				$diffArray[$counter]['type'] = $regs[1];
 				$line = next($lines);
 			}
 			else {
@@ -190,13 +190,18 @@ class pmkpatcher {
 	protected function _applyDiff($diffArray, $rev=false) {
 		// Process diff data
 		foreach ($diffArray as $key => $diffParts) {
+				
 			if (isset($diffParts['range'])) {
 				//$sourceFile = $this->path.($rev ? $diffParts['destinationfile'] : $diffParts['sourcefile']);
-				$sourceFile = $this->path.$diffParts['sourcefile'];
-				$source = @file_get_contents($sourceFile);
-				if (!$source) {
-					$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$sourceFile.'</p>';
-					return false;
+				if ($diffParts['sourcefile'] == '/dev/null') {
+					$source = '';
+				} else {
+					$sourceFile = $this->path.$diffParts['sourcefile'];
+					$source = @file_get_contents($sourceFile);
+					if (!$source) {
+						$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$sourceFile.'</p>';
+						return false;
+					}
 				}
 				$sLines = preg_split('/\r\n|\r|\n/', $source);
 				$destLines = $sLines;
@@ -226,20 +231,16 @@ class pmkpatcher {
 				// Get rid of the extra linefeed at the end, before returning result
 				//$destLines = array_slice($destLines,0,count($sLines)+$offset+1);
 				$diffArray[$key]['patcheddata'] = implode(chr(10),$destLines);
-			}
-			else {
+			}	elseif ($diffParts['type'] == 'binary-file') {
 				// Process custom marker for adding or removing binary files
-				$action = $diffParts['action'];
-				if ($rev) $action = $action=='add' ? 'remove' : 'add';
-				if ($action=='add') {
-					$file = $this->path.$diffParts['sourcefile'];
-				}
-				else {
-					$file = $this->path.$diffParts['destinationfile'];
-				}
+				$file = (!$rev) ? $this->path.$diffParts['sourcefile'] : dirname($this->path.$diffParts['sourcefile']) . '/undo/' . basename($this->path.$diffParts['sourcefile']);
 				if (!file_exists($file) || !is_file($file)) {
-					$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$file.'</p>';
-					return false;
+				  if ($rev) {
+						$diffParts['sourcefile'] = '/dev/null';
+					} else {
+						$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$file.'</p>';
+						return false;
+					}
 				}
 			}
 		}

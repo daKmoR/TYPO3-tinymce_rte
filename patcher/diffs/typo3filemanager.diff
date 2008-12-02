@@ -101,36 +101,22 @@ Index: res/tiny_mce/plugins/typo3filemanager/editor_plugin_src.js
 \ No newline at end of file
 Index: res/tiny_mce/plugins/typo3filemanager/img/typo3image.gif
 ===================================================================
---- typo3filemanager/typo3image.gif	(revision 0)
+--- patcher/diffs/typo3filemanager/typo3image.gif	(revision 0)
 +++ res/tiny_mce/plugins/typo3filemanager/img/typo3image.gif	(revision 0)
-Cannot display: file marked as a binary type.
-svn:mime-type = application/octet-stream
-
-Property changes on: res\tiny_mce\plugins\typo3filemanager\img\typo3image.gif
-___________________________________________________________________
-Added: svn:mime-type
-   + application/octet-stream
-
+@@ binary-file @@
 Index: res/tiny_mce/plugins/typo3filemanager/img/typo3link.gif
 ===================================================================
---- typo3filemanager/typo3link.gif	(revision 0)
+--- patcher/diffs/typo3filemanager/typo3link.gif	(revision 0)
 +++ res/tiny_mce/plugins/typo3filemanager/img/typo3link.gif	(revision 0)
-Cannot display: file marked as a binary type.
-svn:mime-type = application/octet-stream
-
-Property changes on: res\tiny_mce\plugins\typo3filemanager\img\typo3link.gif
-___________________________________________________________________
-Added: svn:mime-type
-   + application/octet-stream
-
+@@ binary-file @@
 Index: res/tiny_mce/plugins/typo3filemanager/langs/de.js
 ===================================================================
 --- /dev/null	(revision 0)
 +++ res/tiny_mce/plugins/typo3filemanager/langs/de.js	(revision 0)
 @@ -0,0 +1,4 @@
 +tinyMCE.addI18n('de.typo3filemanager',{
-+	link_desc : 'TYPO3 Verkn\u00FCpfung',
-+	image_desc : 'TYPO3 Bild'
++	link_desc : 'TYPO3 Verkn\u00FCpfungen',
++	image_desc : 'TYPO3 Bilder'
 +});
 \ No newline at end of file
 Index: res/tiny_mce/plugins/typo3filemanager/langs/en.js
@@ -139,7 +125,7 @@ Index: res/tiny_mce/plugins/typo3filemanager/langs/en.js
 +++ res/tiny_mce/plugins/typo3filemanager/langs/en.js	(revision 0)
 @@ -0,0 +1,4 @@
 +tinyMCE.addI18n('en.typo3filemanager',{
-+	link_desc : 'TYPO3 Link',
-+	image_desc : 'TYPO3 Image'
++	link_desc : 'TYPO3 Links',
++	image_desc : 'TYPO3 Images'
 +});
 \ No newline at end of file
