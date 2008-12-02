@@ -190,9 +190,8 @@ class pmkpatcher {
 	protected function _applyDiff($diffArray, $rev=false) {
 		// Process diff data
 		foreach ($diffArray as $key => $diffParts) {
-				
-			if (isset($diffParts['range'])) {
-				//$sourceFile = $this->path.($rev ? $diffParts['destinationfile'] : $diffParts['sourcefile']);
+					
+			if (isset($diffParts['range']) && $diffParts['destinationfile'] != '/dev/null' && ($diffParts['sourcefile'] != '/dev/null' || ($diffParts['sourcefile'] == '/dev/null' && !$rev) ) && $diffParts['type'] != 'binary-file') {
 				if ($diffParts['sourcefile'] == '/dev/null') {
 					$source = '';
 				} else {
@@ -236,7 +235,8 @@ class pmkpatcher {
 				$file = (!$rev) ? $this->path.$diffParts['sourcefile'] : dirname($this->path.$diffParts['sourcefile']) . '/undo/' . basename($this->path.$diffParts['sourcefile']);
 				if (!file_exists($file) || !is_file($file)) {
 				  if ($rev) {
-						$diffParts['sourcefile'] = '/dev/null';
+						$diffArray[$key]['sourcefile'] = $diffArray[$key]['destinationfile'];
+						$diffArray[$key]['destinationfile'] = '/dev/null';
 					} else {
 						$this->errorMsg = '<p>Error: sourcefile not found.<br/>'.$file.'</p>';
 						return false;

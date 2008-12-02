@@ -147,7 +147,7 @@ class ext_update {
 			else {
 				// Process custom marker for adding or removing binary files
 				$type = $diffParts['type'];
-				$content .= '<h3>'.($rev ? 'Removing' : 'Adding').' file "'.$diffParts['destinationfile'].'"</h3>';
+				$content .= '<h3>'.($rev ? 'Removing' : 'Adding').' file "'. ( ($rev && $type == 'binary-file') ? $diffParts['sourcefile'] : $diffParts['destinationfile']) .'"</h3>';
 				
 				if ($type == 'binary-file') {
 					if ( $diffParts['sourcefile'] && $diffParts['destinationfile']!='/dev/null' ) {
