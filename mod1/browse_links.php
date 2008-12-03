@@ -733,11 +733,13 @@ RTE.default.linkhandler {
 	tt_news {
 		# id of the Single News Page
 		parameter = 27
-		# id of the Storage folder containing the news (just used to mark already selected news)
+		# id of the Storage folder containing the news (just used to mark already selected news) [set 'storage >' if unsure or the user can select from more than one Storage Folder]
 		storage = 25
 		additionalParams = &tx_ttnews[tt_news]={field:uid}
 		additionalParams.insertData = 1
-		select = uid,title as header,hidden,starttime,endtime,fe_group,bodytext
+		# you need: uid, hidden, header [this is the displayed title] (use xx as header to select other properties)
+		# you can provide: bodytext [alternative title], starttime, endtime [to display the current status]
+		select = uid,title as header,hidden,starttime,endtime,bodytext
 		sorting = crdate
 	}
 }
@@ -936,6 +938,7 @@ RTE.default.linkhandler {
 	 *
 	 * @return	void
 	 */
+	 /*
 	function main()	{
 		global $BE_USER;
 
@@ -970,6 +973,95 @@ RTE.default.linkhandler {
 			case 'wizard':
 				$this->content=$this->main_rte(1);
 			break;
+		}
+	}*/
+	
+	
+	/**
+	 * Main function, detecting the current mode of the element browser and branching out to internal methods.
+	 *
+	 * @return	void
+	 */
+	function main()	{
+		global $BE_USER;
+		$this->content = '';
+
+			// look for alternativ mountpoints
+		switch((string)$this->mode)	{
+			case 'rte':
+			case 'db':
+			case 'wizard':
+					// Setting alternative browsing mounts (ONLY local to browse_links.php this script so they stay "read-only")
+				$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.pageTree.altElementBrowserMountPoints'));
+				if ($altMountPoints) {
+					$GLOBALS['BE_USER']->groupData['webmounts'] = implode(',', array_unique(t3lib_div::intExplode(',', $altMountPoints)));
+					$GLOBALS['WEBMOUNTS'] = $GLOBALS['BE_USER']->returnWebmounts();
+				}
+			case 'file':
+			case 'filedrag':
+			case 'folder':
+					// Setting additional read-only browsing file mounts
+				$altMountPoints = trim($GLOBALS['BE_USER']->getTSConfigVal('options.folderTree.altElementBrowserMountPoints'));
+				if ($altMountPoints) {
+					$altMountPoints = t3lib_div::trimExplode(',', $altMountPoints);
+					foreach($altMountPoints as $filePathRelativeToFileadmindir)	{
+						$GLOBALS['BE_USER']->addFileMount('', $filePathRelativeToFileadmindir, $filePathRelativeToFileadmindir, 1, 'readonly');
+					}
+					$GLOBALS['FILEMOUNTS'] = $GLOBALS['BE_USER']->returnFilemounts();
+				}
+				break;
+		}
+			
+			
+			// render type by user func
+		$browserRendered = false;
+		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'] as $classRef) {
+				$browserRenderObj = t3lib_div::getUserObj($classRef);
+				if (is_object($browserRenderObj) && method_exists($browserRenderObj, 'isValid') && method_exists($browserRenderObj, 'render')) {
+					if ($browserRenderObj->isValid($this->mode, $this)) {
+						$this->content.= $browserRenderObj->render($this->mode, $this);
+						$browserRendered = true;
+						break;
+					}
+				}
+			}
+		}
+
+			// if type was not rendered use default rendering functions
+		if(!$browserRendered) {
+			$modData = $BE_USER->getModuleData('browse_links.php','ses');
+				// Output the correct content according to $this->mode
+			switch((string)$this->mode)	{
+				case 'rte':
+					$this->content=$this->main_rte();
+				break;
+				case 'db':
+					if (isset($this->expandPage))	{
+						$modData['expandPage']=$this->expandPage;
+						$BE_USER->pushModuleData('browse_links.php',$modData);
+					} else {
+						$this->expandPage=$modData['expandPage'];
+					}
+	
+					$this->content=$this->main_db();
+				break;
+				case 'file':
+				case 'filedrag':
+				case 'folder':
+					if (isset($this->expandFolder))	{
+						$modData['expandFolder']=$this->expandFolder;
+						$BE_USER->pushModuleData('browse_links.php',$modData);
+					} else {
+						$this->expandFolder=$modData['expandFolder'];
+					}
+	
+					$this->content=$this->main_file();
+				break;
+				case 'wizard':
+					$this->content=$this->main_rte(1);
+				break;
+			}
 		}
 	}
 
