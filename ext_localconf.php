@@ -25,6 +25,9 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['typo
 // user function to force typolink creation of every link
 if (!class_exists('user_tinymce_rte')) {
 	class user_tinymce_rte {
+		function isNotAnchor($content,$conf) {
+			return preg_match('/\w*href\s*=\s*"([^"]+)"\s*/i', $content) ? 1 : 0;
+		}
 		function getHref($content,$conf) {
 			if (preg_match('/\w*href\s*=\s*"([^"]+)"\s*/i', $content, $regs))
 				$content = $regs[1];

@@ -25,20 +25,32 @@ lib.parseFunc_RTE {
 }
 
 # function to allow custom link attributes
-lib.parseFunc.tags.a = TEXT
+lib.parseFunc.tags.a = COA
 lib.parseFunc.tags.a {
-  current = 1
-  if.isTrue.current = 1
-  typolink.parameter.data = parameters : allParams
-  typolink.parameter.postUserFunc = user_tinymce_rte->getHref
-  typolink.ATagParams.data = parameters : allParams
-  typolink.ATagParams.postUserFunc = user_tinymce_rte->getATagParams
+	// Parsing of A tag if not an anchor
+	10 = TEXT
+	10.current = 1
+	10.required = 1	// Remove empty links
+	10.typolink.parameter.data = parameters : allParams
+	10.typolink.parameter.postUserFunc = user_tinymce_rte->getHref
+	10.typolink.ATagParams.data = parameters : allParams
+	10.typolink.ATagParams.postUserFunc = user_tinymce_rte->getATagParams
+	10.if.isTrue.data = parameters : allParams
+	10.if.isTrue.postUserFunc = user_tinymce_rte->isNotAnchor
+	
+	// Parsing of A tag if an anchor
+	20 = TEXT
+	20.current = 1
+	20.dataWrap = <a {parameters : allParams}>|</a>
+	20.if.isTrue.data = parameters : allParams
+	20.if.isTrue.postUserFunc = user_tinymce_rte->isNotAnchor
+	20.if.negate = 1
 }
 lib.parseFunc_RTE.tags.a < lib.parseFunc.tags.a
 
-# allow empty links
-lib.parseFunc.tags.link.if.isTrue.current = 1
-lib.parseFunc_RTE.tags.link.if.isTrue.current = 1
+// Remove empty links
+lib.parseFunc.tags.link.required = 1
+lib.parseFunc_RTE.tags.link.required = 1
 
 # allow all values in the FE
 lib.parseFunc.denyTags =
