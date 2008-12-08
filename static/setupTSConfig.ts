@@ -9,6 +9,16 @@ lib.parseFunc_RTE {
 	# DO NOT WRAP THOSE TAGS WITH <p>
 	nonTypoTagStdWrap.encapsLines.encapsTagList = cite, div, p, pre, hr, h1, h2, h3, h4, h5, h6, table
 	
+	# table handling
+	table.stripNL = 1
+	table.stdWrap.HTMLparser = 1
+	table.callRecursive = 1
+	table.callRecursive.tagStdWrap.HTMLparser = 1
+	table.stdWrap.HTMLparser.keepNonMatchedTags = 1
+	# Do NOT add any unwanted p elements in table cells, and do NOT remove any p-elements that have been added by authors!
+	table.HTMLtableCells = 1
+	table.HTMLtableCells.default.stdWrap.parseFunc =< lib.parseFunc 	
+
 	# avoid unwanted p-elements in th/td on the way to FE
 	externalBlocks.table.HTMLtableCells.default >
 	externalBlocks.table.HTMLtableCells.default.stdWrap.parseFunc =< lib.parseFunc

@@ -1,4 +1,4 @@
-//Patch advlink to hide the popup tab as it's not supported in TinyMCE RTE
+//Patch advlink to hide the popup tab
 --- res/tiny_mce/plugins/advlink/link.htm	Sat Oct 25 12:08:29 2008
 +++ res/tiny_mce/plugins/advlink/link.htm	Sun Oct 26 09:29:42 2008
 @@ -15,7 +15,7 @@
