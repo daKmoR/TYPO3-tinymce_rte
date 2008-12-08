@@ -1,0 +1,40 @@
+Patches the advlink plugin to make the popup tab compatible with TYPO3 links
+--- res/tiny_mce/plugins/advlink/js/advlink.js	Sat Nov 22 01:10:13 2008
++++ res/tiny_mce/plugins/advlink/js/advlink.js	Mon Dec 08 18:47:54 2008
+@@ -277,10 +277,11 @@
+ 		return;
+ 	}
+ 
+-	var onclick = "window.open('";
++/*	var onclick = "window.open('";
+ 	var url = formObj.popupurl.value;
+ 
+-	onclick += url + "','";
++	onclick += url + "','";*/
++	var onclick = "window.open(this.href,'";
+ 	onclick += formObj.popupname.value + "','";
+ 
+ 	if (formObj.popuplocation.checked)
+@@ -336,8 +337,8 @@
+ 
+ 	formObj.onclick.value = onclick;
+ 
+-	if (formObj.href.value == "")
+-		formObj.href.value = url;
++/*	if (formObj.href.value == "")
++		formObj.href.value = url; */
+ }
+ 
+ function setAttrib(elm, attrib, value) {
+Patches the advlink plugin to make the popup tab compatible with TYPO3 links
+--- res/tiny_mce/plugins/advlink/link.htm	Mon Dec 08 18:42:25 2008
++++ res/tiny_mce/plugins/advlink/link.htm	Mon Dec 08 18:45:00 2008
+@@ -72,7 +72,7 @@
+ 					<label id="ispopuplabel" for="ispopup">{#advlink_dlg.popup}</label>
+ 
+ 					<table border="0" cellpadding="0" cellspacing="4">
+-						<tr>
++						<tr style="display:none">
+ 							<td nowrap="nowrap"><label for="popupurl">{#advlink_dlg.popup_url}</label>&nbsp;</td>
+ 							<td>
+ 								<table border="0" cellspacing="0" cellpadding="0">

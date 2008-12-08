@@ -277,10 +277,11 @@ function buildOnClick() {
 		return;
 	}
 
-	var onclick = "window.open('";
+/*	var onclick = "window.open('";
 	var url = formObj.popupurl.value;
 
-	onclick += url + "','";
+	onclick += url + "','";*/
+	var onclick = "window.open(this.href,'";
 	onclick += formObj.popupname.value + "','";
 
 	if (formObj.popuplocation.checked)
@@ -336,8 +337,8 @@ function buildOnClick() {
 
 	formObj.onclick.value = onclick;
 
-	if (formObj.href.value == "")
-		formObj.href.value = url;
+/*	if (formObj.href.value == "")
+		formObj.href.value = url; */
 }
 
 function setAttrib(elm, attrib, value) {
