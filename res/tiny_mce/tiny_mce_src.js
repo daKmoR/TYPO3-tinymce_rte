@@ -3,8 +3,8 @@
 
 var tinymce = {
 	majorVersion : '3',
-	minorVersion : '2.1.1',
-	releaseDate : '2008-11-27',
+	minorVersion : '2.1.2',
+	releaseDate : '200x-xx-xx',
 
 	_init : function() {
 		var t = this, d = document, w = window, na = navigator, ua = na.userAgent, i, nl, n, base, p, v;
@@ -969,9 +969,8 @@ tinymce.create('static tinymce.util.XHR', {
 (function() {
 	// Shorten names
 	var each = tinymce.each, is = tinymce.is;
-	var isWebKit = tinymce.isWebKit, isIE = tinymce.isIE, Sizzle;
+	var isWebKit = tinymce.isWebKit, isIE = tinymce.isIE;
 
-	
 	tinymce.create('tinymce.dom.DOMUtils', {
 		doc : null,
 		root : null,
@@ -1150,7 +1149,7 @@ tinymce.create('static tinymce.util.XHR', {
 		select : function(pa, s) {
 			var t = this, cs, c, pl, o = [], x, i, l, n, xp;
 
-			s = t.get(s) || t.doc;
+			s = t.get(s) || t.get(t.settings.root_element) || t.doc;
 
 			// Look for native support and use that if it's found
 			if (s.querySelectorAll) {
@@ -7421,6 +7420,26 @@ var tinyMCE = window.tinyMCE = tinymce.EditorManager;
 				});
 			}
 
+			// Fix gecko link bug, when a link is placed at the end of block elements there is
+			// no way to move the caret behind the link. This fix adds a bogus br element after the link
+			if (isGecko) {
+				function fixLinks(ed, o) {
+					each(ed.dom.select('a'), function(n) {
+						var pn = n.parentNode;
+
+						if (ed.dom.isBlock(pn) && pn.lastChild === n)
+							ed.dom.add(pn, 'br', {'mce_bogus' : 1});
+					});
+				};
+
+				t.onExecCommand.add(function(ed, cmd) {
+					if (cmd === 'CreateLink')
+						fixLinks(ed);
+				});
+
+				t.onSetContent.add(t.selection.onSetContent.add(fixLinks));
+			}
+
 			if (isGecko && !s.readonly) {
 				try {
 					// Design mode must be set here once again to fix a bug where
@@ -10040,7 +10059,7 @@ tinymce.create('tinymce.UndoManager', {
 			t.reOpera = new RegExp('(\\u00a0|&#160;|&nbsp;)<\/' + elm + '>', 'gi');
 			t.rePadd = new RegExp('<p( )([^>]+)><\\\/p>|<p( )([^>]+)\\\/>|<p( )([^>]+)>\\s+<\\\/p>|<p><\\\/p>|<p\\\/>|<p>\\s+<\\\/p>'.replace(/p/g, elm), 'gi');
 			t.reNbsp2BR1 = new RegExp('<p( )([^>]+)>[\\s\\u00a0]+<\\\/p>|<p>[\\s\\u00a0]+<\\\/p>'.replace(/p/g, elm), 'gi');
-			t.reNbsp2BR2 = new RegExp('<p( )([^>]+)>(&nbsp;|&#160;)<\\\/p>|<p>(&nbsp;|&#160;)<\\\/p>'.replace(/p/g, elm), 'gi');
+			t.reNbsp2BR2 = new RegExp('<%p()([^>]+)>(&nbsp;|&#160;)<\\\/%p>|<%p>(&nbsp;|&#160;)<\\\/%p>'.replace(/%p/g, elm), 'gi');
 			t.reBR2Nbsp = new RegExp('<p( )([^>]+)>\\s*<br \\\/>\\s*<\\\/p>|<p>\\s*<br \\\/>\\s*<\\\/p>'.replace(/p/g, elm), 'gi');
 			t.reTrailBr = new RegExp('\\s*<br \\/>\\s*<\\\/p>'.replace(/p/g, elm), 'gi');
 
