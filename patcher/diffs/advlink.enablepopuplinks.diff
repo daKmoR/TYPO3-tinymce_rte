@@ -29,12 +29,12 @@ Patches the advlink plugin to make the popup tab compatible with TYPO3 links
 Patches the advlink plugin to make the popup tab compatible with TYPO3 links
 --- res/tiny_mce/plugins/advlink/link.htm	Mon Dec 08 18:42:25 2008
 +++ res/tiny_mce/plugins/advlink/link.htm	Mon Dec 08 18:45:00 2008
-@@ -72,7 +72,7 @@
+@@ -71,7 +71,7 @@
  					<label id="ispopuplabel" for="ispopup">{#advlink_dlg.popup}</label>
  
  					<table border="0" cellpadding="0" cellspacing="4">
 -						<tr>
 +						<tr style="display:none">
- 							<td nowrap="nowrap"><label for="popupurl">{#advlink_dlg.popup_url}</label>&nbsp;</td>
+ 							<td class="nowrap"><label for="popupurl">{#advlink_dlg.popup_url}</label>&nbsp;</td>
  							<td>
  								<table border="0" cellspacing="0" cellpadding="0">
