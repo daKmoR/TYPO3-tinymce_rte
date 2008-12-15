@@ -1,0 +1,2 @@
+# cat=basic/enable/10; type=options[minimal=EXT:tinymce_rte/static/minimal.ts,basic=EXT:tinymce_rte/static/basic.ts,small=EXT:tinymce_rte/static/small.ts,standard=EXT:tinymce_rte/static/standard.ts,full=EXT:tinymce_rte/static/full.ts]; label=Preset TSConfig. (See manual for differences.)
+loadConfig = EXT:tinymce_rte/static/standard.ts

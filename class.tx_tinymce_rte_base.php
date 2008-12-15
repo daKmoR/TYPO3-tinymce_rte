@@ -30,6 +30,7 @@
  */
  
 require_once(PATH_t3lib.'class.t3lib_rteapi.php');
+require_once(PATH_t3lib.'class.t3lib_tsparser.php');
 require_once(PATH_t3lib.'class.t3lib_cs.php');
 require_once(PATH_t3lib.'class.t3lib_page.php');
 
@@ -108,7 +109,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$this->language = $LANG->lang;
 
 		// language conversion from TLD to iso631
-		if ( array_key_exists($this->language, $LANG->csConvObj->isoArray) )
+		if ( is_array($LANG->csConvObj->isoArray) && array_key_exists($this->language, $LANG->csConvObj->isoArray) )
 			$this->language = $LANG->csConvObj->isoArray[$this->language];
 
 		// check if TinyMCE language file exists
@@ -126,17 +127,23 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			'elements' => 'RTEarea' . $rteId
 		));
 		
+		// override with loadConfig
+		if ( is_file($this->getpath($thisConfig['loadConfig'], 1)) ) {
+			$tsparser = t3lib_div::makeInstance('t3lib_tsparser');
+			$loadConfig = t3lib_TSparser::checkIncludeLines( file_get_contents( $this->getpath($thisConfig['loadConfig'], 1) ) );
+			$tsparser->parse( $loadConfig );
+			$thisConfig = $this->array_merge_recursive_override($tsparser->setup['RTE.']['default.'], $thisConfig);
+		}
+		
 		$config = $this->array_merge_recursive_override($config, $thisConfig);
+		
+		// override with userConfig
 		$config = $this->array_merge_recursive_override($config, $BE_USER->userTS['RTE.']['default.']);
 
 		//resolve EXT pathes for these values
 		$config['init.']['spellchecker_rpc_url'] = $this->getPath($config['init.']['spellchecker_rpc_url']);
 		$config['tiny_mcePath'] = $this->getPath($config['tiny_mcePath']);
 		$config['tiny_mceGzipPath'] = $this->getPath($config['tiny_mceGzipPath']);
-		
-		//do not us the default linkhandler config for tt_news unless it's loaded
-		if ( !t3lib_extmgm::isLoaded('tt_news') )
-			unset($config['linkhandler.']['tt_news.']);
 			
 		return $config;
 	}	

@@ -14,7 +14,7 @@
  * 
  * Example on how to include it:
 RTE.default.init.template_templates {
-	 0 {
+	 10 {
 		title = TYPO3 mod
 		description = Use an TYPO3 mod to get data easily into the the TinyMCE Template System
 		include = EXT:tinymce_rte/res/tinymce_templates/advanced.php

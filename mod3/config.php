@@ -3,9 +3,12 @@
 	unset($MCONF);
 	require ('conf.php');
 	require ($BACK_PATH.'init.php');
+	require_once(t3lib_extMgm::extPath('tinymce_rte').'class.tx_tinymce_rte_base.php');	
 	
-	$RTEsetup = $GLOBALS["BE_USER"]->getTSConfig("RTE",t3lib_BEfunc::getPagesTSconfig("")); 
-	$thisConfig = t3lib_BEfunc::RTEsetup($RTEsetup["properties"],"","");
+	$thisConfig['loadConfig'] = 'EXT:tinymce_rte/static/full.ts';
+	
+	$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
+	$thisConfig = $tinymce_rte->init( $thisConfig );
 	$thisConfig = $thisConfig['spellcheck.'];
 	
 	// General settings

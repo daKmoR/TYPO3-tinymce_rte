@@ -13,6 +13,10 @@ $TYPO3_CONF_VARS['BE']['RTE_reg'][$_EXTKEY] = array('objRef' => 'EXT:'.$_EXTKEY.
 // load default PageTS config from static
 t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/pageTSConfig.ts">');
 
+// Get extension configuration
+$extConf = unserialize($_EXTCONF); 
+t3lib_extMgm::addPageTSConfig('RTE.default.loadConfig = ' . $extConf['loadConfig']);
+
 // load default SetupTS config from static
 t3lib_extMgm::addTypoScript($_EXTKEY,'setup','<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/setupTSConfig.ts">',43);
 
