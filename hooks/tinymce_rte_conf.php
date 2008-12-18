@@ -11,7 +11,6 @@
 		
 	$this->conf['init.'] = array(
 		'plugins' => 'safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,typo3filemanager,template,spellchecker',
-		'language' => 'en',
 		'theme' => 'advanced',
 		'mode' => 'none'
 	);
