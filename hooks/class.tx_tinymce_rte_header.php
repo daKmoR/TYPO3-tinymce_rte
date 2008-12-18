@@ -44,23 +44,19 @@ class tx_tinymce_rte_header {
 	function preStartPageHook($parameters, $pObj) {
 		// Only add JS if this is the top TYPO3 frame/document
 		if ( $pObj->bodyTagId == 'typo3-backend-php' ) {
-			// $pageTSconfig = t3lib_BEfunc::getPagesTSconfig(1);
-			// $this->conf = $pageTSconfig['RTE.']['default.'];
-			
-			include (t3lib_extMgm::extPath('tinymce_rte') . 'hooks/tinymce_rte_conf.php');
-			
 			$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
-			$this->conf = $tinymce_rte->init( $this->conf );
+
+			$pageTSconfig = t3lib_BEfunc::getPagesTSconfig("");
+			$this->conf = $pageTSconfig['RTE.']['default.'];
 			
-			// print_r($this->conf);
-			// die();
+			$this->conf['loadConfig'] = 'EXT:tinymce_rte/static/pageLoad.ts';
+			if ( ($this->conf['pageLoadConfigFile'] != '') && ( is_file($tinymce_rte->getPath($this->conf['pageLoadConfigFile'], 1)) ) )
+				$this->conf['loadConfig'] = $this->conf['pageLoadConfigFile'];
+				
+			$this->conf = $tinymce_rte->init( $this->conf );
+			$this->conf['init.']['mode'] = 'none';
 			
 			$pObj->JScode .= $tinymce_rte->getCoreScript( $this->conf );
-			
-			// print_r( $tinymce_rte->getCoreScript( $this->conf ) );
-			// die();
-			
-			$this->conf['init.']['mode'] = 'none';
 			$pObj->JScode .= $tinymce_rte->getInitScript( $this->conf['init.'] );
 			
 			$pObj->JScode .= '

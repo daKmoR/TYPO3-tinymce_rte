@@ -165,11 +165,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	function getCoreScript( $config ) {
 		$code = '';
 		
-		if ( $config['callbackJavascriptFile'] != '' ) { //add callback javascript file
-			$config['callbackJavascriptFile'] = $this->getPath($config['callbackJavascriptFile']);
-			$code .= '<script type="text/javascript" src="' . $config['callbackJavascriptFile'] . '"></script>';
-		}
-
 		$loaded = ( t3lib_extmgm::isLoaded($config['languagesExtension']) ) ? 1 : 0;
 		if ($config['gzip'])
 			$code .= '
@@ -205,7 +200,14 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @return	array		code incl. script tags
 	 */
 	function getInitScript( $config ) {
-		$code = '
+		$code = '';
+
+		if ( $config['callbackJavascriptFile'] != '' ) { //add callback javascript file
+			$config['callbackJavascriptFile'] = $this->getPath($config['callbackJavascriptFile']);
+			$code .= '<script type="text/javascript" src="' . $config['callbackJavascriptFile'] . '"></script>';
+		}
+
+		$code .= '
 			<script type="text/javascript">
 			/* <![CDATA[ */
 				tinyMCE.init(
