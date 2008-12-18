@@ -67,16 +67,21 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		// include core and typo3filemanager only the first time
 		if ( $parentObject->RTEcounter == 1 ) {
 			$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
-			$code .= $this->getCoreScript( $config );
+//			$code .= $this->getCoreScript( $config );
 		}
 		
-		$code .= $this->getInitScript( $config['init.'] );
+		//$code .= $this->getInitScript( $config['init.'] );
 		
 		//loads the current Value and create the textarea
 		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
-		$code .= $this->triggerField($PA['itemFormElName']);
-		$code .= '<textarea id="RTEarea'.$parentObject->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
+		$code .= $this->getTextarea($parentObject, $PA, $value, $config['init.']);
 		
+		return $code;
+	}
+	
+	function getTextarea($parentObject, $PA, $value, $config) {
+		$code = $this->triggerField($PA['itemFormElName']);
+		$code .= '<textarea onFocus=\'top.tinyMCE.execCommand("mceAddFrameControl", false, { window:self,element_id:"RTEarea'. $parentObject->RTEcounter . '", init : ' . $this->parseConfig($config) . '});\' id="RTEarea'.$parentObject->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
 		return $code;
 	}
 	
@@ -160,7 +165,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		if ( $config['callbackJavascriptFile'] != '' ) { //add callback javascript file
 			$config['callbackJavascriptFile'] = $this->getPath($config['callbackJavascriptFile']);
 			$code .= '<script type="text/javascript" src="' . $config['callbackJavascriptFile'] . '"></script>';
-		}			
+		}
 
 		$loaded = ( t3lib_extmgm::isLoaded($config['languagesExtension']) ) ? 1 : 0;
 		if ($config['gzip'])
@@ -188,7 +193,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		}
 		
 		return $code;
-		
 	}
 	
 	/**
@@ -209,7 +213,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		';
 		return $code;
 	}
-	
 	
 	/**
 	 * alternative to array_merge_recursive (which won't override valuse)

@@ -6649,8 +6649,15 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 
 					tinymce.DOM.doc = w.document;
 					tinymce.DOM.win = w;
+					
+					if (v.init)
+						t.settings = v.init;
+					
+					// you need to add the css files again with frames
+					if (tinymce.DOM.files)
+						tinymce.DOM.files = {};
 
-					ed = new tinymce.Editor(v.element_id, v);
+					ed = new tinymce.Editor(v.element_id, t.settings);
 					ed.render();
 
 					// Fix IE memory leaks

@@ -44,13 +44,33 @@ class tx_tinymce_rte_header {
 	function preStartPageHook($parameters, $pObj) {
 		// Only add JS if this is the top TYPO3 frame/document
 		if ( $pObj->bodyTagId == 'typo3-backend-php' ) {
-			$pageTSconfig = t3lib_BEfunc::getPagesTSconfig(1);
-			$this->conf = $pageTSconfig['RTE.']['default.'];
+			// $pageTSconfig = t3lib_BEfunc::getPagesTSconfig(1);
+			// $this->conf = $pageTSconfig['RTE.']['default.'];
+			
+			include (t3lib_extMgm::extPath('tinymce_rte') . 'hooks/tinymce_rte_conf.php');
 			
 			$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
 			$this->conf = $tinymce_rte->init( $this->conf );
 			
+			// print_r($this->conf);
+			// die();
+			
 			$pObj->JScode .= $tinymce_rte->getCoreScript( $this->conf );
+			
+			// print_r( $tinymce_rte->getCoreScript( $this->conf ) );
+			// die();
+			
+			$this->conf['init.']['mode'] = 'none';
+			$pObj->JScode .= $tinymce_rte->getInitScript( $this->conf['init.'] );
+			
+			$pObj->JScode .= '
+				<script type="text/javascript">
+					function typo3filemanager(field_name, url, type, win) {
+						document.getElementById("content").contentWindow.list_frame.typo3filemanager(field_name, url, type, win);
+					}
+				</script>
+			';
+			
 		}
 	}
 
