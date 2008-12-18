@@ -64,13 +64,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		$config = $this->fixTinyMCETemplates($config, $row);
 		
-		// include core and typo3filemanager only the first time
+		// include typo3filemanager only the first time
 		if ( $parentObject->RTEcounter == 1 ) {
 			$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
-//			$code .= $this->getCoreScript( $config );
 		}
-		
-		//$code .= $this->getInitScript( $config['init.'] );
 		
 		//loads the current Value and create the textarea
 		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
@@ -81,7 +78,13 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	
 	function getTextarea($parentObject, $PA, $value, $config) {
 		$code = $this->triggerField($PA['itemFormElName']);
-		$code .= '<textarea onFocus=\'top.tinyMCE.execCommand("mceAddFrameControl", false, { window:self,element_id:"RTEarea'. $parentObject->RTEcounter . '", init : ' . $this->parseConfig($config) . '});\' id="RTEarea'.$parentObject->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
+		$code .= '<textarea id="RTEarea'.$parentObject->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
+
+		$code .= '
+			<script type="text/javascript">
+				top.tinyMCE.execCommand("mceAddFrameControl", false, { window:self,element_id:"RTEarea'. $parentObject->RTEcounter . '", init : ' . $this->parseConfig($config) . '});
+			</script>
+		';
 		return $code;
 	}
 	
