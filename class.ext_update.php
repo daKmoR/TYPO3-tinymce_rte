@@ -22,8 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-// PHP and TYPO3 version check
-if (intval(phpversion())>=5 || TYPO3_branch>=4.2) {
+// TYPO3 version check
+if (TYPO3_branch>=4.2) {
 	require_once('patcher/class.pmkpatcher.php');
 	require_once(PATH_typo3.'contrib/jsmin/jsmin.php');
 }
