@@ -33,15 +33,15 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/template.php']['preStartPageHoo
 if (!class_exists('user_tinymce_rte')) {
 	class user_tinymce_rte {
 		function isNotAnchor($content,$conf) {
-			return preg_match('/\w*href\s*=\s*"([^"]+)"\s*/i', $content) ? 1 : 0;
+			return preg_match('/\s*href\s*=\s*"[^"]+"\s*/i', $content) ? 1 : 0;
 		}
 		function getHref($content,$conf) {
-			if (preg_match('/\w*href\s*=\s*"([^"]+)"\s*/i', $content, $regs))
+			if (preg_match('/\s*href\s*=\s*"([^"]+)"\s*/i', $content, $regs))
 				$content = $regs[1];
 			return $content;
 		}
 		function getATagParams($content,$conf) {
-			return preg_replace('/\w*href\s*=\s*"([^"]+)"\s*/i', '', $content);
+			return preg_replace('/\s*href\s*=\s*"[^"]+"\s*/i', ' ', $content);
 		}
 	}
 }
