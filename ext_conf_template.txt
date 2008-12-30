@@ -2,4 +2,4 @@
 loadConfig = EXT:tinymce_rte/static/standard.ts
 
   # cat=basic/enable; type=string; label=If you want to change the way TinyMCE is loaded on TYPO3 init you can give it a another loading config
-pageLoadConfigFile = EXT:tinymce_rte/static/pageLoad.ts
+pageLoadConfigFile =

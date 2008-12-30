@@ -48,7 +48,6 @@ RTE.default.init.template_templates {
 			</tr>
 	';
 	while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {		 
-		$is_admin = ($row['admin']) ? 'yes' : 'no';
 		$this->content .= '<tr><td>' . $row['uid'] . '</td><td>' . $row['title'] . '</td></tr>';
 	}	
 	$this->content .= '</table>';
