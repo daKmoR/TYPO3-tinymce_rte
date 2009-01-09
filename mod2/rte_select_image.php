@@ -502,6 +502,14 @@ class SC_rte_select_image {
 			// Upload
 			// ***************************
 
+				// File-folders:	
+			$foldertree = t3lib_div::makeInstance("localFolderTree");
+			$tree=$foldertree->getBrowsableTree();
+			$this->content.= '<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+			<tr>
+				<td valign="top" style="width: 100%;"><fieldset><legend>'.$LANG->getLL("folderTree").'</legend><div style="overflow: hidden;"><table><tr><td>'.$tree.'</td></tr></table></div></fieldset></td>
+			</tr>
+			</table>';
 			$fileProcessor = t3lib_div::makeInstance("t3lib_basicFileFunctions");
 			$fileProcessor->init($FILEMOUNTS, $TYPO3_CONF_VARS["BE"]["fileExtensions"]);
 			$path=t3lib_div::_GP("expandFolder");
