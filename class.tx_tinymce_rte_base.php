@@ -56,11 +56,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		$config = $this->init($thisConfig, $parentObject->RTEcounter);
 		
-		$row['ISOcode'] = $parentObject->cachedLanguageFlag[$table . ':' . $row['uid']][$row['sys_language_uid']]['ISOcode'];
-		if ( !$row['ISOcode'] ) {
-			$setupTS = $this->getSetupTS( $row['pid'] );
-			$row['ISOcode'] = ( (strtolower($setupTS['config.']['language']) == 'en') || !$setupTS['config.']['language'] ) ? 'default' : $setupTS['config.']['language'];
-		}
+		// get the language code of the Content Element
+		$row['ISOcode'] = $parentObject->getAvailableLanguages();
+		$row['ISOcode'] = strtolower( $row['ISOcode'][$row['sys_language_uid']]['ISOcode'] );
+		$row['ISOcode'] = ( $row['ISOcode'] == 'en') ? 'default' : $row['ISOcode'];
 		
 		$config = $this->fixTinyMCETemplates($config, $row);
 		
