@@ -10,6 +10,8 @@ RTE.default {
 	# languagesExtension = tinymce_rte
 	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
 	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
+	# set the language to the same value as the default FE language
+	defaultLanguageFE = en
 }
 
 RTE.default.init {

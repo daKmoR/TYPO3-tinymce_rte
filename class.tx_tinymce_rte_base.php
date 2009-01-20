@@ -59,6 +59,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		// get the language code of the Content Element
 		$row['ISOcode'] = $parentObject->getAvailableLanguages();
 		$row['ISOcode'] = strtolower( $row['ISOcode'][$row['sys_language_uid']]['ISOcode'] );
+		if ( ($row['ISOcode'] == 'def') || ($row['ISOcode'] == 'default') )
+			$row['ISOcode'] = $config['defaultLanguageFE'];
 		$row['ISOcode'] = ( $row['ISOcode'] == 'en') ? 'default' : $row['ISOcode'];
 		
 		$config = $this->fixTinyMCETemplates($config, $row);
