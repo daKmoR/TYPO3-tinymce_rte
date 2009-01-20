@@ -36,6 +36,7 @@ require_once(PATH_t3lib.'class.t3lib_page.php');
 
 class tx_tinymce_rte_base extends t3lib_rteapi {
 
+
 	/**
 	 * Draws the RTE
 	 *
@@ -53,6 +54,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 */
 	function drawRTE($parentObject, $table, $field, $row, $PA, $specConf, $thisConfig, $RTEtypeVal, $RTErelPath, $thePidValue) {
 		$code = '';
+		$parentObject->RTEcounter = rand();
 		
 		$config = $this->init($thisConfig, $parentObject->RTEcounter);
 		
@@ -66,9 +68,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$config = $this->fixTinyMCETemplates($config, $row);
 		
 		// include typo3filemanager only the first time
-		if ( $parentObject->RTEcounter == 1 ) {
+		//if ( $parentObject->RTEcounter == 1 ) {
 			$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
-		}
+		//}
 		
 		//loads the current Value and create the textarea
 		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
