@@ -375,7 +375,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 							tab = "plain";
 							var current = "&expandFolder=' . rawurlencode($this->getPath('./',1)) . '" + encodeURIComponent(url.substr(0,url.lastIndexOf("/")));
 							if ( (url.indexOf("RTEmagicC_") > -1) || (url == "") ) {
-								current = "&expandFolder=' . rawurlencode($this->getPath('./fileadmin/',1)) . '";
+								current = "&expandFolder=' . rawurlencode($this->getPath($config['typo3filemanager.']['defaultImagePath'],1)) . '";
 								tab = "magic";
 							}
 							if ( url == "" ) tab = "' . $config['typo3filemanager.']['defaultImageTab'] . '";

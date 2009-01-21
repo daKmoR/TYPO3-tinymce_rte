@@ -61,6 +61,7 @@ RTE.default {
 		defaultTab = page
 		# possible values for defaultImageTab = magic,plain,upload
 		defaultImageTab = magic
+		defaultImagePath = ./fileadmin/
 		# in the imagebrowser how big should the thumbnails be
 		thumbs.width = 200
 		thumbs.height = 150
