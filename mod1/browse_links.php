@@ -661,12 +661,11 @@ class SC_browse_links {
 		}
 			// init hook objects:
 		
-		
 		$this->hookObjects = array();
-		if(intval(phpversion())>=5) {
+		if ( (intval(phpversion()) >= 5) && (TYPO3_branch > 4.1) )
 			include_once('include_php5.inc');
-		} else	include_once('include_php4.inc');
-		
+		else
+			include_once('include_php4.inc');
 
 			// Site URL
 		$this->siteURL = t3lib_div::getIndpEnv('TYPO3_SITE_URL');	// Current site url
