@@ -3,7 +3,7 @@
 ########################################################################
 # Extension Manager/Repository config file for ext: "tinymce_rte"
 #
-# Auto generated 04-02-2009 10:04
+# Auto generated 04-02-2009 10:15
 #
 # Manual updates:
 # Only the data in the array - anything else is removed by next write.
@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'description' => 'An advanced integration of TinyMCE which supports all TinyMCE plugins and languages.',
 	'category' => 'be',
 	'shy' => 0,
-	'version' => '0.2.1',
+	'version' => '0.3.0',
 	'dependencies' => 'cms',
 	'conflicts' => 'ch_rterecords,dam,linkhandler,rtehtmlarea,rte_tinymce,tinyrteru,tinyrte',
 	'priority' => '',
