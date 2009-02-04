@@ -67,10 +67,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		$config = $this->fixTinyMCETemplates($config, $row);
 		
-		// include typo3filemanager only the first time
-		//if ( $parentObject->RTEcounter == 1 ) {
-			$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
-		//}
+		$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
 		
 		//loads the current Value and create the textarea
 		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
@@ -264,7 +261,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @return	string	javascript object in JSON
 	 */
 	function parseConfig($config) {
-		$code = t3lib_div::array2json($this->fixTSArray($config));
+		if (version_compare(PHP_VERSION, '5.2.0') < 0 )
+			$code = t3lib_div::array2json($this->fixTSArray($config));
+		else
+			$code = json_encode($this->fixTSArray($config));
 		return str_replace( array('"false"', '"true"'), array('false', 'true'), $code);
 	}
 	
