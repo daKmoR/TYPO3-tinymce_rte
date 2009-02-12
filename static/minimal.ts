@@ -1,5 +1,3 @@
-<INCLUDE_TYPOSCRIPT: source="FILE:EXT:tinymce_rte/static/common.ts">
-
 RTE.default.init {
 	plugins = inlinepopups
 	theme_advanced_buttons1 = bold,italic,underline,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink

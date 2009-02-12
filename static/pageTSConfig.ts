@@ -1,4 +1,6 @@
 # needs any non TS line on top
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:tinymce_rte/static/common.ts">
+
 RTE.default {
 	loadConfig = EXT:tinymce_rte/static/standard.ts
 }
