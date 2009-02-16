@@ -119,6 +119,8 @@ RTE.default.proc {
 			hr.allowedAttribs = class, style
 			br.allowedAttribs = class, style
 			table.allowedAttribs = class, style, id, border, cellpadding, cellspacing
+			thead.allowedAttribs = class, style
+			tfoot.allowedAttribs = class, style
 			b.allowedAttribs = xml:lang
 			blockquote.allowedAttribs = xml:lang
 			cite.allowedAttribs = xml:lang
