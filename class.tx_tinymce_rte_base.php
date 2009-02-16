@@ -68,10 +68,16 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$config = $this->fixTinyMCETemplates($config, $row);
 		
 		$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
+
+		//add callback javascript file
+		if ( $config['callbackJavascriptFile'] != '' ) {
+			$config['callbackJavascriptFile'] = $this->getPath($config['callbackJavascriptFile']);
+			$code .= '<script type="text/javascript" src="' . $config['callbackJavascriptFile'] . '"></script>';
+		}
 		
 		//loads the current Value and create the textarea
 		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
-		$code .= $this->getTextarea($parentObject, $PA, $value, $config['init.']);
+		$code .= $this->getTextarea($parentObject, $PA, $value, $config);
 		
 		return $code;
 	}
@@ -79,12 +85,17 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	function getTextarea($parentObject, $PA, $value, $config) {
 		$code = $this->triggerField($PA['itemFormElName']);
 		$code .= '<textarea id="RTEarea'.$parentObject->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
-
-		$code .= '
-			<script type="text/javascript">
-				top.tinyMCE.execCommand("mceAddFrameControl", false, { window:self,element_id:"RTEarea'. $parentObject->RTEcounter . '", init : ' . $this->parseConfig($config) . '});
-			</script>
-		';
+		
+		if ( !$config['useFEediting'] ) {
+			$code .= '
+				<script type="text/javascript">
+					top.tinyMCE.execCommand("mceAddFrameControl", false, { window:self,element_id:"RTEarea'. $parentObject->RTEcounter . '", init : ' . $this->parseConfig($config['init.']) . '});
+				</script>
+			';
+		} else {
+			$code .= $this->getCoreScript( $config );
+			$code .= $this->getInitScript( $config['init.'] );
+		}
 		return $code;
 	}
 	
@@ -202,11 +213,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	function getInitScript( $config ) {
 		$code = '';
 
-		if ( $config['callbackJavascriptFile'] != '' ) { //add callback javascript file
-			$config['callbackJavascriptFile'] = $this->getPath($config['callbackJavascriptFile']);
-			$code .= '<script type="text/javascript" src="' . $config['callbackJavascriptFile'] . '"></script>';
-		}
-
 		$code .= '
 			<script type="text/javascript">
 			/* <![CDATA[ */
@@ -265,6 +271,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$code = t3lib_div::array2json($this->fixTSArray($config));
 		else
 			$code = json_encode($this->fixTSArray($config));
+
+		// remove quotes around the setup call
+		$code = preg_replace('/("setup":)\s*"(.+?)"(,")/i', '\1\2\3', $code);		
 		return str_replace( array('"false"', '"true"'), array('false', 'true'), $code);
 	}
 	

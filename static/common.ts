@@ -12,6 +12,8 @@ RTE.default {
 	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
 	# set the language to the same value as the default FE language
 	defaultLanguageFE = en
+	# just a dummy until I find out howto automatically detect FE editing mode
+	useFEediting = 0
 	
 	typo3filemanager {
 		# width/height of the typo3filemanger popup
