@@ -20,6 +20,9 @@ t3lib_extMgm::addPageTSConfig('
 	RTE.default.pageLoadConfigFile = ' . $extConf['pageLoadConfigFile']
 );
 
+if ( $extConf['loadConfig'] === 'EXT:tinymce_rte/static/full.ts' )
+	t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/full_include.ts">');
+
 // load default SetupTS config from static
 t3lib_extMgm::addTypoScript($_EXTKEY,'setup','<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/setupTSConfig.ts">',43);
 
