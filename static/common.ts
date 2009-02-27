@@ -139,6 +139,10 @@ RTE.default.proc {
 
 		# PROTECT CUSTOM TAGS
 		keepNonMatchedTags = protect
+
+		# XHTML COMPLIANCE
+		# Note that applying xhtml_cleaning on exit would break non-standard attributes of typolink tags
+		xhtml_cleaning = 1	
 	}
 	
 	HTMLparser_db {
@@ -146,10 +150,6 @@ RTE.default.proc {
 		# If this list of tags is not set, it will default to: b,i,u,br,center,hr,sub,sup,strong,em,li,ul,ol,blockquote,strike.
 		# However, we want to keep xml:lang attribute on most tags and tags from the default list where cleaned on entry.
 		noAttrib = 
-
-		# XHTML COMPLIANCE
-		# Note that applying xhtml_cleaning on exit would break non-standard attributes of typolink tags
-		xhtml_cleaning = 1
 	}
 
 	exitHTMLparser_db = 1
