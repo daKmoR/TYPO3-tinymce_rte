@@ -40,7 +40,7 @@ if (!class_exists('user_tinymce_rte')) {
 		}
 		function getHref($content,$conf) {
 			if (preg_match('/\s*href\s*=\s*"([^"]+)"\s*/i', $content, $regs))
-				$content = $regs[1];
+				$content = htmlspecialchars_decode($regs[1]);
 			return $content;
 		}
 		function getATagParams($content,$conf) {
