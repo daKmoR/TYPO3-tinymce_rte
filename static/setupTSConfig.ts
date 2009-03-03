@@ -37,10 +37,11 @@ lib.parseFunc_RTE {
 # function to allow custom link attributes
 lib.parseFunc.tags.a = COA
 lib.parseFunc.tags.a {
-	// Parsing of A tag if not an anchor
+	# Parsing of A tag if not an anchor
 	10 = TEXT
 	10.current = 1
-	10.required = 1	// Remove empty links
+	# Remove empty links
+	10.required = 1	
 	10.typolink.parameter.data = parameters : allParams
 	10.typolink.parameter.postUserFunc = user_tinymce_rte->getHref
 	10.typolink.ATagParams.data = parameters : allParams
@@ -48,7 +49,7 @@ lib.parseFunc.tags.a {
 	10.if.isTrue.data = parameters : allParams
 	10.if.isTrue.postUserFunc = user_tinymce_rte->isNotAnchor
 	
-	// Parsing of A tag if an anchor
+	# Parsing of A tag if an anchor
 	20 = TEXT
 	20.current = 1
 	20.dataWrap = <a {parameters : allParams}>|</a>
@@ -58,7 +59,7 @@ lib.parseFunc.tags.a {
 }
 lib.parseFunc_RTE.tags.a < lib.parseFunc.tags.a
 
-// Remove empty links
+# Remove empty links
 lib.parseFunc.tags.link.required = 1
 lib.parseFunc_RTE.tags.link.required = 1
 
