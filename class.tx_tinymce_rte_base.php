@@ -87,9 +87,12 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$code .= '<textarea id="RTEarea'.$parentObject->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
 		
 		if ( !$config['useFEediting'] ) {
+			$config['init.']['window'] = 'self';
+			$config['init.']['element_id'] = 'RTEarea' . $parentObject->RTEcounter;
+			$config['init.']['reAddCss'] = 'true';
 			$code .= '
 				<script type="text/javascript">
-					top.tinyMCE.execCommand("mceAddFrameControl", false, { window:self,element_id:"RTEarea'. $parentObject->RTEcounter . '", init : ' . $this->parseConfig($config['init.']) . '});
+					top.tinyMCE.execCommand("mceAddFrameControl", false, ' . $this->parseConfig($config['init.']) . ');
 				</script>
 			';
 		} else {
@@ -273,8 +276,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$code = json_encode($this->fixTSArray($config));
 
 		// remove quotes around the setup call
-		$code = preg_replace('/("setup":)\s*"(.+?)"(,")/i', '\1\2\3', $code);		
-		return str_replace( array('"false"', '"true"'), array('false', 'true'), $code);
+		$code = preg_replace('/("setup":)\s*"(.+?)"(,")/i', '\1\2\3', $code);
+		return str_replace( array('"false"', '"true"', '"self"'), array('false', 'true', 'self'), $code);
 	}
 	
 	/**
