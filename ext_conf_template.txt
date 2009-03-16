@@ -1,5 +1,5 @@
-	# cat=basic/enable/10; type=options[minimal=EXT:tinymce_rte/static/minimal.ts,basic=EXT:tinymce_rte/static/basic.ts,small=EXT:tinymce_rte/static/small.ts,standard=EXT:tinymce_rte/static/standard.ts,full=EXT:tinymce_rte/static/full.ts]; label=Preset TSConfig. (See manual for differences) [can always be overruled by RTE.default.loadConfig in pageTS]
+# cat=basic/enable/10; type=options[minimal=EXT:tinymce_rte/static/minimal.ts,small=EXT:tinymce_rte/static/small.ts,standard=EXT:tinymce_rte/static/standard.ts,full=EXT:tinymce_rte/static/full.ts]; label=Preset TSConfig. (See manual for differences) [can always be overruled by RTE.default.loadConfig in pageTS]
 loadConfig = EXT:tinymce_rte/static/standard.ts
 
-  # cat=basic/enable; type=string; label=If you want to change the way TinyMCE is loaded on TYPO3 init you can give it a another loading config
+# cat=basic/enable; type=string; label=If you want to change the way TinyMCE is loaded on TYPO3 init you can give it a another loading config
 pageLoadConfigFile =
