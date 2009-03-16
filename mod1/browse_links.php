@@ -1014,7 +1014,7 @@ RTE.default.linkhandler {
 			
 			// render type by user func
 		$browserRendered = false;
-		if (is_array ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'])) {
+		/*if (is_array ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'] as $classRef) {
 				$browserRenderObj = t3lib_div::getUserObj($classRef);
 				if (is_object($browserRenderObj) && method_exists($browserRenderObj, 'isValid') && method_exists($browserRenderObj, 'render')) {
@@ -1025,7 +1025,7 @@ RTE.default.linkhandler {
 					}
 				}
 			}
-		}
+		}*/
 
 			// if type was not rendered use default rendering functions
 		if(!$browserRendered) {
