@@ -14,6 +14,8 @@ RTE.default {
 	defaultLanguageFE = en
 	# just a dummy until I find out howto automatically detect FE editing mode
 	useFEediting = 0
+	# forces UTF8 on all key values of the configuration (neede if you save non standard chars in your config files as ANSI)
+	forceUTF8 = 1
 	
 	typo3filemanager {
 		# width/height of the typo3filemanger popup

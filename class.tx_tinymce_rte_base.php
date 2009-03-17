@@ -36,6 +36,7 @@ require_once(PATH_t3lib.'class.t3lib_page.php');
 
 class tx_tinymce_rte_base extends t3lib_rteapi {
 
+	var $forceUTF8 = true;
 
 	/**
 	 * Draws the RTE
@@ -162,11 +163,14 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		// override with userConfig
 		$config = $this->array_merge_recursive_override($config, $BE_USER->userTS['RTE.']['default.']);
 
-		//resolve EXT pathes for these values
+		// resolve EXT pathes for these values
 		$config['init.']['spellchecker_rpc_url'] = $this->getPath($config['init.']['spellchecker_rpc_url']);
 		$config['tiny_mcePath'] = $this->getPath($config['tiny_mcePath']);
 		$config['tiny_mceGzipPath'] = $this->getPath($config['tiny_mceGzipPath']);
-			
+		
+		// defines if you want to force UTF8 on every config entry
+		$this->forceUTF8 = $config['forceUTF8'] ? true : false;
+		
 		return $config;
 	}	
 	
@@ -250,7 +254,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	}
 
 	/**
-	 * creates an valid array that can be parced (recursive)
+	 * creates an valid array that can be parsed (recursive)
+	 * removes "." from array keys and ensure that array values are in UTF-8 format
 	 * 
 	 * @param	array		config array to be fixed
 	 * @return	array		fixed array
@@ -258,9 +263,24 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	function fixTSArray($config) {
 		$output = array();
 		foreach($config as $key => $value) {
-			$output[trim($key,'.')] = is_array($value) ? $this->fixTSArray($value) : $value;
+			if( is_array($value) )
+				$output[trim($key,'.')] = $this->fixTSArray($value);
+			elseif ( $this->forceUTF8 === true )
+				$output[trim($key,'.')] = $this->isUTF8($value) ? $value : utf8_encode($value);
+			else
+				$output[trim($key,'.')] = $value;
 		}
 		return $output;
+	}
+	
+	/**
+	 * Check if string is in UTF-8 format
+	 * 
+	 * @param	array	string to check
+	 * @return	boolean	true if string is valid utf-8
+	 */
+	function isUTF8($str) {
+		return preg_match('/\A(?:([\09\0A\0D\x20-\x7E]|[\xC2-\xDF][\x80-\xBF]|\xE0[\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}|\xED[\x80-\x9F][\x80-\xBF]|\xF0[\x90-\xBF][\x80-\xBF]{2}|[\xF1-\xF3][\x80-\xBF]{3}|\xF4[\x80-\x8F][\x80-\xBF]{2})*)\Z/x', $str);
 	}
 
 	/**
