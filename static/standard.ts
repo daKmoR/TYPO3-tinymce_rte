@@ -1,4 +1,9 @@
 RTE.default.init {
+	# define a stylesheet
+  # content_css = fileadmin/templates/main/css/screen.css
+	# define styles and how they are displayed in the rte
+  # theme_advanced_styles = Display Name=cssClassName;seperated=with;another Class=otherClass;
+	
 	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,typo3filemanager
 	theme_advanced_buttons1 = newdocument,|,undo,redo,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,pastetext,pasteword,|,search,replace,|,fullscreen,|,cleanup,nonbreaking
 	theme_advanced_buttons2 = link,typo3link,unlink,|,image,typo3image,|,tablecontrols
