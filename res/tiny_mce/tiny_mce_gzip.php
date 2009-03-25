@@ -163,7 +163,7 @@
 	}
 
 	function getFileContents($path) {
-		$path = realpath($path);
+		$path = @realpath($path);
 
 		if (!$path || !@is_file($path))
 			return "";
