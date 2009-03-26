@@ -1,0 +1,11 @@
+//Patch advlink to add support for Shadowbox REL attribute
+--- res/tiny_mce/plugins/advlink/link.htm	Sun Dec 14 22:51:06 2008
++++ res/tiny_mce/plugins/advlink/link.htm	Sun Dec 14 22:51:06 2008
+@@ -198,6 +198,7 @@
+ 							<td><select id="rel" name="rel"> 
+ 									<option value="">{#not_set}</option> 
+ 									<option value="lightbox">Lightbox</option> 
++									<option value="shadowbox;player=iframe">Shadowbox</option> 
+ 									<option value="alternate">Alternate</option> 
+ 									<option value="designates">Designates</option> 
+ 									<option value="stylesheet">Stylesheet</option> 
