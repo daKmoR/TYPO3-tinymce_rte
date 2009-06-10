@@ -6,6 +6,7 @@ RTE.default {
 }
 
 RTE.default.FE >
+RTE.default.FE < RTE.default
 RTE.default.FE {
 	loadConfig = EXT:tinymce_rte/static/minimal.ts
 	init {
