@@ -57,17 +57,19 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$code = '';
 		$parentObject->RTEcounter = rand();
 		
-		$config = $this->init($thisConfig, $parentObject->RTEcounter);
-		
 		// get the language code of the Content Element
 		$row['ISOcode'] = $parentObject->getAvailableLanguages();
 		$row['ISOcode'] = strtolower( $row['ISOcode'][$row['sys_language_uid']]['ISOcode'] );
+		
+		$this->cfgOrder = $this->getConfigOrder($table, $row);
+		$this->currentPage = $row['pid'];
+		$config = $this->init($thisConfig, $parentObject->RTEcounter);
+		
 		if ( $row['ISOcode'] == 'def' )
 			$row['ISOcode'] = $config['defaultLanguageFE'];
 		$row['ISOcode'] = ( $row['ISOcode'] == 'en') ? 'default' : $row['ISOcode'];
 		
 		$config = $this->fixTinyMCETemplates($config, $row);
-		
 		$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
 
 		//add callback javascript file
@@ -150,12 +152,37 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			'elements' => 'RTEarea' . $rteId
 		));
 		
+		if (!$this->cfgOrder) 
+			$this->cfgOrder = array('default');
+			
 		// override with loadConfig
 		if ( is_file($this->getpath($thisConfig['loadConfig'], 1)) ) {
 			$tsparser = t3lib_div::makeInstance('t3lib_tsparser');
 			$loadConfig = t3lib_TSparser::checkIncludeLines( file_get_contents( $this->getpath($thisConfig['loadConfig'], 1) ) );
 			$tsparser->parse( $loadConfig );
 			$thisConfig = $this->array_merge_recursive_override($tsparser->setup['RTE.']['default.'], $thisConfig);
+			
+			$pageTs = t3lib_BEfunc::getPagesTSconfig($this->currentPage);
+			// Merge configs
+			foreach ($this->cfgOrder as $order) {
+				$order = explode('.',$order);
+				switch (count($order)) {
+					case 5:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
+					break;
+					case 3:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
+					break;
+					default:
+						$tsc = $pageTs['RTE.'][$order[0].'.'];
+					break;
+				}
+				if (isset($tsc)) {
+					$thisConfig = $this->array_merge_recursive_override($thisConfig, $tsc);
+				}
+			}
+			unset($thisConfig['field.']);
+			unset($thisConfig['lang.']);
 		}
 		
 		$config = $this->array_merge_recursive_override($config, $thisConfig);
@@ -173,6 +200,48 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		return $config;
 	}	
+	
+	/**
+	 * Returns the BE location of the RTE
+	 *
+	 * @param	string		The table name
+	 * @param	array		The current row from which field is being rendered
+	 * @return	array		Config order!
+	 */
+	function getConfigOrder($table,$row) {
+		// Initial location is set to: Default config, then the table name
+		$where = array('default.lang.'.$row['ISOcode'],'default',$table.'.lang.'.$row['ISOcode'],$table);
+		
+		// Custom location based on table name
+		switch ($table) {
+			case 'tt_content':
+				// location based on tablename + tt_content column position is added
+				$where[] = $table.'.field.colPos'.$row['colPos'].'.lang.'.$row['ISOcode'];
+				$where[] = $table.'.field.colPos'.$row['colPos'];
+				
+				// TemplaVoila is installed
+				if (t3lib_extMgm::isLoaded('templavoila')) {
+					require_once(t3lib_extMgm::extPath('templavoila').'class.tx_templavoila_api.php');
+					$tvAPI = t3lib_div::makeInstance('tx_templavoila_api');
+					
+					// Add all nested TV fields to location
+					$tmp = array();
+					$flex = array('table' => $table, 'uid' => $row['uid']);
+					while ($flex['table'] == $table) {
+						$flex = array_shift($tvAPI->flexform_getPointersByRecord($flex['uid'], $row['pid']));
+						// location based on tablename + TV field name is added
+						// Note: Language location must be added last here as array is reversed later
+						$tmp[] = $table.'.field.'.$flex['field'];
+						$tmp[] = $table.'.field.'.$flex['field'].'.lang.'.$row['ISOcode'];
+					}
+					$where = array_merge($where,array_reverse($tmp));
+				}
+			break;
+		}
+		// A hook could be inserted here, to allow pre-processing of custom tables
+		
+		return $where;
+	}
 	
 	/**
 	 * including of all nessecary core files (gzip or seperate, additional language files, callbackJS)
