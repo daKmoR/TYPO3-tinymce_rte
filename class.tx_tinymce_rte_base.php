@@ -246,7 +246,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				$tmp = $_procObj->process_table_configuration($table, $row);
 				$where = array_merge($where, $tmp);
 			}
-			debug($where);
 		}
 		
 		return $where;
