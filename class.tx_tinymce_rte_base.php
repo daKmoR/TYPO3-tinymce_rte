@@ -238,7 +238,16 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				}
 			break;
 		}
-		// A hook could be inserted here, to allow pre-processing of custom tables
+		// A hook  to allow pre-processing of custom tables
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tinymce_rte']['processTableConfiguration'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['tinymce_rte']['processTableConfiguration'] as $_classRef) {
+				$_procObj = &t3lib_div::getUserObj($_classRef);
+				$tmp = array();
+				$tmp = $_procObj->process_table_configuration($table, $row);
+				$where = array_merge($where, $tmp);
+			}
+			debug($where);
+		}
 		
 		return $where;
 	}
