@@ -715,14 +715,17 @@ class SC_browse_links {
 				} elseif (strstr($this->curUrlArray['href'], 'record:')) {
 					$handel = t3lib_div::trimExplode(':',$this->curUrlArray['href']);
 					
-					if ( is_array($this->thisConfig['linkhandler.'][$handel[1] . "."]) ) {
+					if ( is_array($this->thisConfig['linkhandler.'][$handel[1] . '.']) ) {
 					
-						if ($this->thisConfig['linkhandler.'][$handel[1] . "."]['storage']) {
-							$this->curUrlInfo['info'] = $this->thisConfig['linkhandler.'][$handel[1] . "."]['storage'];
+						$row = t3lib_BEfunc::getRecord($handel[1],$handel[2]);
+						if ( is_array($this->thisConfig['linkhandler.'][$handel[1] . '.'][$row['pid'] . '.']) ) {
+							$this->curUrlInfo['info'] = $row['pid'];
 							$this->curUrlInfo['pageid'] = $this->curUrlInfo['info'];
 							$this->expandPage();
-						}	else
+						}
+						else {
 							$this->curUrlInfo = array();
+						}
 						$this->curUrlInfo['cElement'] = $handel[2];
 					} else {
 						echo "in PageTSconfig you should define RTE.default.linkhandler." . $handel[1];
@@ -730,16 +733,17 @@ class SC_browse_links {
 						echo "<pre>
 RTE.default.linkhandler {
 	tt_news {
-		# id of the Single News Page
-		parameter = 27
-		# id of the Storage folder containing the news (just used to mark already selected news) [set 'storage >' if unsure or the user can select from more than one Storage Folder]
-		storage = 25
-		additionalParams = &tx_ttnews[tt_news]={field:uid}
-		additionalParams.insertData = 1
-		# you need: uid, hidden, header [this is the displayed title] (use xx as header to select other properties)
-		# you can provide: bodytext [alternative title], starttime, endtime [to display the current status]
-		select = uid,title as header,hidden,starttime,endtime,bodytext
-		sorting = crdate
+		default {
+			# instead of default you could write the id of the storage folder
+			# id of the Single News Page
+			parameter = 27
+			additionalParams = &tx_ttnews[tt_news]={field:uid}
+			additionalParams.insertData = 1
+			# you need: uid, hidden, header [this is the displayed title] (use xx as header to select other properties)
+			# you can provide: bodytext [alternative title], starttime, endtime [to display the current status]
+			select = uid,title as header,hidden,starttime,endtime,bodytext
+			sorting = crdate
+		}
 	}
 }
 </pre>";
@@ -1632,8 +1636,16 @@ RTE.default.linkhandler {
 			$out.=$picon.'<br />';
 			
 			$queries = array('tt_content.' => array('sorting' => 'colpos,sorting', 'select' => 'uid,header,hidden,starttime,endtime,fe_group,CType,colpos,bodytext' ));
-			if( is_array($this->thisConfig['linkhandler.']) )
-				$queries = array_merge($queries, $this->thisConfig['linkhandler.']);
+			if( is_array($this->thisConfig['linkhandler.']) ) {
+				foreach ($this->thisConfig['linkhandler.'] as $k => $v) {
+					if (is_array($this->thisConfig['linkhandler.'][$k][$this->expandPage . '.'])) {
+						$queries = array_merge($queries, array($k => $this->thisConfig['linkhandler.'][$k][$this->expandPage . '.']));
+					}
+					else if (is_array($this->thisConfig['linkhandler.'][$k]['default.'])) {
+						$queries = array_merge($queries, array($k => $this->thisConfig['linkhandler.'][$k]['default.']));
+					}
+				}
+			}
 			
 			foreach ($queries as $table => $query) {
 				// set some mandatory default values

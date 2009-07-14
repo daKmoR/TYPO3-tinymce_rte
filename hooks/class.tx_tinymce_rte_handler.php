@@ -53,11 +53,14 @@ class tx_tinymce_rte_handler {
 		$localcObj->start($row, '');
 		
 		$lconf = array();
-		$lconf = $linkConfig[$linkHandlerData[0].'.'];
+		if (is_array($linkConfig[$linkHandlerData[0].'.'][$row['pid'].'.']))
+			$lconf = $linkConfig[$linkHandlerData[0].'.'][$row['pid'].'.'];
+		else
+			$lconf = $linkConfig[$linkHandlerData[0].'.']['default.'];
 		$lconf['ATagParams'] = $this->pObj->getATagParams($conf);
 		
 		// remove the tinymce_rte specific attributes
-		unset( $lconf['select'], $lconf['sorting'], $lconf['storage'] );
+		unset( $lconf['select'], $lconf['sorting'] );
 		
 		return $localcObj->typoLink($linktxt, $lconf);
 	}
