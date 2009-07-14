@@ -297,6 +297,15 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 
 		// remove quotes around the setup call
 		$code = preg_replace('/("setup":)\s*"(.+?)"(,")/i', '\1\2\3', $code);
+		// remove quotes from numeric values
+		$code = preg_replace('/(.*"theme_advanced_resizing_max_width"\s*:\s*)"(.*?)"(.*)/', '\1\2\3', $code);
+		$code = preg_replace('/(.*"theme_advanced_resizing_min_width"\s*:\s*)"(.*?)"(.*)/', '\1\2\3', $code);
+		$code = preg_replace('/(.*"theme_advanced_resizing_max_height"\s*:\s*)"(.*?)"(.*)/', '\1\2\3', $code);
+		$code = preg_replace('/(.*"theme_advanced_resizing_min_width"\s*:\s*)"(.*?)"(.*)/', '\1\2\3', $code);
+		$code = preg_replace('/(.*"custum_undo_redo_levels"\s*:\s*)"(.*?)"(.*)/', '\1\2\3', $code);
+		$code = preg_replace('/(.*"table_cell_limit"\s*:\s*)"(.*?)"(.*)/', '\1\2\3', $code);
+		$code = preg_replace('/(.*"table_row_limit"\s*:\s*)"(.*?)"(.*)/', '\1\2\3', $code);
+		$code = preg_replace('/(.*"table_col_limit"\s*:\s*)"(.*?)"(.*)/', '\1\2\3', $code);
 		return str_replace( array('"false"', '"true"', '"self"'), array('false', 'true', 'self'), $code);
 	}
 	
