@@ -61,9 +61,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$row['ISOcode'] = $parentObject->getAvailableLanguages();
 		$row['ISOcode'] = strtolower( $row['ISOcode'][$row['sys_language_uid']]['ISOcode'] );
 		
-		$this->cfgOrder = $this->getConfigOrder($table, $row);
+		$this->cfgOrder = $this->getConfigOrder($table, $row, $PA);
 		$this->currentPage = $row['pid'];
-		$config = $this->init($thisConfig, $parentObject->RTEcounter);
+		$config = $this->init($thisConfig, $parentObject->RTEcounter,$PA);
 		
 		if ( $row['ISOcode'] == 'def' )
 			$row['ISOcode'] = $config['defaultLanguageFE'];
@@ -122,7 +122,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @param	array		rteId (a counter)
 	 * @return	array		initiated config
 	 */	
-	function init($thisConfig, $rteId = 1) {
+	function init($thisConfig, $rteId = 1, $PA=array()) {
 		global $LANG;
 		if (TYPO3_MODE == 'BE') global $BE_USER;
 		
@@ -169,40 +169,33 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			// Merge configs
 			foreach ($this->cfgOrder as $order) {
 				$order = explode('.',$order);
-				// Added some more cases (even and higher), since we do not know what ext developers return using the hook  
-				switch (count($order)) {
-					case 8:
-						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'][$order[7].'.'];
-						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'][$order[7].'.'];
-					break;
-					case 7:
-						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'];
-						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'];
-					break;
-					case 6:
-						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'];
-						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'];
-					break;
-					case 5:
-						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
-						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
-					break;
-					case 4:
-						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
-						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
-					break;
-					case 3:
-						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
-						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
-					break;
-					case 2:
-						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'];
-						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'];
-					break;
-					default:
-						$tsc = $pageTs['RTE.'][$order[0].'.'];
-						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'];
-					break;
+				// Only use this when order[0] matches tablename contained in $PA['itemFormElName']
+				// otherwise all configurations delivered by the hook would be merged  
+				if (preg_match('/'.$order[0].'/',$PA['itemFormElName']) || $order[0] == 'default') {
+					// Added even cases , since we do not know what ext developers return using the hook
+					// Do we need higher cases, since we do not know what will come from the hook?   
+					switch (count($order)) {
+						case 5:
+							$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
+							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
+						break;
+						case 4:
+							$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
+							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
+						break;
+						case 3:
+							$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
+							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
+						break;
+						case 2:
+							$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'];
+							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'];
+						break;
+						default:
+							$tsc = $pageTs['RTE.'][$order[0].'.'];
+							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'];
+						break;
+					}
 				}
 				if (isset($tsc)) {
 					$thisConfig = $this->array_merge_recursive_override($thisConfig, $tsc);
@@ -235,7 +228,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @param	array		The current row from which field is being rendered
 	 * @return	array		Config order!
 	 */
-	function getConfigOrder($table,$row) {
+	function getConfigOrder($table,$row, $PA = array()) {
 		// Initial location is set to: Default config, then the table name
 		$where = array('default.lang.'.$row['ISOcode'],'default',$table.'.lang.'.$row['ISOcode'],$table);
 		
@@ -263,6 +256,13 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 					}
 					$where = array_merge($where,array_reverse($tmp));
 				}
+			break;
+			default:
+				$fieldStr = $PA['itemFormElName'];
+				$fieldStrLength = strlen($fieldStr)-6;
+				$fieldStr = substr($fieldStr,5,$fieldStrLength);
+				$fields = explode('][', $fieldStr);
+				$where[] = $fields[0].'.'.$fields[2];
 			break;
 		}
 		// A hook  to allow pre-processing of custom tables
