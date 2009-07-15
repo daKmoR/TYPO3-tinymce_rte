@@ -143,8 +143,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		  $this->language = 'en';
 		}
 
-		if (!is_array($BE_USER->userTS['RTE.']['default.']))
-		  $BE_USER->userTS['RTE.']['default.'] = array();
+		if (!is_array($BE_USER->userTS['RTE.']))
+		  $BE_USER->userTS['RTE.'] = array();
 
 		$config = array( 'init.' => array(
 			'language' => $this->language,
@@ -161,24 +161,54 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$loadConfig = t3lib_TSparser::checkIncludeLines( file_get_contents( $this->getpath($thisConfig['loadConfig'], 1) ) );
 			$tsparser->parse( $loadConfig );
 			$thisConfig = $this->array_merge_recursive_override($tsparser->setup['RTE.']['default.'], $thisConfig);
+
+			// override with userConfig
+			$thisConfig = $this->array_merge_recursive_override($thisConfig, $BE_USER->userTS['RTE.']['default.']);
 			
 			$pageTs = t3lib_BEfunc::getPagesTSconfig($this->currentPage);
 			// Merge configs
 			foreach ($this->cfgOrder as $order) {
 				$order = explode('.',$order);
+				// Added some more cases (even and higher), since we do not know what ext developers return using the hook  
 				switch (count($order)) {
+					case 8:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'][$order[7].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'][$order[7].'.'];
+					break;
+					case 7:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'];
+					break;
+					case 6:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'];
+					break;
 					case 5:
 						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
+					break;
+					case 4:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
 					break;
 					case 3:
 						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
+					break;
+					case 2:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'];
 					break;
 					default:
 						$tsc = $pageTs['RTE.'][$order[0].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'];
 					break;
 				}
 				if (isset($tsc)) {
 					$thisConfig = $this->array_merge_recursive_override($thisConfig, $tsc);
+				}
+				if (isset($utsc)) {
+					$thisConfig = $this->array_merge_recursive_override($thisConfig, $utsc);
 				}
 			}
 			unset($thisConfig['field.']);
@@ -187,9 +217,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		$config = $this->array_merge_recursive_override($config, $thisConfig);
 		
-		// override with userConfig
-		$config = $this->array_merge_recursive_override($config, $BE_USER->userTS['RTE.']['default.']);
-
 		// resolve EXT pathes for these values
 		$config['init.']['spellchecker_rpc_url'] = $this->getPath($config['init.']['spellchecker_rpc_url']);
 		$config['tiny_mcePath'] = $this->getPath($config['tiny_mcePath']);
