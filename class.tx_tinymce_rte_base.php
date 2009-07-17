@@ -63,7 +63,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		$this->cfgOrder = $this->getConfigOrder($table, $row, $PA);
 		$this->currentPage = $row['pid'];
-		$config = $this->init($thisConfig, $parentObject->RTEcounter,$PA);
+		$config = $this->init($thisConfig, $parentObject->RTEcounter, $PA);
 		
 		if ( $row['ISOcode'] == 'def' )
 			$row['ISOcode'] = $config['defaultLanguageFE'];
@@ -168,7 +168,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$pageTs = t3lib_BEfunc::getPagesTSconfig($this->currentPage);
 			// Merge configs
 			foreach ($this->cfgOrder as $order) {
-				$order = explode('.',$order);
+				$order = explode('.', $order);
 				// Only use this when order[0] matches tablename contained in $PA['itemFormElName']
 				// otherwise all configurations delivered by the hook would be merged  
 				if (preg_match('/'.$order[0].'/',$PA['itemFormElName']) || $order[0] == 'default') {
@@ -197,15 +197,15 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 						break;
 					}
 				}
-				if (isset($tsc)) {
+				if ( isset($tsc) ) {
 					$thisConfig = $this->array_merge_recursive_override($thisConfig, $tsc);
 				}
-				if (isset($utsc)) {
+				if ( isset($utsc) ) {
 					$thisConfig = $this->array_merge_recursive_override($thisConfig, $utsc);
 				}
 			}
-			unset($thisConfig['field.']);
-			unset($thisConfig['lang.']);
+			unset( $thisConfig['field.'] );
+			unset( $thisConfig['lang.'] );
 		}
 		
 		$config = $this->array_merge_recursive_override($config, $thisConfig);
