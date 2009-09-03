@@ -394,7 +394,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @return	string	javascript object in JSON
 	 */
 	function parseConfig($config) {
-		if (version_compare(PHP_VERSION, '5.2.0') < 0 )
+		if ( !function_exists('json_encode') )
 			$code = t3lib_div::array2json($this->fixTSArray($config));
 		else
 			$code = json_encode($this->fixTSArray($config));
