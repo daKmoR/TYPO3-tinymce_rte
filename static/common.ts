@@ -120,7 +120,7 @@ RTE.default.proc {
 			div.fixAttrib.align.unset = 1
 			hr.allowedAttribs = class, style
 			br.allowedAttribs = class, style
-			table.allowedAttribs = class, style, id, border, cellpadding, cellspacing
+			table.allowedAttribs = class, style, id, border, cellpadding, cellspacing, summary 
 			thead.allowedAttribs = class, style
 			tfoot.allowedAttribs = class, style
 			b.allowedAttribs = xml:lang
