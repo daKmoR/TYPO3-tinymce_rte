@@ -35,7 +35,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/class.tslib_content.php']['typo
 // Enable preStartPageHook hook
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/template.php']['preStartPageHook'][] = 'EXT:' . $_EXTKEY . '/hooks/class.tx_tinymce_rte_header.php:&tx_tinymce_rte_header->preStartPageHook';
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/sysext/feeditadvanced/view/class.tx_feeditadvanced_adminpanel.php']['addIncludes'][] = 'EXT:' . $_EXTKEY . '/hooks/class.tx_tinymce_rte_feeditadv.php:&tx_tinymce_rte_feeditadv';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['EXT:feeditadvanced/view/class.tx_feeditadvanced_adminpanel.php']['addIncludes'][] = 'EXT:' . $_EXTKEY . '/hooks/class.tx_tinymce_rte_feeditadv.php:&tx_tinymce_rte_feeditadv';
 
 // user function to force typolink creation of every link
 if (!class_exists('user_tinymce_rte')) {

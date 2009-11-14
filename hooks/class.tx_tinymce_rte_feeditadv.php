@@ -33,7 +33,7 @@ class tx_tinymce_rte_feeditadv {
 		
 		$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
 		
-		$pageTSconfig = t3lib_BEfunc::getPagesTSconfig("");
+		$pageTSconfig = t3lib_BEfunc::getPagesTSconfig('');
 		$myConf = $pageTSconfig['RTE.']['default.'];
 			
 		$myConf['loadConfig'] = 'EXT:tinymce_rte/static/pageLoad.ts';
@@ -43,11 +43,9 @@ class tx_tinymce_rte_feeditadv {
 		$rteConf = $tinymce_rte->init( $myConf );
 		$rteConf['init.']['mode'] = 'none';
 		
+		$myIncludes = $tinymce_rte->getCoreScript( $rteConf );
+		$myIncludes .= "\n" . $tinymce_rte->getInitScript( $rteConf['init.'] );
 		
-		$myIncludes = array();
-		$myIncludes[] = $tinymce_rte->getCoreScript( $rteConf );
-		$myIncludes[] = $tinymce_rte->getInitScript( $rteConf['init.'] );			
-
 		return $myIncludes;	
 	}
 
