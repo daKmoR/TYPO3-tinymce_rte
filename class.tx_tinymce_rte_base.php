@@ -130,7 +130,14 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			die('for TYPO3 4.1 you need to install the extension tinymce_rte_patch41');
 
 		// get the language (also checks if lib is called from FE or BE, which might of use later.)
-		$LANG = (TYPO3_MODE == 'FE') ? $GLOBALS['TSFE'] : $GLOBALS['LANG'];
+		if (TYPO3_MODE == 'FE') {
+			$LANG = t3lib_div::makeInstance('language');
+			$LANG->init($GLOBALS['TSFE']->tmpl->setup['config.']['language']);
+			$LANG->includeLLFile('typo3conf/ext/tinymce_rte/mod1/locallang_browse_links.xml');
+		} else {
+			$LANG = $GLOBALS['LANG'];
+		}
+		
 		$this->language = $LANG->lang;
 
 		// language conversion from TLD to iso631
