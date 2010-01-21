@@ -20,7 +20,7 @@ t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKE
 $extConf = unserialize($_EXTCONF);
 
 // set default if value is undefined (for backward compatibility as most users will have it set empty)
-if( $extConf['pageLoadConfigFile'] === '' )
+if( $extConf['pageLoadConfigFile'] === '' ) {
 	$extConf['pageLoadConfigFile'] = 'EXT:tinymce_rte/static/pageLoad.ts'
 }
 // load mandatory pageLoadConfigFile
