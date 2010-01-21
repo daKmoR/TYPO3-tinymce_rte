@@ -46,18 +46,15 @@ class tx_tinymce_rte_header {
 		if ( $pObj->bodyTagId == 'typo3-backend-php' ) {
 			$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
 
-			$pageTSconfig = t3lib_BEfunc::getPagesTSconfig("");
-			$this->conf = $pageTSconfig['RTE.']['default.'];
+			$pageTSconfig = t3lib_BEfunc::getPagesTSconfig('');
+			$this->conf = $pageTSconfig['RTE.']['pageLoad.'];
 			
-			$this->conf['loadConfig'] = 'EXT:tinymce_rte/static/pageLoad.ts';
-			if ( ($this->conf['pageLoadConfigFile'] != '') && ( is_file($tinymce_rte->getPath($this->conf['pageLoadConfigFile'], 1)) ) )
-				$this->conf['loadConfig'] = $this->conf['pageLoadConfigFile'];
-				
 			$this->conf = $tinymce_rte->init( $this->conf );
+
 			$this->conf['init.']['mode'] = 'none';
 			
 			$pObj->JScode .= $tinymce_rte->getCoreScript( $this->conf );
-			$pObj->JScode .= $tinymce_rte->getInitScript( $this->conf['init.'] );
+			//$pObj->JScode .= $tinymce_rte->getInitScript( $this->conf['init.'] );
 			
 			$pObj->JScode .= '
 				<script type="text/javascript">

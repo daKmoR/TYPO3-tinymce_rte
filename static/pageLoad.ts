@@ -1,4 +1,4 @@
-RTE.default {
+RTE.pageLoad {
 	gzip = 1,
 	gzipFileCache = 0
 	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
@@ -6,7 +6,7 @@ RTE.default {
 	languagesExtension = tinymce_rte_languages
 }
 
-RTE.default.init {
+RTE.pageLoad.init {
 	plugins = safari,style,layer,table,advimage,advlink,inlinepopups,insertdatetime,media,searchreplace,contextmenu,paste,fullscreen,noneditable,nonbreaking,xhtmlxtras,typo3filemanager,template,spellchecker
 	theme = advanced
 	mode = none

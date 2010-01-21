@@ -18,13 +18,13 @@ t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKE
 
 // Get extension configuration
 $extConf = unserialize($_EXTCONF);
-t3lib_extMgm::addPageTSConfig('
-	RTE.default.loadConfig = ' . $extConf['loadConfig'] . '
-	RTE.default.pageLoadConfigFile = ' . $extConf['pageLoadConfigFile']
-);
 
-if ( $extConf['loadConfig'] === 'EXT:tinymce_rte/static/full.ts' )
-	t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/full_include.ts">');
+// load mandatory pageLoadConfigFile
+t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:' . $extConf['pageLoadConfigFile'] . '">');
+
+if ( $extConf['loadConfig'] !== '' ) {
+	t3lib_extMgm::addPageTSConfig('<INCLUDE_TYPOSCRIPT: source="FILE:' . $extConf['loadConfig'] . '">');
+}
 
 // load default SetupTS config from static
 t3lib_extMgm::addTypoScript($_EXTKEY,'setup','<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $_EXTKEY . '/static/setupTSConfig.ts">',43);

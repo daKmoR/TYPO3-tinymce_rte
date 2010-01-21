@@ -61,13 +61,15 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$row['ISOcode'] = $parentObject->getAvailableLanguages();
 		$row['ISOcode'] = strtolower( $row['ISOcode'][$row['sys_language_uid']]['ISOcode'] );
 		
-		$this->cfgOrder = $this->getConfigOrder($table, $row, $PA);
 		$this->currentPage = $row['pid'];
 		$config = $this->init($thisConfig, $parentObject->RTEcounter, $PA);
+
+		$this->cfgOrder = $this->getConfigOrder($table, $row, $PA);
+		$config = $this->mergeLocationConfig($config, $PA);
 		
 		if ( $row['ISOcode'] == 'def' )
 			$row['ISOcode'] = $config['defaultLanguageFE'];
-		$row['ISOcode'] = ( $row['ISOcode'] == 'en') ? 'default' : $row['ISOcode'];
+		$row['ISOcode'] = ($row['ISOcode'] == 'en') ? 'default' : $row['ISOcode'];
 		
 		$config = $this->fixTinyMCETemplates($config, $row);
 		$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
@@ -79,7 +81,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		}
 		
 		//loads the current Value and create the textarea
-		$value = $this->transformContent('rte',$PA['itemFormElValue'],$table,$field,$row,$specConf,$thisConfig, $RTErelPath ,$thePidValue);
+		$value = $this->transformContent('rte', $PA['itemFormElValue'], $table, $field, $row, $specConf, $thisConfig, $RTErelPath, $thePidValue);
 		$code .= $this->getTextarea($parentObject, $PA, $value, $config);
 		
 		return $code;
@@ -122,9 +124,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @param	array		rteId (a counter)
 	 * @return	array		initiated config
 	 */	
-	function init($thisConfig, $rteId = 1, $PA=array()) {
+	function init($config, $rteId = 1, $PA=array()) {
 		global $LANG;
-		if (TYPO3_MODE == 'BE') global $BE_USER;
 		
 		if ( TYPO3_branch == 4.1 && !t3lib_extMgm::isLoaded('tinymce_rte_patch41') )
 			die('for TYPO3 4.1 you need to install the extension tinymce_rte_patch41');
@@ -145,78 +146,15 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$this->language = $LANG->csConvObj->isoArray[$this->language];
 
 		// check if TinyMCE language file exists
-		$langpath = (t3lib_extmgm::isLoaded($thisConfig['languagesExtension'])) ? t3lib_extMgm::siteRelPath($thisConfig['languagesExtension']) : t3lib_extMgm::siteRelPath('tinymce_rte') . 'res/';
+		$langpath = (t3lib_extmgm::isLoaded($config['languagesExtension'])) ? t3lib_extMgm::siteRelPath($config['languagesExtension']) : t3lib_extMgm::siteRelPath('tinymce_rte') . 'res/';
 		if(!is_file(PATH_site . $langpath . 'tiny_mce/langs/' . $this->language . '.js')) {
 		  $this->language = 'en';
 		}
 
-		if (!is_array($BE_USER->userTS['RTE.']))
-		  $BE_USER->userTS['RTE.'] = array();
-
-		$config = array( 'init.' => array(
-			'language' => $this->language,
-			'document_base_url' => t3lib_div::getIndpEnv('TYPO3_SITE_URL'),
-			'elements' => 'RTEarea' . $rteId
-		));
-		
-		if (!$this->cfgOrder) 
-			$this->cfgOrder = array('default');
+		$config['init.']['language'] = $this->language;
+		$config['init.']['document_base_url'] = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
+		$config['init.']['elements'] = 'RTEarea' . $rteId;
 			
-		// override with loadConfig
-		if ( is_file($this->getpath($thisConfig['loadConfig'], 1)) ) {
-			$tsparser = t3lib_div::makeInstance('t3lib_tsparser');
-			$loadConfig = t3lib_TSparser::checkIncludeLines( file_get_contents( $this->getpath($thisConfig['loadConfig'], 1) ) );
-			$tsparser->parse( $loadConfig );
-			$thisConfig = $this->array_merge_recursive_override($tsparser->setup['RTE.']['default.'], $thisConfig);
-
-			// override with userConfig
-			$thisConfig = $this->array_merge_recursive_override($thisConfig, $BE_USER->userTS['RTE.']['default.']);
-			
-			$pageTs = t3lib_BEfunc::getPagesTSconfig($this->currentPage);
-			// Merge configs
-			foreach ($this->cfgOrder as $order) {
-				$order = explode('.', $order);
-				// Only use this when order[0] matches tablename contained in $PA['itemFormElName']
-				// otherwise all configurations delivered by the hook would be merged  
-				if (preg_match('/'.$order[0].'/',$PA['itemFormElName']) || $order[0] == 'default') {
-					// Added even cases , since we do not know what ext developers return using the hook
-					// Do we need higher cases, since we do not know what will come from the hook?   
-					switch (count($order)) {
-						case 5:
-							$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
-							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
-						break;
-						case 4:
-							$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
-							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
-						break;
-						case 3:
-							$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
-							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
-						break;
-						case 2:
-							$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'];
-							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'];
-						break;
-						default:
-							$tsc = $pageTs['RTE.'][$order[0].'.'];
-							$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'];
-						break;
-					}
-				}
-				if ( isset($tsc) ) {
-					$thisConfig = $this->array_merge_recursive_override($thisConfig, $tsc);
-				}
-				if ( isset($utsc) ) {
-					$thisConfig = $this->array_merge_recursive_override($thisConfig, $utsc);
-				}
-			}
-			unset( $thisConfig['field.'] );
-			unset( $thisConfig['lang.'] );
-		}
-		
-		$config = $this->array_merge_recursive_override($config, $thisConfig);
-		
 		// resolve EXT pathes for these values
 		$config['init.']['spellchecker_rpc_url'] = $this->getPath($config['init.']['spellchecker_rpc_url']);
 		$config['tiny_mcePath'] = $this->getPath($config['tiny_mcePath']);
@@ -226,7 +164,70 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$this->forceUTF8 = $config['forceUTF8'] ? true : false;
 		
 		return $config;
-	}	
+	}
+	
+	/**
+	 * Merges the Configs for Locations into the main config
+	 *
+	 * @param	array  The config that should be modified
+	 * @param array  
+	 * @return array The altered config
+	 */	
+	function mergeLocationConfig($config, $PA=array()) {
+		if (TYPO3_MODE == 'BE') global $BE_USER;
+		
+		if (!$this->cfgOrder)
+			return $config;
+	
+		if (!is_array($BE_USER->userTS['RTE.']))
+			$BE_USER->userTS['RTE.'] = array();
+	
+		$pageTs = t3lib_BEfunc::getPagesTSconfig($this->currentPage);
+		
+		// Merge configs
+		foreach ($this->cfgOrder as $order) {
+			$order = explode('.', $order);
+			// Only use this when order[0] matches tablename contained in $PA['itemFormElName']
+			// otherwise all configurations delivered by the hook would be merged  
+			if ( preg_match('/'.$order[0].'/', $PA['itemFormElName']) || ($order[0] == 'default' && $order[1] == 'lang') ) {
+				// Added even cases , since we do not know what ext developers return using the hook
+				// Do we need higher cases, since we do not know what will come from the hook?   
+				switch (count($order)) {
+					case 5:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
+					break;
+					case 4:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'];
+					break;
+					case 3:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'];
+					break;
+					case 2:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'];
+					break;
+					default:
+						$tsc = $pageTs['RTE.'][$order[0].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'];
+					break;
+				}
+			}
+			if ( isset($tsc) ) {
+				$config = $this->array_merge_recursive_override($config, $tsc);
+			}
+			if ( isset($utsc) ) {
+				$config = $this->array_merge_recursive_override($config, $utsc);
+			}
+		}
+		
+		unset( $config['field.'] );
+		unset( $config['lang.'] );
+		
+		return $config;
+	}
 	
 	/**
 	 * Returns the BE location of the RTE
@@ -235,16 +236,20 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @param	array		The current row from which field is being rendered
 	 * @return	array		Config order!
 	 */
-	function getConfigOrder($table,$row, $PA = array()) {
+	function getConfigOrder($table, $row, $PA = array()) {
 		// Initial location is set to: Default config, then the table name
-		$where = array('default.lang.'.$row['ISOcode'],'default',$table.'.lang.'.$row['ISOcode'],$table);
+		$where = array(
+			'default.lang.' . $this->language,
+			$table,
+			$table . '.lang.' . $this->language
+		);
 		
 		// Custom location based on table name
 		switch ($table) {
 			case 'tt_content':
 				// location based on tablename + tt_content column position is added
-				$where[] = $table.'.field.colPos'.$row['colPos'].'.lang.'.$row['ISOcode'];
 				$where[] = $table.'.field.colPos'.$row['colPos'];
+				$where[] = $table.'.field.colPos'.$row['colPos'].'.lang.'.$this->language;
 				
 				// TemplaVoila is installed
 				if (t3lib_extMgm::isLoaded('templavoila')) {
@@ -257,9 +262,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 					while ($flex['table'] == $table) {
 						$flex = array_shift($tvAPI->flexform_getPointersByRecord($flex['uid'], $row['pid']));
 						// location based on tablename + TV field name is added
-						// Note: Language location must be added last here as array is reversed later
+						$tmp[] = $table.'.field.'.$flex['field'].'.lang.'.$this->language;
 						$tmp[] = $table.'.field.'.$flex['field'];
-						$tmp[] = $table.'.field.'.$flex['field'].'.lang.'.$row['ISOcode'];
 					}
 					$where = array_merge($where,array_reverse($tmp));
 				}
