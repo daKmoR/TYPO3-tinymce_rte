@@ -156,7 +156,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$config['init.']['elements'] = 'RTEarea' . $rteId;
 			
 		// resolve EXT pathes for these values
-		$config['init.']['spellchecker_rpc_url'] = $this->getPath($config['init.']['spellchecker_rpc_url']);
+		$config['init.']['spellchecker_rpc_url'] = $this->getPath($config['init.']['spellchecker_rpc_url']) . '?pageId=' . $this->currentPage;
 		$config['tiny_mcePath'] = $this->getPath($config['tiny_mcePath']);
 		$config['tiny_mceGzipPath'] = $this->getPath($config['tiny_mceGzipPath']);
 		

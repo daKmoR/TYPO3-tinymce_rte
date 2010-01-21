@@ -47,7 +47,11 @@ RTE.default.init {
 	template_replace_values {
 		username = Jack Black
 	}
+	
+}
 
+RTE.default {
+	
 	callbackJavascriptFile =
 	
 	linkhandler {
@@ -76,6 +80,6 @@ RTE.default.init {
 		PSpellShell.mode = PSPELL_FAST
 		PSpellShell.aspell =
 		PSpellShell.tmp = ./tmp
-	}	
+	}
 	
 }
