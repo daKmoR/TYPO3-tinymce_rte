@@ -196,8 +196,16 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			// otherwise all configurations delivered by the hook would be merged  
 			if ( preg_match('/'.$order[0].'/', $PA['itemFormElName']) || ($order[0] == 'default' && $order[1] == 'lang') ) {
 				// Added even cases , since we do not know what ext developers return using the hook
-				// Do we need higher cases, since we do not know what will come from the hook?   
+				// Do we need higher cases, since we do not know what will come from the hook?
 				switch (count($order)) {
+					case 7:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'][$order[6].'.'];
+					break;
+					case 6:
+						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'];
+						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'][$order[5].'.'];
+					break;
 					case 5:
 						$tsc = $pageTs['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
 						$utsc = $BE_USER->userTS['RTE.'][$order[0].'.'][$order[1].'.'][$order[2].'.'][$order[3].'.'][$order[4].'.'];
@@ -230,6 +238,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		
 		unset( $config['field.'] );
 		unset( $config['lang.'] );
+		unset( $config['ctype.'] );
 		
 		return $config;
 	}
@@ -252,9 +261,17 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		// Custom location based on table name
 		switch ($table) {
 			case 'tt_content':
+
+				// location based on tablename + tt_content Ctype
+				$where[] = $table . '.ctype.' . $row['CType'];
+				$where[] = $table . '.ctype.' . $row['CType'] . '.lang.' . $this->language;
+			
 				// location based on tablename + tt_content column position is added
-				$where[] = $table.'.field.colPos'.$row['colPos'];
-				$where[] = $table.'.field.colPos'.$row['colPos'].'.lang.'.$this->language;
+				$where[] = $table . '.field.colPos' . $row['colPos'];
+				$where[] = $table . '.field.colPos' . $row['colPos'] . '.lang.' . $this->language;
+				
+				$where[] = $table . '.field.colPos' . $row['colPos'] . '.ctype.' . $row['CType'];
+				$where[] = $table . '.field.colPos' . $row['colPos'] . '.ctype.' . $row['CType'] . '.lang.' . $this->language;;
 				
 				// TemplaVoila is installed
 				if (t3lib_extMgm::isLoaded('templavoila')) {
@@ -267,8 +284,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 					while ($flex['table'] == $table) {
 						$flex = array_shift($tvAPI->flexform_getPointersByRecord($flex['uid'], $row['pid']));
 						// location based on tablename + TV field name is added
-						$tmp[] = $table.'.field.'.$flex['field'].'.lang.'.$this->language;
-						$tmp[] = $table.'.field.'.$flex['field'];
+						$tmp[] = $table . '.field.' . $flex['field'] . '.ctype.' . $row['CType'] . '.lang.' . $this->language;
+						$tmp[] = $table . '.field.' . $flex['field'] . '.ctype.' . $row['CType'];
+						$tmp[] = $table . '.field.' . $flex['field'] . '.lang.' . $this->language;
+						$tmp[] = $table . '.field.' . $flex['field'];
 					}
 					$where = array_merge($where,array_reverse($tmp));
 				}
@@ -438,8 +457,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @return	string	the javascript code to load all language files
 	 */
 	function loadLanguageExtension($lang, $plugins, $path) {
-		$msg = "";
-		foreach(explode(",", $plugins) as $plugin) {
+		$msg = '';
+		foreach(explode(',', $plugins) as $plugin) {
 			$msg .= 'tinymce.ScriptLoader.load("' . $path . '/plugins/' . $plugin . '/langs/' . $lang . '_dlg.js");';
 		}
 		$msg .= '
