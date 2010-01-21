@@ -62,6 +62,11 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$row['ISOcode'] = strtolower( $row['ISOcode'][$row['sys_language_uid']]['ISOcode'] );
 		
 		$this->currentPage = $row['pid'];
+		if ($this->currentPage < 0) {
+			$pidRow = t3lib_BEfunc::getRecord($table, abs($this->currentPage),'pid');
+			$this->currentPage = $pidRow['pid'];
+		}		
+		
 		$config = $this->init($thisConfig, $parentObject->RTEcounter, $PA);
 
 		$this->cfgOrder = $this->getConfigOrder($table, $row, $PA);
