@@ -182,7 +182,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		if (TYPO3_MODE == 'BE') global $BE_USER;
 		
 		if (!$this->cfgOrder)
-			return $config;
+			$this->cfgOrder = array('default');
 	
 		if (!is_array($BE_USER->userTS['RTE.']))
 			$BE_USER->userTS['RTE.'] = array();
@@ -194,7 +194,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$order = explode('.', $order);
 			// Only use this when order[0] matches tablename contained in $PA['itemFormElName']
 			// otherwise all configurations delivered by the hook would be merged  
-			if ( preg_match('/'.$order[0].'/', $PA['itemFormElName']) || ($order[0] == 'default' && $order[1] == 'lang') ) {
+			if ( preg_match('/'.$order[0].'/', $PA['itemFormElName']) || $order[0] == 'default' ) {
 				// Added even cases , since we do not know what ext developers return using the hook
 				// Do we need higher cases, since we do not know what will come from the hook?
 				switch (count($order)) {
@@ -253,6 +253,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	function getConfigOrder($table, $row, $PA = array()) {
 		// Initial location is set to: Default config, then the table name
 		$where = array(
+			'default',
 			'default.lang.' . $this->language,
 			$table,
 			$table . '.lang.' . $this->language
