@@ -46,15 +46,16 @@ class tx_tinymce_rte_header {
 		if ( $pObj->bodyTagId == 'typo3-backend-php' ) {
 			$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
 
-			$pageTSconfig = t3lib_BEfunc::getPagesTSconfig('');
-			$this->conf = $pageTSconfig['RTE.']['pageLoad.'];
+			$pageTSconfig = t3lib_BEfunc::getPagesTSconfig();
+			$conf = $pageTSconfig['RTE.']['pageLoad.'];
 			
-			$this->conf = $tinymce_rte->init( $this->conf );
+			$conf = $tinymce_rte->init( $conf );
 
-			$this->conf['init.']['mode'] = 'none';
+			$conf['init.']['mode'] = 'none';
+			unset($conf['init.']['spellchecker_rpc_url']);
 			
-			$pObj->JScode .= $tinymce_rte->getCoreScript( $this->conf );
-			//$pObj->JScode .= $tinymce_rte->getInitScript( $this->conf['init.'] );
+			$pObj->JScode .= $tinymce_rte->getCoreScript( $conf );
+			//$pObj->JScode .= $tinymce_rte->getInitScript( $conf['init.'] );
 			
 			$pObj->JScode .= '
 				<script type="text/javascript">
