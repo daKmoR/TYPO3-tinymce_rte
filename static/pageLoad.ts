@@ -1,6 +1,6 @@
 RTE.pageLoad {
-	gzip = 1,
-	gzipFileCache = 0
+	gzip = 1
+	gzipFileCache = 1
 	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
 	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
 	languagesExtension = tinymce_rte_languages

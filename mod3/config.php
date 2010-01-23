@@ -4,12 +4,7 @@
 	require ('conf.php');
 	require ($BACK_PATH.'init.php');
 	
-	$pageId = '';
-	if( t3lib_div::_GP('pageId') ) {
-		$pageId = t3lib_div::_GP('pageId');
-	}
-	
-	$pageTSconfig = t3lib_BEfunc::getPagesTSconfig($pageId);
+	$pageTSconfig = t3lib_BEfunc::getPagesTSconfig( t3lib_div::_GP('pageId') );
 	
 	$config = $pageTSconfig['RTE.']['default.']['spellcheck.'];
 	
