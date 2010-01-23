@@ -65,12 +65,12 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		if ($this->currentPage < 0) {
 			$pidRow = t3lib_BEfunc::getRecord($table, abs($this->currentPage),'pid');
 			$this->currentPage = $pidRow['pid'];
-		}		
+		}
 		
 		$config = $this->init($thisConfig, $parentObject->RTEcounter, $PA);
-
-		$this->cfgOrder = $this->getConfigOrder($table, $row, $PA);
-		$config = $this->mergeLocationConfig($config, $PA);
+		
+		$configOrder = $this->getConfigOrder($table, $row, $PA);
+		$config = $this->mergeLocationConfig($config, $configOrder, $PA);
 		
 		if ( $row['ISOcode'] == 'def' )
 			$row['ISOcode'] = $config['defaultLanguageFE'];
@@ -178,19 +178,16 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @param array  
 	 * @return array The altered config
 	 */	
-	function mergeLocationConfig($config, $PA=array()) {
+	function mergeLocationConfig($config, $configOrder = array('default'), $PA = array() ) {
 		if (TYPO3_MODE == 'BE') global $BE_USER;
 		
-		if (!$this->cfgOrder)
-			$this->cfgOrder = array('default');
-	
 		if (!is_array($BE_USER->userTS['RTE.']))
 			$BE_USER->userTS['RTE.'] = array();
 	
 		$pageTs = t3lib_BEfunc::getPagesTSconfig($this->currentPage);
 		
 		// Merge configs
-		foreach ($this->cfgOrder as $order) {
+		foreach ($configOrder as $order) {
 			$order = explode('.', $order);
 			// Only use this when order[0] matches tablename contained in $PA['itemFormElName']
 			// otherwise all configurations delivered by the hook would be merged  
@@ -228,7 +225,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 					break;
 				}
 			}
-			if ( isset($tsc) ) {
+			if ( isset($tsc) && $order[0] !== 'default' ) {
 				$config = $this->array_merge_recursive_override($config, $tsc);
 			}
 			if ( isset($utsc) ) {
