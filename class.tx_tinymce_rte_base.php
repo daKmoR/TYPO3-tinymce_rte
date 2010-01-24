@@ -312,9 +312,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			}
 		}
 		
-		print_r($where);
-		die();
-		
 		return $where;
 	}
 	
