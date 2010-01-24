@@ -1371,7 +1371,7 @@ RTE.default.linkhandler {
 				$tree=$pagetree->getBrowsableTree();
 				$cElements = $this->expandPage();
 				$label=$GLOBALS['LANG']->getLL('contentRecords');
-				$cElements ='<fieldset><legend>'.$label.'</legend><div style="overflow: auto; min-height: 200px;"><table><tr><td>'.$cElements.'</td></tr></table></div></fieldset>';
+				$cElements ='<fieldset><legend>'.$label.'</legend><div style="overflow: auto; min-height: 200px;"><table style="width: 100%;"><tr><td>'.$cElements.'</td></tr></table></div></fieldset>';
 				$content.= '
 
 			<!--
@@ -1622,7 +1622,7 @@ RTE.default.linkhandler {
 	 */
 	function expandPage()	{
 		global $BE_USER, $BACK_PATH;
-		$out='';
+		$out='<table cellspacing="0" cellpadding="0" border="0" style="margin: 0pt; width: 100%;">';
 		$expPageId = $this->expandPage;		// Set page id (if any) to expand
 			// If there is an anchor value (content element reference) in the element reference, then force an ID to expand:
 		if (!$this->expandPage && $this->curUrlInfo['cElement'])	{
@@ -1675,9 +1675,11 @@ RTE.default.linkhandler {
 					$icon=t3lib_iconWorks::getIconImage($currentTable,$row,$BACK_PATH,'');
 
 					if ($this->curUrlInfo['act']=='page' && $this->curUrlInfo['cElement']==$row['uid'])	{
-						$arrCol='<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/blinkarrow_left.gif','width="5" height="9"').' class="c-blinkArrowL" alt="" />';
+						$current = 'style="background: #b7bac0;"';
+						//$arrCol='<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/blinkarrow_left.gif','width="5" height="9"').' class="c-blinkArrowL" alt="" />';
 					} else {
-						$arrCol='';
+						$current = '';
+						//$arrCol='';
 					}
 						// Putting list element HTML together:
 					$cropAt = 24;
@@ -1685,17 +1687,15 @@ RTE.default.linkhandler {
 					$t=strlen(htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)))>$cropAt ? '&nbsp;'.substr(htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)),0,$cropAt).'...' : '&nbsp;'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen));
 
 
-					$out.='<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/ol/join'.($c==$cc?'bottom':'').'.gif','width="18" height="16"').' alt="" />'.
-							$arrCol;
+					$out.='<tr ' . $current . '><td style="width: 20px;"><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/ol/join'.($c==$cc?'bottom':'').'.gif','width="18" height="16"').' alt="" /></td>';
 					
+					$out .= '<td style="width: 18px;">' . $icon . '</td>';
 					if( $currentTable == 'tt_content' )
-						$out .= '<a href="#" onclick="return link_insert(\''.$expPageId.'\',\'#'.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)).'">';
+						$out .= '<td><a href="#" onclick="return link_insert(\''.$expPageId.'\',\'#'.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)).'">';
 					else 
-						$out .= '<a href="#" onclick="return record_insert(\''.$currentTable.'\',\''.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)).'">';
+						$out .= '<td><a href="#" onclick="return record_insert(\''.$currentTable.'\',\''.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)).'">';
 					
-					$out.=$icon.
-							$t.
-							'</a><br />';
+					$out .= $t .'</a></td></tr>';
 
 						// Finding internal anchor points:
 					if (t3lib_div::inList('text,textpic', $row['CType']))	{
@@ -1719,6 +1719,7 @@ RTE.default.linkhandler {
 
 			
 		}
+		$out .= '</table>';
 		return $out;
 	}
 
@@ -1852,7 +1853,7 @@ RTE.default.linkhandler {
 		global $BACK_PATH;
 		
 		$expandFolder = $expandFolder ? $expandFolder : $this->expandFolder;
-		$out='';
+		$out='<table cellspacing="0" cellpadding="0" border="0" style="margin: 0pt; width: 100%;">';
 		if ($expandFolder && $this->checkFolder($expandFolder))	{
 
 				// Prepare current path value for comparison (showing red arrow)
@@ -1866,14 +1867,18 @@ RTE.default.linkhandler {
 				// Create header element; The folder from which files are listed.
 
 			$titleLen=35;
-			$picon='<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/i/_icon_webfolders.gif','width="18" height="16"').' alt="" />';
-			$picon.=htmlspecialchars(t3lib_div::fixed_lgd_cs(basename($expandFolder),$titleLen));
-			$picon='<a href="#" onclick="return link_insert(\''.t3lib_div::rawUrlEncodeFP(substr($expandFolder,strlen(PATH_site))).'\');">'.$picon.'</a>';
+			$picon =  '<td style="width: 20px;"><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/i/_icon_webfolders.gif','width="18" height="16"').' alt="" /></td>';
+			$piconLink = htmlspecialchars(t3lib_div::fixed_lgd_cs(basename($expandFolder),$titleLen));
+			$picon .=  '<td colspan="2"><a href="#" onclick="return link_insert(\''.t3lib_div::rawUrlEncodeFP(substr($expandFolder,strlen(PATH_site))).'\');">'.$piconLink.'</a></td>';
 			if ($this->curUrlInfo['act'] == 'folder' && $cmpPath == $expandFolder)	{
-				$out.= '<img'.t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/blinkarrow_left.gif', 'width="5" height="9"') . ' class="c-blinkArrowL" alt="" />';
+				$out .= '<tr style="background: #b7bac0;">';
+				//$out.= '<img'.t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/blinkarrow_left.gif', 'width="5" height="9"') . ' class="c-blinkArrowL" alt="" />';
+			} else {
+				$out .= '<tr>';
 			}
+			
 
-			$out.=$picon.'<br />';
+			$out .= $picon . '</tr>';
 
 				// Get files from the folder:
 			if ($this->mode == 'wizard' && $this->act == 'folder') {
@@ -1904,25 +1909,23 @@ RTE.default.linkhandler {
 
 						// If the listed file turns out to be the CURRENT file, then show blinking arrow:
 					if (($this->curUrlInfo['act'] == 'file' || $this->curUrlInfo['act'] == 'folder') && $cmpPath == $filepath) {
-						$arrCol='<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/blinkarrow_left.gif','width="5" height="9"').' class="c-blinkArrowL" alt="" />';
+						$current = 'style="background: #b7bac0;"';
+						//$arrCol='<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/blinkarrow_left.gif','width="5" height="9"').' class="c-blinkArrowL" alt="" />';
 					} else {
-						$arrCol='';
+						$current = '';
+						//$arrCol='';
 					}
 
-
-
-
-
 						// Put it all together for the file element:
-					$out.='<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/ol/join'.($c==$cc?'bottom':'').'.gif','width="18" height="16"').' alt="" />'.
-							$arrCol.
-							'<a href="#" onclick="return link_insert(\''.t3lib_div::rawUrlEncodeFP(substr($filepath,strlen(PATH_site))).'\');">'.
-							$icon.
-							htmlspecialchars(t3lib_div::fixed_lgd_cs(basename($filepath),$titleLen)).
-							'</a><br />';
+					$out .= '<tr ' . $current . '>'.
+						'<td><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/ol/join'.($c==$cc?'bottom':'').'.gif','width="18" height="16"').' alt="" /></td>' .
+						'<td style="width: 18px;">' . $icon . '</td>' .
+						'<td><a href="#" onclick="return link_insert(\''.t3lib_div::rawUrlEncodeFP(substr($filepath,strlen(PATH_site))).'\');">' .
+						htmlspecialchars(t3lib_div::fixed_lgd_cs(basename($filepath),$titleLen)) . '</a></td></tr>';
 				}
 			}
 		}
+		$out .= '</table>';
 		return $out;
 	}
 
