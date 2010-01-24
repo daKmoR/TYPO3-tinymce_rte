@@ -251,9 +251,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		// Initial location is set to: Default config, then the table name
 		$where = array(
 			'default',
-			'default.lang.' . $this->language,
+			'default.lang.' . $row['ISOcode'],
 			$table,
-			$table . '.lang.' . $this->language
+			$table . '.lang.' . $row['ISOcode']
 		);
 		
 		// Custom location based on table name
@@ -262,14 +262,14 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 
 				// location based on tablename + tt_content Ctype
 				$where[] = $table . '.ctype.' . $row['CType'];
-				$where[] = $table . '.ctype.' . $row['CType'] . '.lang.' . $this->language;
+				$where[] = $table . '.ctype.' . $row['CType'] . '.lang.' . $row['ISOcode'];
 			
 				// location based on tablename + tt_content column position is added
 				$where[] = $table . '.field.colPos' . $row['colPos'];
-				$where[] = $table . '.field.colPos' . $row['colPos'] . '.lang.' . $this->language;
+				$where[] = $table . '.field.colPos' . $row['colPos'] . '.lang.' . $row['ISOcode'];
 				
 				$where[] = $table . '.field.colPos' . $row['colPos'] . '.ctype.' . $row['CType'];
-				$where[] = $table . '.field.colPos' . $row['colPos'] . '.ctype.' . $row['CType'] . '.lang.' . $this->language;;
+				$where[] = $table . '.field.colPos' . $row['colPos'] . '.ctype.' . $row['CType'] . '.lang.' . $row['ISOcode'];;
 				
 				// TemplaVoila is installed
 				if (t3lib_extMgm::isLoaded('templavoila')) {
@@ -278,13 +278,17 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 					
 					// Add all nested TV fields to location
 					$tmp = array();
-					$flex = array('table' => $table, 'uid' => $row['uid']);
+					$uid = $row['uid'];
+					if( $row['t3_origuid'] > 0 ) {
+						$uid = $row['t3_origuid'];
+					}
+					$flex = array('table' => $table, 'uid' => $uid);
 					while ($flex['table'] == $table) {
 						$flex = array_shift($tvAPI->flexform_getPointersByRecord($flex['uid'], $row['pid']));
 						// location based on tablename + TV field name is added
-						$tmp[] = $table . '.field.' . $flex['field'] . '.ctype.' . $row['CType'] . '.lang.' . $this->language;
+						$tmp[] = $table . '.field.' . $flex['field'] . '.ctype.' . $row['CType'] . '.lang.' . $row['ISOcode'];
 						$tmp[] = $table . '.field.' . $flex['field'] . '.ctype.' . $row['CType'];
-						$tmp[] = $table . '.field.' . $flex['field'] . '.lang.' . $this->language;
+						$tmp[] = $table . '.field.' . $flex['field'] . '.lang.' . $row['ISOcode'];
 						$tmp[] = $table . '.field.' . $flex['field'];
 					}
 					$where = array_merge($where,array_reverse($tmp));
@@ -307,6 +311,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				$where = array_merge($where, $tmp);
 			}
 		}
+		
+		print_r($where);
+		die();
 		
 		return $where;
 	}
