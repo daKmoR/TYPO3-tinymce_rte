@@ -9,7 +9,7 @@ RTE.default {
 	# Should the gzip file saved in typo3temp/tinymce_rte/ for further use (faster)
 	gzipFileCache = 0
 	# the following should be set by the language extension itself, but can also be set directly
-	# languagesExtension = tinymce_rte
+	# languagesExtension = tinymce_languages
 	tiny_mcePath = EXT:tinymce_rte/res/tiny_mce/tiny_mce.js
 	tiny_mceGzipPath = EXT:tinymce_rte/res/tiny_mce/tiny_mce_gzip.js
 	# set the language to the same value as the default FE language
