@@ -223,22 +223,25 @@ class localPageTree extends t3lib_browseTree {
 			$c++;
 			
 			if (str_replace("#".$GLOBALS['SOBE']->curUrlInfo['cElement'],"",$GLOBALS['SOBE']->curUrlInfo['info'])==$v['row']['uid'] && $GLOBALS['SOBE']->curUrlInfo['value'])	{
-				$arrCol='<td><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/blinkarrow_right.gif','width="5" height="9"').' class="c-blinkArrowR" alt="" /></td>';
+				$current = 'style="background: #b7bac0;"';
+				//$arrCol='<td><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/blinkarrow_right.gif','width="5" height="9"').' class="c-blinkArrowR" alt="" /></td>';
 			} else {
-				$arrCol='<td></td>';
+				$current = '';
+				//$arrCol='<td></td>';
 			}
+			
+		  
 
 			$aOnClick = 'return jumpToUrl(\''.$this->thisScript.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandPage='.$v['row']['uid'].'\');';
 			$cEbullet = $this->ext_isLinkable($v['row']['doktype'],$v['row']['uid']) ?
 						'<a href="#" onclick="'.htmlspecialchars($aOnClick).'"><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/ol/arrowbullet.gif','width="18" height="16"').' alt="" /></a>' :
 						'';
 			$out.='
-				<tr>
+				<tr ' . $current . '>
 					<td nowrap="nowrap" style="width: 97%;" title="'.$v['row']["title"].'">'.
 					$v['HTML'].
 					$this->wrapTitle($this->getTitleStr($v['row'],$titleLen),$v['row'],$this->ext_pArrPages).
 					'</td>'.
-					$arrCol.
 					'<td>'.$cEbullet.'</td>
 				</tr>';
 		}
@@ -450,10 +453,12 @@ class localFolderTree extends t3lib_folderTree {
 
 				// Creating blinking arrow, if applicable:
 			if ($GLOBALS['SOBE']->curUrlInfo['act']=='file' && $cmpPath==$v['row']['path'])	{
-				$arrCol='<td><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/blinkarrow_right.gif','width="5" height="9"').' class="c-blinkArrowR" alt="" /></td>';
+				$current = 'style="background: #b7bac0;"';
+				//$arrCol='<td><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/blinkarrow_right.gif','width="5" height="9"').' class="c-blinkArrowR" alt="" /></td>';
 				//$bgColorClass='bgColor4';
 			} else {
-				$arrCol='<td></td>';
+				$current = '';
+				//$arrCol='<td></td>';
 			}
 				// Create arrow-bullet for file listing (if folder path is linkable):
 			$aOnClick = 'return jumpToUrl(\''.$this->thisScript.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandFolder='.rawurlencode($v['row']['path']).'\');';
@@ -461,9 +466,8 @@ class localFolderTree extends t3lib_folderTree {
 
 				// Put table row with folder together:
 			$out.='
-				<tr class="'.$bgColorClass.'">
+				<tr class="'.$bgColorClass.'" ' . $current . '>
 					<td nowrap="nowrap">'.$v['HTML'].$this->wrapTitle(t3lib_div::fixed_lgd_cs($v['row']['title'],$titleLen),$v['row']).'</td>
-					'.$arrCol.'
 					<td>'.$cEbullet.'</td>
 				</tr>';
 		}
@@ -2213,7 +2217,7 @@ RTE.default.linkhandler {
 	 * @return	boolean		If the input path is found in the backend users filemounts, then return true.
 	 */
 	function checkFolder($folder)	{
-		return $this->fileProcessor->checkPathAgainstMounts(ereg_replace('\/$','',$folder).'/') ? TRUE : FALSE;
+		return $this->fileProcessor->checkPathAgainstMounts(preg_replace('#\/$#','',$folder).'/') ? TRUE : FALSE;
 	}
 
 	/**	 
