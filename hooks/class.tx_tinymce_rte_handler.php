@@ -37,7 +37,7 @@ class tx_tinymce_rte_handler {
 	function main($linktxt, $conf, $linkHandlerKeyword, $linkHandlerValue, $link_param, &$pObj) {
 		$this->pObj = &$pObj;
 		
-		$pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig();
+		$pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig($GLOBALS['TSFE']->id);
 		$linkConfig = $pageTSConfig['RTE.']['default.']['linkhandler.'];
 		
 		if ( !is_array($linkConfig) )

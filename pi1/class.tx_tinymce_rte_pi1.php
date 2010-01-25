@@ -61,7 +61,7 @@ class tx_tinymce_rte_pi1 extends tx_tinymce_rte_base {
 
 	function drawRTE($parentObject,$table,$field,$row,$PA,$specConf,$thisConfig,$RTEtypeVal,$RTErelPath,$thePidValue) {
 
-		$pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig();
+		$pageTSConfig = $GLOBALS['TSFE']->getPagesTSconfig($GLOBALS['TSFE']->id);
 		$localRteId = $parentObject->RTEcounter . '.';
 
 		$rteConfig = $pageTSConfig['RTE.']['default.']['FE.'];
