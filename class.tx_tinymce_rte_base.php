@@ -131,6 +131,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 */	
 	function init($config, $rteId = 1, $PA=array()) {
 		global $LANG;
+		if (TYPO3_MODE == 'BE') {
+			global $BE_USER;
+		}
 		
 		if ( TYPO3_branch == 4.1 && !t3lib_extMgm::isLoaded('tinymce_rte_patch41') )
 			die('for TYPO3 4.1 you need to install the extension tinymce_rte_patch41');
@@ -168,6 +171,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		// defines if you want to force UTF8 on every config entry
 		$this->forceUTF8 = $config['forceUTF8'] ? true : false;
 		
+		if( is_array($BE_USER->userTS['RTE.']) ) {
+			$config = $this->array_merge_recursive_override($config, $BE_USER->userTS['RTE.']['default.']);
+		}
+		
 		return $config;
 	}
 	
@@ -179,7 +186,9 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @return array The altered config
 	 */	
 	function mergeLocationConfig($config, $configOrder = array('default'), $PA = array() ) {
-		if (TYPO3_MODE == 'BE') global $BE_USER;
+		if (TYPO3_MODE == 'BE') {
+			global $BE_USER;
+		}
 		
 		if (!is_array($BE_USER->userTS['RTE.']))
 			$BE_USER->userTS['RTE.'] = array();
@@ -191,7 +200,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$order = explode('.', $order);
 			// Only use this when order[0] matches tablename contained in $PA['itemFormElName']
 			// otherwise all configurations delivered by the hook would be merged  
-			if ( preg_match('/'.$order[0].'/', $PA['itemFormElName']) || $order[0] == 'default' ) {
+			if ( preg_match('/'.$order[0].'/', $PA['itemFormElName']) || ($order[0] == 'default' && $order[1] == 'lang') ) {
 				// Added even cases , since we do not know what ext developers return using the hook
 				// Do we need higher cases, since we do not know what will come from the hook?
 				switch (count($order)) {
@@ -225,7 +234,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 					break;
 				}
 			}
-			if ( isset($tsc) && $order[0] !== 'default' ) {
+			if ( isset($tsc) ) {
 				$config = $this->array_merge_recursive_override($config, $tsc);
 			}
 			if ( isset($utsc) ) {
@@ -250,7 +259,6 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	function getConfigOrder($table, $row, $PA = array()) {
 		// Initial location is set to: Default config, then the table name
 		$where = array(
-			'default',
 			'default.lang.' . $row['ISOcode'],
 			$table,
 			$table . '.lang.' . $row['ISOcode']
