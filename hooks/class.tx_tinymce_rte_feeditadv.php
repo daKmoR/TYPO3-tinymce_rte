@@ -30,23 +30,19 @@ require_once(t3lib_extMgm::extPath('tinymce_rte').'class.tx_tinymce_rte_base.php
 class tx_tinymce_rte_feeditadv {
 
 	function addIncludes() {
+		global $TSFE;
 		
 		$tinymce_rte = t3lib_div::makeInstance('tx_tinymce_rte_base');
 		
-		$pageTSconfig = t3lib_BEfunc::getPagesTSconfig('');
-		$myConf = $pageTSconfig['RTE.']['default.'];
-			
-		$myConf['loadConfig'] = 'EXT:tinymce_rte/static/pageLoad.ts';
-		if ( ($myConf['pageLoadConfigFile'] != '') && ( is_file($tinymce_rte->getPath($myConf['pageLoadConfigFile'], 1)) ) )
-			$myConf['loadConfig'] = $myConf['pageLoadConfigFile'];
-				
-		$rteConf = $tinymce_rte->init( $myConf );
-		$rteConf['init.']['mode'] = 'none';
+		$pageTSconfig = t3lib_BEfunc::getPagesTSconfig( $TSFE->id );
+		$config = $pageTSconfig['RTE.']['default.'];
 		
-		$myIncludes = $tinymce_rte->getCoreScript( $rteConf );
-		$myIncludes .= "\n" . $tinymce_rte->getInitScript( $rteConf['init.'] );
+		$config = $tinymce_rte->init( $config );
 		
-		return $myIncludes;	
+		$myIncludes = $tinymce_rte->getCoreScript( $config );
+		$myIncludes .= "\n" . $tinymce_rte->getInitScript( $config['init.'] );
+		
+		return $myIncludes;
 	}
 
 }
