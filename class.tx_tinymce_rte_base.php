@@ -130,10 +130,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	 * @return	array		initiated config
 	 */	
 	function init($config, $rteId = 1, $PA=array()) {
-		global $LANG;
-		if (TYPO3_MODE == 'BE') {
-			global $BE_USER;
-		}
+		global $LANG, $BE_USER;
 		
 		if ( TYPO3_branch == 4.1 && !t3lib_extMgm::isLoaded('tinymce_rte_patch41') )
 			die('for TYPO3 4.1 you need to install the extension tinymce_rte_patch41');
