@@ -120,10 +120,10 @@ RTE.default.proc {
 			b.allowedAttribs = xml:lang
 			blockquote.allowedAttribs = xml:lang
 			cite.allowedAttribs = xml:lang
-			em.allowedAttribs = xml:lang
+			em.allowedAttribs = class, style, xml:lang
 			i.allowedAttribs = xml:lang
 			q.allowedAttribs = xml:lang
-			strong.allowedAttribs = xml:lang
+			strong.allowedAttribs = class, style, xml:lang
 			sub.allowedAttribs = xml:lang
 			sup.allowedAttribs = xml:lang
 			tt.allowedAttribs = xml:lang
@@ -145,7 +145,8 @@ RTE.default.proc {
 		# STRIP ALL ATTRIBUTES FROM THESE TAGS
 		# If this list of tags is not set, it will default to: b,i,u,br,center,hr,sub,sup,strong,em,li,ul,ol,blockquote,strike.
 		# However, we want to keep xml:lang attribute on most tags and tags from the default list where cleaned on entry.
-		noAttrib = 
+		# So we just set any tag we don't use
+		noAttrib = nonusedtag
 	}
 
 	exitHTMLparser_db = 1
