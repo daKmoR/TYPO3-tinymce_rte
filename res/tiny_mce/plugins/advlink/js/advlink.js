@@ -277,11 +277,10 @@ function buildOnClick() {
 		return;
 	}
 
-/*	var onclick = "window.open('";
+	var onclick = "window.open('";
 	var url = formObj.popupurl.value;
 
-	onclick += url + "','";*/
-	var onclick = "window.open(this.href,'";
+	onclick += url + "','";
 	onclick += formObj.popupname.value + "','";
 
 	if (formObj.popuplocation.checked)
@@ -337,8 +336,8 @@ function buildOnClick() {
 
 	formObj.onclick.value = onclick;
 
-/*	if (formObj.href.value == "")
-		formObj.href.value = url; */
+	if (formObj.href.value == "")
+		formObj.href.value = url;
 }
 
 function setAttrib(elm, attrib, value) {
@@ -355,7 +354,7 @@ function setAttrib(elm, attrib, value) {
 
 	// Clean up the style
 	if (attrib == 'style')
-		value = dom.serializeStyle(dom.parseStyle(value));
+		value = dom.serializeStyle(dom.parseStyle(value), 'a');
 
 	dom.setAttrib(elm, attrib, value);
 }
