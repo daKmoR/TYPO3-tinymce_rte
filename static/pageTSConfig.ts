@@ -93,7 +93,7 @@ RTE.default.proc {
 	# Attributes class and align are always preserved
 	# Align attribute will be unset on entry (see below)
 	# This is a list of additional attributes to keep
-	keepPDIVattribs = xml:lang, style
+	keepPDIVattribs = xml:lang, style, class, id
 	
 	# CONTENT TO DATABASE
 	entryHTMLparser_db = 1
@@ -111,19 +111,20 @@ RTE.default.proc {
 		tags {
 			# CLEAN ATTRIBUTES ON THE FOLLOWING TAGS
 			p.fixAttrib.align.unset = 1
+			p.allowedAttribs = id, class, style
 			div.fixAttrib.align.unset = 1
-			hr.allowedAttribs = class, style
-			br.allowedAttribs = class, style
-			table.allowedAttribs = class, style, id, border, cellpadding, cellspacing, summary 
-			thead.allowedAttribs = class, style
-			tfoot.allowedAttribs = class, style
+			hr.allowedAttribs = id, class, style
+			br.allowedAttribs = id, class, style
+			table.allowedAttribs = id, class, style, border, cellpadding, cellspacing, summary 
+			thead.allowedAttribs = id, class, style
+			tfoot.allowedAttribs = id, class, style
 			b.allowedAttribs = xml:lang
-			blockquote.allowedAttribs = xml:lang
+			blockquote.allowedAttribs = id, class, style, xml:lang
 			cite.allowedAttribs = xml:lang
-			em.allowedAttribs = class, style, xml:lang
+			em.allowedAttribs = id, class, style, xml:lang
 			i.allowedAttribs = xml:lang
 			q.allowedAttribs = xml:lang
-			strong.allowedAttribs = class, style, xml:lang
+			strong.allowedAttribs = id, class, style, xml:lang
 			sub.allowedAttribs = xml:lang
 			sup.allowedAttribs = xml:lang
 			tt.allowedAttribs = xml:lang
