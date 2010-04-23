@@ -42,7 +42,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/template.php']['preStartPageHoo
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['EXT:feeditadvanced/view/class.tx_feeditadvanced_adminpanel.php']['addIncludes'][] = 'EXT:' . $_EXTKEY . '/hooks/class.tx_tinymce_rte_feeditadv.php:&tx_tinymce_rte_feeditadv';
 
 // user function to force typolink creation of every link
-if (!class_exists('user_tinymce_rte')) {
+if (!class_exists('user_tinymce_rte', false)) {
 	class user_tinymce_rte {
 		function isNotAnchor($content,$conf) {
 			return preg_match('/\s*href\s*=\s*"[^"]+"\s*/i', $content) ? 1 : 0;
