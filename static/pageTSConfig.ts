@@ -48,6 +48,7 @@ RTE.default.init {
 	# elements = RTEarea1
 	theme = advanced
 	entity_encoding = raw
+	gecko_spellcheck = true
 }
 
 ## Default RTE processing rules ####################################################################
