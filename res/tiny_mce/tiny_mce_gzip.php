@@ -22,7 +22,10 @@
 	$compress = getParam("compress", "true") == "true";
 	$core = getParam("core", "true") == "true";
 	$suffix = getParam("suffix", "_src") == "_src" ? "_src" : "";
-	$cachePath = realpath("../../../../../typo3temp/tinymce_rte/"); // Cache path, this is where the .gz files will be stored
+	$cachePath = "../../../../../typo3temp/tinymce_rte/"; // Cache path, this is where the .gz files will be stored
+	if( !is_dir($cachePath) ) {
+		mkdir( $cachePath );
+	}
 	$expiresOffset = 3600 * 24 * 10; // Cache for 10 days in browser cache
 	$content = "";
 	$encodings = array();
@@ -58,7 +61,7 @@
 
 	// Setup cache info
 	if ($diskCache) {
-		if (!$cachePath)
+		if ( !is_dir($cachePath) )
 			die("alert('TinyMCE gzip cache file couldn\'t be created.');");
 
 		$cacheKey = getParam("plugins", "") . getParam("languages", "") . getParam("themes", "") . $suffix;
