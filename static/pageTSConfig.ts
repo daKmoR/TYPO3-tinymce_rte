@@ -42,7 +42,6 @@ RTE.default.init {
 	theme_advanced_resizing = true
 	theme_advanced_toolbar_location = top
 	theme_advanced_toolbar_align = left
-	button_tile_map = true	
 	mode = exact
 	# the element will be set by the main class
 	# elements = RTEarea1
