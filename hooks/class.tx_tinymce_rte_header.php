@@ -60,7 +60,7 @@ class tx_tinymce_rte_header {
 			$pObj->JScode .= '
 				<script type="text/javascript">
 					function typo3filemanager(field_name, url, type, win) {
-						if( TYPO3 !== null && TYPO3 !== \'undefined\' && TYPO3.configuration !== null && TYPO3.configuration !== \'undefined\' && TYPO3.configuration.condensedMode == 1 ) {
+						if(  typeof(TYPO3) !== \'undefined\' && TYPO3.configuration.condensedMode == 1 ) {
 							document.getElementById("content").contentWindow.typo3filemanager(field_name, url, type, win);
 						} else {
 							document.getElementById("content").contentWindow.list_frame.typo3filemanager(field_name, url, type, win);
