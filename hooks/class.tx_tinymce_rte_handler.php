@@ -53,11 +53,14 @@ class tx_tinymce_rte_handler {
 		$localcObj->start($row, '');
 		
 		$lconf = array();
-		if (is_array($linkConfig[$linkHandlerData[0].'.'][$row['pid'].'.']))
+		if (is_array($linkConfig[$linkHandlerData[0].'.'][$row['pid'].'.'])) {
 			$lconf = $linkConfig[$linkHandlerData[0].'.'][$row['pid'].'.'];
-		else
+		} else {
 			$lconf = $linkConfig[$linkHandlerData[0].'.']['default.'];
-		$lconf['ATagParams'] = $this->pObj->getATagParams($conf);
+		}
+		$link_paramA = t3lib_div::unQuoteFilenames($link_param, true);
+		$linkClass = $link_paramA[2] == '-' ? '' : $link_paramA[2];
+		$lconf['ATagParams'] = $this->pObj->getATagParams($conf) . ($linkClass ? ' class="' . $linkClass . '"' : '');
 		
 		// remove the tinymce_rte specific attributes
 		unset( $lconf['select'], $lconf['sorting'] );
