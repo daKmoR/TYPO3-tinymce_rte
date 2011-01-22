@@ -57,18 +57,28 @@ class tx_tinymce_rte_header {
 			$pObj->JScode .= $tinymce_rte->getCoreScript( $conf );
 			//$pObj->JScode .= $tinymce_rte->getInitScript( $conf['init.'] );
 			
-			$pObj->JScode .= '
-				<script type="text/javascript">
-					function typo3filemanager(field_name, url, type, win) {
-						if( document.getElementById("content").contentWindow.list_frame && document.getElementById("content").contentWindow.list_frame.typo3filemanager ) {
-							document.getElementById("content").contentWindow.list_frame.typo3filemanager(field_name, url, type, win);
-						} else {
-							document.getElementById("content").contentWindow.typo3filemanager(field_name, url, type, win);
+			if (t3lib_div::int_from_ver(TYPO3_version) < 400500) {
+				$pObj->JScode .= '
+					<script type="text/javascript">
+						function typo3filemanager(field_name, url, type, win) {
+							if( document.getElementById("content").contentWindow.list_frame && document.getElementById("content").contentWindow.list_frame.typo3filemanager ) {
+								document.getElementById("content").contentWindow.list_frame.typo3filemanager(field_name, url, type, win);
+							} else {
+								document.getElementById("content").contentWindow.typo3filemanager(field_name, url, type, win);
+							}
 						}
-					}
-				</script>
-			';
-			
+					</script>
+				';
+			} else {
+				$pObj->JScode .= '
+					<script type="text/javascript">
+						function typo3filemanager(field_name, url, type, win) {
+								document.getElementById("typo3-contentContainer").getElementsByTagName("iframe")[0].contentWindow.typo3filemanager(field_name, url, type, win);
+						}
+					</script>
+				';
+			}
+
 		}
 	}
 
