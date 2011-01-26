@@ -62,10 +62,10 @@ class tx_tinymce_rte_handler {
 		$linkClass = $link_paramA[2] == '-' ? '' : $link_paramA[2];
 		$lconf['ATagParams'] = $this->pObj->getATagParams($conf) . ($linkClass ? ' class="' . $linkClass . '"' : '');
 
-	    if ($link_paramA[3]) {
-		    $lconf['title'] = $link_paramA[3];
-	    }
-	    
+		if ($link_paramA[3]) {
+			$lconf['title'] = $link_paramA[3];
+		}
+		
 		// remove the tinymce_rte specific attributes
 		unset( $lconf['select'], $lconf['sorting'] );
 		
