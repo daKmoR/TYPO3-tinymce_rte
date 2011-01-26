@@ -57,27 +57,25 @@ class tx_tinymce_rte_header {
 			$pObj->JScode .= $tinymce_rte->getCoreScript( $conf );
 			//$pObj->JScode .= $tinymce_rte->getInitScript( $conf['init.'] );
 			
-			if (t3lib_div::int_from_ver(TYPO3_version) < 400500) {
-				$pObj->JScode .= '
-					<script type="text/javascript">
-						function typo3filemanager(field_name, url, type, win) {
-							if( document.getElementById("content").contentWindow.list_frame && document.getElementById("content").contentWindow.list_frame.typo3filemanager ) {
-								document.getElementById("content").contentWindow.list_frame.typo3filemanager(field_name, url, type, win);
-							} else {
-								document.getElementById("content").contentWindow.typo3filemanager(field_name, url, type, win);
-							}
+			$pObj->JScode .= '
+				<script type="text/javascript">
+					function typo3filemanager(field_name, url, type, win) {
+						if( document.getElementById("typo3-contentContainer") && 
+								document.getElementById("typo3-contentContainer").getElementsByTagName("iframe")[0] && 
+								document.getElementById("typo3-contentContainer").getElementsByTagName("iframe")[0].contentWindow &&
+								document.getElementById("typo3-contentContainer").getElementsByTagName("iframe")[0].contentWindow.typo3filemanager ) {
+							// TYPO3 4.5
+							document.getElementById("typo3-contentContainer").getElementsByTagName("iframe")[0].contentWindow.typo3filemanager(field_name, url, type, win);
+						} else if( document.getElementById("content").contentWindow.list_frame && document.getElementById("content").contentWindow.list_frame.typo3filemanager ) {
+							// < TYPO3 4.5
+							document.getElementById("content").contentWindow.list_frame.typo3filemanager(field_name, url, type, win);
+						} else {
+							// < TYPO3 4.5 compact mode
+							document.getElementById("content").contentWindow.typo3filemanager(field_name, url, type, win);
 						}
-					</script>
-				';
-			} else {
-				$pObj->JScode .= '
-					<script type="text/javascript">
-						function typo3filemanager(field_name, url, type, win) {
-								document.getElementById("typo3-contentContainer").getElementsByTagName("iframe")[0].contentWindow.typo3filemanager(field_name, url, type, win);
-						}
-					</script>
-				';
-			}
+					}
+				</script>
+			';
 
 		}
 	}
