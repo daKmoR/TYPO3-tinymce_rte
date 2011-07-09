@@ -1649,11 +1649,13 @@ RTE.default.linkhandler {
 			$queries = array('tt_content.' => array('sorting' => 'colpos,sorting', 'select' => 'uid,header,hidden,starttime,endtime,fe_group,CType,colpos,bodytext' ));
 			if( is_array($this->thisConfig['linkhandler.']) ) {
 				foreach ($this->thisConfig['linkhandler.'] as $k => $v) {
-					if (is_array($this->thisConfig['linkhandler.'][$k][$this->expandPage . '.'])) {
-						$queries = array_merge($queries, array($k => $this->thisConfig['linkhandler.'][$k][$this->expandPage . '.']));
-					}
-					else if (is_array($this->thisConfig['linkhandler.'][$k]['default.'])) {
-						$queries = array_merge($queries, array($k => $this->thisConfig['linkhandler.'][$k]['default.']));
+					$tcaTable = substr($k,0,-1);
+					if (is_array($GLOBALS['TCA'][$tcaTable])){
+						if (is_array($this->thisConfig['linkhandler.'][$k][$this->expandPage . '.'])) {
+							$queries = array_merge($queries, array($k => $this->thisConfig['linkhandler.'][$k][$this->expandPage . '.']));
+						}  else if (is_array($this->thisConfig['linkhandler.'][$k]['default.'])) {
+							$queries = array_merge($queries, array($k => $this->thisConfig['linkhandler.'][$k]['default.']));
+						}
 					}
 				}
 			}
