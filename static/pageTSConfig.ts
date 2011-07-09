@@ -84,7 +84,7 @@ RTE.default.proc {
 	# b and i will be remapped on exit (see below).
 	allowTags (
 		a, abbr, acronym, address, blockquote, b, br, caption, cite, code, dd, div, dl, dt, em, embed,
-		h1, h2, h3, h4, h5, h6, hr, i, img, li, link, object, ol, p, param, pre, q,
+		h1, h2, h3, h4, h5, h6, hr, i, iframe, img, li, link, object, ol, p, param, pre, q,
 		span, strong, sub, sup, table, tbody, td, th, tr, tt, ul
 	)
 
