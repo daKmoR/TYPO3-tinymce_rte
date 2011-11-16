@@ -11048,6 +11048,10 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 
 					tinymce.DOM.doc = w.document;
 					tinymce.DOM.win = w;
+					
+					// you need to add the css files again when using frames [XXX not in official TinyMCE Core]
+					if (tinymce.DOM.files && v.reAddCss)
+						tinymce.DOM.files = {};
 
 					ed = new tinymce.Editor(v.element_id, v);
 					ed.render();
