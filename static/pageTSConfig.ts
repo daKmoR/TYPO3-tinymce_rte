@@ -38,7 +38,7 @@ RTE.default {
 }
 
 RTE.default.init {
-	content_css = fileadmin/templates/main/css/screen.css
+	content_css = fileadmin/templates/default/css/screen.css
 	theme_advanced_resizing = true
 	theme_advanced_toolbar_location = top
 	theme_advanced_toolbar_align = left
