@@ -106,7 +106,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				</script>
 			';
 		} else {
-			$code .= $this->getCoreScript( $config );
+			if (!self::$coreLoaded) {
+				$code .= $this->getCoreScript( $config );
+				self::$coreLoaded = TRUE;
+			}
 			$code .= $this->getInitScript( $config['init.'] );
 		}
 		return $code;
