@@ -576,7 +576,8 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 						height : ' . $config['typo3filemanager.']['window.']['height'] . ',
 						resizable : "yes",
 						inline : "yes",
-						close_previous : "no"
+						close_previous : "no",
+						scrollbars: "yes"
 					}, {
 						window : win,
 						input : field_name
