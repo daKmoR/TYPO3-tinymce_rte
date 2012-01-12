@@ -871,21 +871,26 @@ RTE.default.linkhandler {
 				function link_insert(value,anchor)	{
 					if (!anchor) anchor = "";
 					var win = tinyMCEPopup.getWindowArg("window");
-					if (win)
+					if (win) {
 						win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = value + anchor;
-					else
+					}	else {
 						directSetHref( value + anchor );
-					  
+					}
 			';
 			//miss use bparams
 			if(t3lib_div::_GP('bparams') == 'media') {
 				$JScode .= '
 					// for media browsers: update media preview
-					win.updatePreview();
+					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).onchange();
+					// win.Media.formToData();
+					
+					if (tinyMCE.activeEditor.selection.getContent() === "") {
+						tinyMCE.activeEditor.selection.select(tinyMCE.activeEditor.dom.select("p")[0]); // xxx no fucking clue why this is needed; but otherwise if nothing is select in the main text it will not insert the correct html code into the editor...
+					}
 				';
 			}
 			$JScode .= '
-					tinyMCEPopup.close(); 
+					tinyMCEPopup.close();
 					return false;
 				}
 				
