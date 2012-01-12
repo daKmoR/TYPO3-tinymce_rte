@@ -2209,7 +2209,7 @@ RTE.default.linkhandler {
 	 * @return	boolean		If the input path is found in PATH_site then it returns true.
 	 */
 	function isWebFolder($folder)	{
-		$folder = ereg_replace('\/$','',$folder).'/';
+		$folder = preg_replace('#\/$#','',$folder).'/';
 		return t3lib_div::isFirstPartOfStr($folder,PATH_site) ? TRUE : FALSE;
 	}
 
@@ -2230,7 +2230,7 @@ RTE.default.linkhandler {
 	 * @return	boolean		If the input path is found in the backend users filemounts and if the filemount is of type readonly, then return true.
 	 */
 	function isReadOnlyFolder($folder) {
-		return ($GLOBALS['FILEMOUNTS'][$this->fileProcessor->checkPathAgainstMounts(ereg_replace('\/$', '', $folder) . '/')]['type'] == 'readonly');
+		return ($GLOBALS['FILEMOUNTS'][$this->fileProcessor->checkPathAgainstMounts(preg_replace('#\/$#', '', $folder) . '/')]['type'] == 'readonly');
  	}
 
 	/**	 * Prints a 'header' where string is in a tablecell
