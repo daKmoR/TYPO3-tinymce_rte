@@ -51,6 +51,8 @@ require_once (PATH_t3lib.'class.t3lib_recordlist.php');
 require_once ($BACK_PATH.'class.db_list.inc');
 require_once ($BACK_PATH.'class.db_list_extra.inc');
 
+require_once ('../class.tx_tinymce_rte_base.php');
+
 class tinymce_rte_template extends template {
 
 }
