@@ -1635,7 +1635,7 @@ RTE.default.linkhandler {
 		}
 
 			// Draw the record list IF there is a page id to expand:
-		if ($expPageId && t3lib_div::testInt($expPageId) && $BE_USER->isInWebMount($expPageId))	{
+		if ($expPageId && tx_tinymce_rte_base::testInt($expPageId) && $BE_USER->isInWebMount($expPageId))	{
 
 				// Create header for listing, showing the page title/icon:
 			$titleLen=intval($GLOBALS['BE_USER']->uc['titleLen']);
@@ -1737,7 +1737,7 @@ RTE.default.linkhandler {
 	function TBE_expandPage($tables)	{
 		global $TCA,$BE_USER,$BACK_PATH;
 		$out='';
-		if ($this->expandPage>=0 && t3lib_div::testInt($this->expandPage) && $BE_USER->isInWebMount($this->expandPage))	{
+		if ($this->expandPage>=0 && tx_tinymce_rte_base::testInt($this->expandPage) && $BE_USER->isInWebMount($this->expandPage))	{
 
 				// Set array with table names to list:
 			if (!strcmp(trim($tables),'*'))	{
@@ -2333,7 +2333,7 @@ RTE.default.linkhandler {
 						$id = $pp[1];
 						if ($id)	{
 								// Checking if the id-parameter is an alias.
-							if (!t3lib_div::testInt($id))	{
+							if (!tx_tinymce_rte_base::testInt($id))	{
 								list($idPartR) = t3lib_BEfunc::getRecordsByField('pages','alias',$id);
 								$id=intval($idPartR['uid']);
 							}

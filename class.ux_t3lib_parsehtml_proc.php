@@ -72,7 +72,7 @@ class ux_t3lib_parsehtml_proc extends t3lib_parsehtml_proc {
 						$sectionMark = trim($link_params_parts[1]);
 						if (!strcmp($idPart,''))	{ $idPart=$this->recPid; }	// If no id or alias is given, set it to class record pid
 							// Checking if the id-parameter is an alias.
-						if (!t3lib_div::testInt($idPart))	{
+						if (!tx_tinymce_rte_base::testInt($idPart))	{
 							list($idPartR) = t3lib_BEfunc::getRecordsByField('pages','alias',$idPart);
 							$idPart = intval($idPartR['uid']);
 						}

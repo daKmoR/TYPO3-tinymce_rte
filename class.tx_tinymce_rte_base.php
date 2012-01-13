@@ -607,6 +607,27 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			return t3lib_div::getFileAbsFileName($path);
 		return $httpTypo3Path . str_replace(PATH_site,'',t3lib_div::getFileAbsFileName($path));
   }
+	
+	/**
+	 * Tests if the value represents an integer number. [copied from tx_realurl]
+	 *
+	 * @param mixed $value
+	 * @return bool
+	 */
+	static public function testInt($value) {
+		static $useOldGoodTestInt = null;
+
+		if (is_null($useOldGoodTestInt)) {
+			$useOldGoodTestInt = !class_exists('t3lib_utility_Math');
+		}
+		if ($useOldGoodTestInt) {
+			$result = t3lib_div::testInt($value);
+		}
+		else {
+			$result = t3lib_utility_Math::canBeInterpretedAsInteger($value);
+		}
+		return $result;
+	}	
 
 }
 
