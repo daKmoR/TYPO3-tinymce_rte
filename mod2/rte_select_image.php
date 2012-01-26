@@ -231,12 +231,10 @@ class SC_rte_select_image {
 					$destName = $fileFunc->getUniqueName($basename,$destPath);
 					@copy($imgInfo[3],$destName);
 		
-					$cHeight=t3lib_div::intInRange(t3lib_div::_GP("cHeight"),0,500);
-					$cWidth=t3lib_div::intInRange(t3lib_div::_GP("cWidth"),0,500);
-					if (!$cHeight)	$cHeight=200;
-					if (!$cWidth)	$cWidth=300;
-						// This thing allows images to be based on their width - to a certain degree - by setting a high height. Then we're almost certain the image will be based on the width 
-							$cHeight=1000;
+					$cHeight=t3lib_div::intInRange(t3lib_div::_GP("cHeight"),0,$this->thisConfig['typo3filemanager.']['maxMagicImages.']['height']);
+					$cWidth=t3lib_div::intInRange(t3lib_div::_GP("cWidth"),0,$this->thisConfig['typo3filemanager.']['maxMagicImages.']['width']);
+					if (!$cHeight)	$cHeight=$this->thisConfig['typo3filemanager.']['maxMagicImages.']['height'];
+					if (!$cWidth)	$cWidth=$this->thisConfig['typo3filemanager.']['maxMagicImages.']['width'];
 		//			debug(array($cHeight,$cWidth));
 		//exit;			
 					$imgI = $imgObj->imageMagickConvert($filepath,"WEB",$cWidth."m",$cHeight."m");	// ($imagefile,$newExt,$w,$h,$params,$frame,$options,$mustCreate=0)

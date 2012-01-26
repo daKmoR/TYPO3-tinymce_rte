@@ -31,9 +31,12 @@ RTE.default {
 		# in the imagebrowser how big should the thumbnails be
 		thumbs.width = 200
 		thumbs.height = 150
-		# defines the maximum allowed image size if you create a plain image
+		# defines the maximum allowed image size you can SELECT while creating an plain image
 		maxPlainImages.width = 1000
 		maxPlainImages.height = 1000
+		# defines the initial max image size of the inserted magic image
+		maxMagicImages.width = 400
+		maxMagicImages.height = 400
 	}
 }
 
