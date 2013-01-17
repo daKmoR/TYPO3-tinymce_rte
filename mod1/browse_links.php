@@ -75,7 +75,7 @@ class TBE_browser_recordList extends localRecordList {
 	function __construct() {
 		$this->thisScript = t3lib_div::getIndpEnv('SCRIPT_NAME');
 	}
-	
+
 	/**
 	 * Creates the URL for links
 	 *
@@ -155,7 +155,7 @@ class TBE_browser_recordList extends localRecordList {
 	function linkWrapTable($table,$code)	{
 		return $code;
 	}
-	
+
 	/**
 	 * Local version that sets allFields to true to support userFieldSelect
 	 *
@@ -223,7 +223,7 @@ class localPageTree extends t3lib_browseTree {
 		$c=0;
 		foreach($treeArr as $k => $v)	{
 			$c++;
-			
+
 			if (str_replace("#".$GLOBALS['SOBE']->curUrlInfo['cElement'],"",$GLOBALS['SOBE']->curUrlInfo['info'])==$v['row']['uid'] && $GLOBALS['SOBE']->curUrlInfo['value'])	{
 				$current = 'style="background: #b7bac0;"';
 				//$arrCol='<td><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/blinkarrow_right.gif','width="5" height="9"').' class="c-blinkArrowR" alt="" /></td>';
@@ -231,8 +231,8 @@ class localPageTree extends t3lib_browseTree {
 				$current = '';
 				//$arrCol='<td></td>';
 			}
-			
-		  
+
+
 
 			$aOnClick = 'return jumpToUrl(\''.$this->thisScript.'?act='.$GLOBALS['SOBE']->act.'&mode='.$GLOBALS['SOBE']->mode.'&expandPage='.$v['row']['uid'].'\');';
 			$cEbullet = $this->ext_isLinkable($v['row']['doktype'],$v['row']['uid']) ?
@@ -649,7 +649,7 @@ class SC_browse_links {
 
 	function init() {
 		global $BE_USER,$BACK_PATH;
-		
+
 
 			// Main GPvars:
 		$this->pointer = t3lib_div::_GP('pointer');
@@ -659,14 +659,14 @@ class SC_browse_links {
 		$this->expandPage = t3lib_div::_GP('expandPage');
 		$this->expandFolder = t3lib_div::_GP('expandFolder');
 		$this->PM = t3lib_div::_GP('PM');
-		
+
 			// Find "mode"
 		$this->mode=t3lib_div::_GP('mode');
 		if (!$this->mode)	{
 			$this->mode='rte';
 		}
 			// init hook objects:
-		
+
 		$this->hookObjects = array();
 		if ( (intval(phpversion()) >= 5) && (TYPO3_branch > 4.1) )
 			include_once('include_php5.inc');
@@ -683,11 +683,11 @@ class SC_browse_links {
 			$addPassOnParams.='&RTEtsConfigParams='.rawurlencode($this->RTEtsConfigParams);
 			$RTEsetup = $GLOBALS['BE_USER']->getTSConfig('RTE',t3lib_BEfunc::getPagesTSconfig($RTEtsConfigParts[5]));
 			$this->thisConfig = t3lib_BEfunc::RTEsetup($RTEsetup['properties'],$RTEtsConfigParts[0],$RTEtsConfigParts[2],$RTEtsConfigParts[4]);
-		}		
-		
+		}
+
 			// the script to link to
 		$this->thisScript = t3lib_div::getIndpEnv('SCRIPT_NAME');
-		
+
 			// init fileProcessor
 		$this->fileProcessor = t3lib_div::makeInstance('t3lib_basicFileFunctions');
 		$this->fileProcessor->init($GLOBALS['FILEMOUNTS'], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
@@ -705,7 +705,7 @@ class SC_browse_links {
 
 			$this->curUrlArray = (is_array(t3lib_div::_GP('curUrl'))) ? array_merge($initialCurUrlArray, t3lib_div::_GP('curUrl')) : $initialCurUrlArray;
 			$this->curUrlInfo = $this->parseCurUrl($this->siteURL.'?id='.$this->curUrlArray['href'], $this->siteURL);
-			
+
 			if ($this->curUrlInfo['pageid'] == 0 && $this->curUrlArray['href']) { // pageid == 0 means that this is not an internal (page) link
 				if (@file_exists(PATH_site.rawurldecode($this->curUrlArray['href'])))	{ // check if this is a link to a file
 					if (t3lib_div::isFirstPartOfStr($this->curUrlArray['href'], PATH_site)) {
@@ -720,9 +720,9 @@ class SC_browse_links {
 					$this->curUrlInfo = $this->parseCurUrl('mailto:'.$currentLinkParts[0], $this->siteURL);
 				} elseif (strstr($this->curUrlArray['href'], 'record:')) {
 					$handel = t3lib_div::trimExplode(':',$this->curUrlArray['href']);
-					
+
 					if ( is_array($this->thisConfig['linkhandler.'][$handel[1] . '.']) ) {
-					
+
 						$row = t3lib_BEfunc::getRecord($handel[1],$handel[2]);
 						if ( is_array($this->thisConfig['linkhandler.'][$handel[1] . '.'][$row['pid'] . '.']) ) {
 							$this->curUrlInfo['info'] = $row['pid'];
@@ -768,7 +768,7 @@ RTE.default.linkhandler {
 				$this->curUrlInfo = $this->parseCurUrl($this->siteURL.'?id='.$this->curUrlArray['href'], $this->siteURL);
 				$this->curUrlInfo['info'] = $this->curUrlInfo['pageid'];
 			}
-			
+
 		} else {
 			$this->curUrlArray = t3lib_div::_GP('curUrl');
 			if ($this->curUrlArray['all'])	{
@@ -840,12 +840,12 @@ RTE.default.linkhandler {
 			$P2['params']['blindLinkOptions']=$this->P['params']['blindLinkOptions'];
 
 			$addPassOnParams.=t3lib_div::implodeArrayForUrl('P',$P2);
-			
+
 			$JScode.='
 			  function directSetHref(value) {
 					// called directly from withint the content area
 					tinyMCEPopup.execCommand("mceBeginUndoLevel");
-					
+
 					var inst = tinyMCE.activeEditor;
 					var elm = inst.selection.getNode();
 					elm = inst.dom.getParent(elm, "A");
@@ -857,7 +857,7 @@ RTE.default.linkhandler {
 							tinyMCE.activeEditor.dom.setAttrib(elm = elementArray[i], "href", value);
 					} else
 						tinyMCE.activeEditor.dom.setAttrib(elm, "href", value);
-						
+
 					// Don t move caret if selection was image
 					if (elm.childNodes.length != 1 || elm.firstChild.nodeName != "IMG") {
 						inst.focus();
@@ -869,7 +869,7 @@ RTE.default.linkhandler {
 					tinyMCEPopup.execCommand("mceEndUndoLevel");
 					return true;
 				}
-				
+
 				function link_insert(value,anchor)	{
 					if (!anchor) anchor = "";
 					var win = tinyMCEPopup.getWindowArg("window");
@@ -885,7 +885,7 @@ RTE.default.linkhandler {
 					// for media browsers: update media preview
 					win.document.getElementById(tinyMCEPopup.getWindowArg("input")).onchange();
 					// win.Media.formToData();
-					
+
 					if (tinyMCE.activeEditor.selection.getContent() === "") {
 						tinyMCE.activeEditor.selection.select(tinyMCE.activeEditor.dom.select("p")[0]); // xxx no fucking clue why this is needed; but otherwise if nothing is select in the main text it will not insert the correct html code into the editor...
 					}
@@ -895,18 +895,18 @@ RTE.default.linkhandler {
 					tinyMCEPopup.close();
 					return false;
 				}
-				
+
 				function record_insert(type,value) {
 					var win = tinyMCEPopup.getWindowArg("window");
 					if (win)
 						win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = "record:" + type + ":" + value;
-					else 
+					else
 						directSetHref( "record:" + type + ":" + value );
-					
+
 					tinyMCEPopup.close();
 					return false;
 				}
-				
+
 			';
 		} else {	// Functions used, if the link selector is in RTE mode:
 			$JScode.='
@@ -989,8 +989,8 @@ RTE.default.linkhandler {
 			break;
 		}
 	}*/
-	
-	
+
+
 	/**
 	 * Main function, detecting the current mode of the element browser and branching out to internal methods.
 	 *
@@ -1025,8 +1025,8 @@ RTE.default.linkhandler {
 				}
 				break;
 		}
-			
-			
+
+
 			// render type by user func
 		$browserRendered = false;
 		/*if (is_array ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/browse_links.php']['browserRendering'])) {
@@ -1057,7 +1057,7 @@ RTE.default.linkhandler {
 					} else {
 						$this->expandPage=$modData['expandPage'];
 					}
-	
+
 					$this->content=$this->main_db();
 				break;
 				case 'file':
@@ -1069,7 +1069,7 @@ RTE.default.linkhandler {
 					} else {
 						$this->expandFolder=$modData['expandFolder'];
 					}
-	
+
 					$this->content=$this->main_file();
 				break;
 				case 'wizard':
@@ -1164,7 +1164,7 @@ RTE.default.linkhandler {
 	 */
 	function main_rte($wiz=1)	{
 		global $LANG, $BACK_PATH;
-		
+
 		#t3lib_div::debug($_POST);
 		#t3lib_div::debug($_GET);
 
@@ -1231,7 +1231,7 @@ RTE.default.linkhandler {
 
 			// Adding the menu and header to the top of page:
 		$content.=$this->printCurrentUrl($this->curUrlInfo['info']);
-		
+
 
 			// Depending on the current action we will create the actual module content for selecting a link:
 		switch($this->act)	{
@@ -1294,7 +1294,7 @@ RTE.default.linkhandler {
 				}
 
 
-				list(,,$specUid) = explode('_',$this->PM);				
+				list(,,$specUid) = explode('_',$this->PM);
 				$files = $this->expandFolder(
 					$foldertree->specUIDmap[$specUid],
 					$this->P['params']['allowedExtensions']
@@ -1384,7 +1384,7 @@ RTE.default.linkhandler {
 			<!--
 				Wrapper table for page tree / record list:
 			-->
-					
+
 					<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 						<tr>
 							<td valign="top" style="width: 58%;"><fieldset><legend>'.$GLOBALS['LANG']->getLL('pageTree').'</legend><div style="overflow: auto;"><table style="width: 100%;"><tr><td>'.$tree.'</td></tr></table></div></fieldset></td>
@@ -1393,7 +1393,7 @@ RTE.default.linkhandler {
 						</tr>
 					</table>
 					';
-			break;			
+			break;
 			default:
 					//call hook
 				foreach($this->hookObjects as $hookObject) {
@@ -1401,7 +1401,7 @@ RTE.default.linkhandler {
 				}
 			break;
 		}
-		
+
 		$content.='</div>';
 			// End page, return content:
 		$content.= $this->doc->endPage();
@@ -1542,7 +1542,7 @@ RTE.default.linkhandler {
 		$content = $this->doc->insertStylesAndJS($content);
 		return $content;
 	}
-	
+
 		/**
 	 * TYPO3 Element Browser: Showing a folder tree, allowing you to browse for folders.
 	 *
@@ -1591,7 +1591,7 @@ RTE.default.linkhandler {
 
 			<!--
 				Wrapper table for folder tree / folder list:
-			-->			
+			-->
 			<table border="0" cellpadding="0" cellspacing="0" id="typo3-EBfiles">
 				<tr>
 					<td class="c-wCell" valign="top">'.$this->barheader($GLOBALS['LANG']->getLL('folderTree').':').$tree.'</td>
@@ -1614,7 +1614,7 @@ RTE.default.linkhandler {
 
 		return $content;
 	}
-	
+
 
 
 	/******************************************************************
@@ -1645,7 +1645,7 @@ RTE.default.linkhandler {
 			$picon=t3lib_iconWorks::getIconImage('pages',$mainPageRec,$BACK_PATH,'');
 			$picon.= htmlspecialchars(t3lib_div::fixed_lgd_cs($mainPageRec['title'],$titleLen));
 			$out.=$picon.'<br />';
-			
+
 			$queries = array('tt_content.' => array('sorting' => 'colpos,sorting', 'select' => 'uid,header,hidden,starttime,endtime,fe_group,CType,colpos,bodytext' ));
 			if( is_array($this->thisConfig['linkhandler.']) ) {
 				foreach ($this->thisConfig['linkhandler.'] as $k => $v) {
@@ -1659,14 +1659,14 @@ RTE.default.linkhandler {
 					}
 				}
 			}
-			
+
 			foreach ($queries as $table => $query) {
 				// set some mandatory default values
 				if (!$query['sorting']) $query['sorting'] = $queries['tt_content.']['sorting'];
 				if (!$query['select']) $query['select'] = $queries['tt_content.']['select'];
-				
+
 				$currentTable = substr($table, 0, strlen($table) - 1);
-				
+
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 								$query['select'],
 								$currentTable,
@@ -1697,13 +1697,13 @@ RTE.default.linkhandler {
 
 
 					$out.='<tr ' . $current . '><td style="width: 20px;"><img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/ol/join'.($c==$cc?'bottom':'').'.gif','width="18" height="16"').' alt="" /></td>';
-					
+
 					$out .= '<td style="width: 18px;">' . $icon . '</td>';
 					if( $currentTable == 'tt_content' )
 						$out .= '<td><a href="#" onclick="return link_insert(\''.$expPageId.'\',\'#'.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)).'">';
-					else 
+					else
 						$out .= '<td><a href="#" onclick="return record_insert(\''.$currentTable.'\',\''.$row['uid'].'\');" title="'.htmlspecialchars(t3lib_div::fixed_lgd_cs($titleText,$titleLen)).'">';
-					
+
 					$out .= $t .'</a></td></tr>';
 
 						// Finding internal anchor points:
@@ -1722,11 +1722,11 @@ RTE.default.linkhandler {
 							}
 						}
 					}
-				}				
+				}
 
 			} //end of queries
 
-			
+
 		}
 		$out .= '</table>';
 		return $out;
@@ -1860,7 +1860,7 @@ RTE.default.linkhandler {
 	 */
 	function expandFolder($expandFolder=0,$extensionList='')	{
 		global $BACK_PATH;
-		
+
 		$expandFolder = $expandFolder ? $expandFolder : $this->expandFolder;
 		$out='<table cellspacing="0" cellpadding="0" border="0" style="margin: 0pt; width: 100%;">';
 		if ($expandFolder && $this->checkFolder($expandFolder))	{
@@ -1885,7 +1885,7 @@ RTE.default.linkhandler {
 			} else {
 				$out .= '<tr>';
 			}
-			
+
 
 			$out .= $picon . '</tr>';
 
@@ -2022,7 +2022,7 @@ RTE.default.linkhandler {
 					$eMsg = $LANG->JScharCode(sprintf($LANG->getLL('invalidChar'),', |'));
 					$ATag = $ATag_alt = '<a href="#" onclick="alert('.$eMsg.');return false;">';
 					$bulkCheckBox = '';
-				} else {	// If filename is OK, just add it:					
+				} else {	// If filename is OK, just add it:
 					$filesIndex = count($this->elements);
 					$this->elements['file_'.$filesIndex] = array(
 						'md5' => t3lib_div::shortMD5($filepath),
@@ -2232,7 +2232,7 @@ RTE.default.linkhandler {
 		return $this->fileProcessor->checkPathAgainstMounts(preg_replace('#\/$#','',$folder).'/') ? TRUE : FALSE;
 	}
 
-	/**	 
+	/**
 	 * Checks, if a path is within a read-only mountpoint of the backend user
 	 *
 	 * @param	string		Absolute filepath
@@ -2435,7 +2435,7 @@ RTE.default.linkhandler {
 	 */
 	function createFolder($path)	{
 		global $BACK_PATH;
-		
+
 		if ($this->isReadOnlyFolder($path)) return '';
 			// Create header, showing upload path:
 		$header = t3lib_div::isFirstPartOfStr($path,PATH_site)?substr($path,strlen(PATH_site)):$path;
@@ -2469,8 +2469,8 @@ RTE.default.linkhandler {
 			</form>';
 
 		return $code;
-	}	
-	
+	}
+
 	/**
 	 * Get the HTML data required for a bulk selection of files of the TYPO3 Element Browser.
 	 *
@@ -2503,6 +2503,6 @@ if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tinymce
 
 
 // Make instance:
-$SOBE = t3lib_div::makeInstance('SC_browse_links');
+$SOBE = new SC_browse_links();
 $SOBE->extended();
 ?>
