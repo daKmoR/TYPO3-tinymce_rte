@@ -3,6 +3,10 @@ if (!defined ("TYPO3_MODE")) 	die ("Access denied.");
 
 // override TS_links_rte( ), TS_images_db()
 $TYPO3_CONF_VARS['BE']['XCLASS']['t3lib/class.t3lib_parsehtml_proc.php'] = t3lib_extMgm::extPath($_EXTKEY).'class.ux_t3lib_parsehtml_proc.php';
+// also for TYPO3 CMS 6+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\CMS\Core\Html\RteHtmlParser'] = array(
+	'className' => 'Rte\TinymceRte\Xclass\RteHtmlParser',
+);
 
 // XCLASSes the "User settings" module, so that the browser is reloaded if language is changed.
 $TYPO3_CONF_VARS['BE']['XCLASS']['ext/setup/mod/index.php'] = t3lib_extMgm::extPath($_EXTKEY).'ux_index.php';
