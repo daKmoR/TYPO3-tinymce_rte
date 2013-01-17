@@ -1,22 +1,22 @@
 <?php
 /***************************************************************
 *  Copyright notice
-*  
+*
 *  (c) 1999-2004 Kasper Skaarhoj (kasperYYYY@typo3.com)
 *  All rights reserved
 *
-*  This script is part of the TYPO3 project. The TYPO3 project is 
+*  This script is part of the TYPO3 project. The TYPO3 project is
 *  free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
 *  the Free Software Foundation; either version 2 of the License, or
 *  (at your option) any later version.
-* 
+*
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license 
+*  A copy is found in the textfile GPL.txt and important notices to the license
 *  from the author is found in LICENSE.txt distributed with these scripts.
 *
-* 
+*
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -24,7 +24,7 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
-/** 
+/**
  * Displays image selector for the RTE
  *
  * @author	Kasper Skaarhoj <kasperYYYY@typo3.com>
@@ -33,7 +33,7 @@
 unset($MCONF);
 require ('conf.php');
 require ($BACK_PATH.'init.php');
-require ($BACK_PATH.'template.php');
+require_once ($BACK_PATH.'template.php');
 
 require_once (PATH_t3lib.'class.t3lib_foldertree.php');
 require_once (PATH_t3lib.'class.t3lib_stdgraphic.php');
@@ -44,7 +44,7 @@ $LANG->includeLLFile('EXT:tinymce_rte/mod2/locallang_rte_select_image.xml');
 
 /**
  * Local Folder Tree
- * 
+ *
  * @author	Kasper Skaarhoj <kasperYYYY@typo3.com>
  * @package TYPO3
  * @subpackage tx_rte
@@ -54,7 +54,7 @@ class localFolderTree extends t3lib_folderTree {
 
 	/**
 	 * Wrapping the title in a link, if applicable.
-	 * 
+	 *
 	 * @param	string		Title, ready for output.
 	 * @param	array		The "record"
 	 * @return	string		Wrapping title string.
@@ -70,7 +70,7 @@ class localFolderTree extends t3lib_folderTree {
 
 	/**
 	 * Returns true if the input "record" contains a folder which can be linked.
-	 * 
+	 *
 	 * @param	array		Array with information about the folder element. Contains keys like title, uid, path, _title
 	 * @return	boolean		True is returned if the path is found in the web-part of the the server and is NOT a recycler or temp folder
 	 */
@@ -80,13 +80,13 @@ class localFolderTree extends t3lib_folderTree {
 
 		if (strstr($v['path'],'_recycler_') || strstr($v['path'],'_temp_') || $webpath!='web')	{
 			return 0;
-		} 
+		}
 		return 1;
 	}
 
 	/**
 	 * Wrap the plus/minus icon in a link
-	 * 
+	 *
 	 * @param	string		HTML string to wrap, probably an image tag.
 	 * @param	string		Command for 'PM' get var
 	 * @param	boolean		If set, the link will have a anchor point (=$bMark) and a name attribute (=$bMark)
@@ -104,25 +104,25 @@ class localFolderTree extends t3lib_folderTree {
 
 	/**
 	 * Print tree.
-	 * 
+	 *
 	 * @param	mixed		Input tree array. If not array, then $this->tree is used.
 	 * @return	string		HTML output of the tree.
 	 */
 	function printTree($treeArr='')	{
-		$titleLen=intval($GLOBALS['BE_USER']->uc['titleLen']);	
+		$titleLen=intval($GLOBALS['BE_USER']->uc['titleLen']);
 
 		if (!is_array($treeArr))	$treeArr=$this->tree;
 
 		$out='';
 		$c=0;
-		
+
 			// Traverse rows for the tree and print them into table rows:
 		foreach($treeArr as $k => $v) {
 			$c++;
 			//$bgColor=' class="'.(($c+1)%2 ? 'bgColor' : 'bgColor-10').'"';
 			$out.='<tr'.$bgColor.'><td nowrap="nowrap">'.$v['HTML'].$this->wrapTitle(t3lib_div::fixed_lgd_cs($v['row']['title'],$titleLen),$v['row']).'</td></tr>';
 		}
-		
+
 		$out='<table border="0" cellpadding="0" cellspacing="0">'.$out.'</table>';
 		return $out;
 	}
@@ -131,7 +131,7 @@ class localFolderTree extends t3lib_folderTree {
 
 /**
  * Script Class
- * 
+ *
  * @author	Kasper Skaarhoj <kasperYYYY@typo3.com>
  * @package TYPO3
  * @subpackage tx_rte
@@ -139,12 +139,12 @@ class localFolderTree extends t3lib_folderTree {
 class SC_rte_select_image {
 	var $content;
 	var $siteUrl;
-	
+
 	var $act;
 	var $modData;
 	var $thisConfig;
 	var $allowedItems;
-	var $doc;	
+	var $doc;
 	var $imgPath;
 
 	/**
@@ -157,7 +157,7 @@ class SC_rte_select_image {
 
 		// Current site url:
 		$this->siteUrl = t3lib_div::getIndpEnv("TYPO3_SITE_URL");
-		
+
 		// Determine nature of current url:
 		$this->act=t3lib_div::_GP("act");
 
@@ -178,27 +178,27 @@ class SC_rte_select_image {
 		} else {
 			t3lib_div::_GETset($this->modData["expandFolder"],'expandFolder');
 		}
-		
+
 		if (!$this->act)	{
 			$this->act="magic";
 		}
-		
+
 		$RTEtsConfigParts = explode(":",t3lib_div::_GP("RTEtsConfigParams"));
 		if (count($RTEtsConfigParts)<2)	die("Error: The GET parameter 'RTEtsConfigParams' was missing. Close the window.");
-		$RTEsetup = $GLOBALS["BE_USER"]->getTSConfig("RTE",t3lib_BEfunc::getPagesTSconfig($RTEtsConfigParts[5])); 
+		$RTEsetup = $GLOBALS["BE_USER"]->getTSConfig("RTE",t3lib_BEfunc::getPagesTSconfig($RTEtsConfigParts[5]));
 		$this->thisConfig = t3lib_BEfunc::RTEsetup($RTEsetup["properties"],$RTEtsConfigParts[0],$RTEtsConfigParts[2],$RTEtsConfigParts[4]);
 		$this->imgPath = $RTEtsConfigParts[6];
 
 		$this->allowedItems = array_diff(explode(",","magic,plain,upload"),t3lib_div::trimExplode(",",$this->thisConfig["blindImageOptions"],1));
 		reset($this->allowedItems);
 		if (!in_array($this->act,$this->allowedItems))	$this->act = current($this->allowedItems);
-		
-		
+
+
 	}
 
 	/**
 	 * [Describe function...]
-	 * 
+	 *
 	 * @return	[type]		...
 	 */
 	function rteImageStorageDir()	{
@@ -208,20 +208,20 @@ class SC_rte_select_image {
 
 	/**
 	 * [Describe function...]
-	 * 
+	 *
 	 * @return	[type]		...
 	 */
 	function magicProcess()	{
 		if ($this->act=="magic" && t3lib_div::_GP("insertMagicImage"))	{
 			$filepath = t3lib_div::_GP("insertMagicImage");
-			
+
 			$imgObj = t3lib_div::makeInstance("t3lib_stdGraphic");
 			$imgObj->init();
 			$imgObj->mayScaleUp=0;
 			$imgObj->tempPath=PATH_site.$imgObj->tempPath;
-		
+
 			$imgInfo = $imgObj->getImageDimensions($filepath);
-			
+
 			if (is_array($imgInfo) && count($imgInfo)==4 && $this->rteImageStorageDir())	{
 				$fI=pathinfo($imgInfo[3]);
 				$fileFunc = t3lib_div::makeInstance("t3lib_basicFileFunctions");
@@ -230,13 +230,13 @@ class SC_rte_select_image {
 				if (@is_dir($destPath))	{
 					$destName = $fileFunc->getUniqueName($basename,$destPath);
 					@copy($imgInfo[3],$destName);
-		
+
 					$cHeight=t3lib_div::intInRange(t3lib_div::_GP("cHeight"),0,$this->thisConfig['typo3filemanager.']['maxMagicImages.']['height']);
 					$cWidth=t3lib_div::intInRange(t3lib_div::_GP("cWidth"),0,$this->thisConfig['typo3filemanager.']['maxMagicImages.']['width']);
 					if (!$cHeight)	$cHeight=$this->thisConfig['typo3filemanager.']['maxMagicImages.']['height'];
 					if (!$cWidth)	$cWidth=$this->thisConfig['typo3filemanager.']['maxMagicImages.']['width'];
 		//			debug(array($cHeight,$cWidth));
-		//exit;			
+		//exit;
 					$imgI = $imgObj->imageMagickConvert($filepath,"WEB",$cWidth."m",$cHeight."m");	// ($imagefile,$newExt,$w,$h,$params,$frame,$options,$mustCreate=0)
 			//		debug($imgI);
 					if ($imgI[3])	{
@@ -244,7 +244,7 @@ class SC_rte_select_image {
 						$mainBase="RTEmagicC_".substr(basename($destName),10).".".$fI["extension"];
 						$destName = $fileFunc->getUniqueName($mainBase,$destPath);
 						@copy($imgI[3],$destName);
-		
+
 						$iurl = substr($destName,strlen(PATH_site));
 						echo'
 <!DOCTYPE html
@@ -252,7 +252,7 @@ class SC_rte_select_image {
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>TYPO3 Imagebrowser</title>
 </head>
 <script language="javascript" type="text/javascript" src="../res/tiny_mce/tiny_mce_popup.js"></script>
@@ -267,13 +267,13 @@ class SC_rte_select_image {
 		} else {
 			tinyMCEPopup.execCommand("mceBeginUndoLevel");
 			var ed = tinyMCE.activeEditor;
-			var el = ed.selection.getNode();			
+			var el = ed.selection.getNode();
 			var args = {
 				"title" : "",
 				"src" : file,
 				"width" : width,
 				"height" : height
-			};			
+			};
 
 			if (el && el.nodeName == "IMG") {
 				ed.dom.setAttribs(el, args);
@@ -283,11 +283,11 @@ class SC_rte_select_image {
 				ed.dom.setAttrib("__mce_tmp", "id", "");
 				ed.undoManager.add();
 			}
-			tinyMCEPopup.execCommand("mceEndUndoLevel");			
+			tinyMCEPopup.execCommand("mceEndUndoLevel");
 		}
 
 		tinyMCEPopup.close();
-		
+
 		return false;
 	}
 </script>
@@ -298,7 +298,7 @@ class SC_rte_select_image {
 </body>
 </html>';
 					}
-					
+
 				}
 			}
 			exit;
@@ -307,12 +307,12 @@ class SC_rte_select_image {
 
 	/**
 	 * [Describe function...]
-	 * 
+	 *
 	 * @return	[type]		...
 	 */
 	function init()	{
 		global $LANG,$BACK_PATH;
-		
+
 		$this->doc = t3lib_div::makeInstance('template');
 		$this->doc->docType= 'xhtml_trans';
 		$this->doc->backPath = $BACK_PATH;
@@ -324,10 +324,10 @@ class SC_rte_select_image {
 			function jumpToUrl(URL,anchor)	{	//
 				var add_act = URL.indexOf("act=")==-1 ? "&act='.$this->act.'" : "";
 				var RTEtsConfigParams = "&RTEtsConfigParams='.rawurlencode(t3lib_div::_GP('RTEtsConfigParams')).'";
-		
+
 				var cur_width = selectedImageRef ? "&cWidth="+selectedImageRef.width : "";
 				var cur_height = selectedImageRef ? "&cHeight="+selectedImageRef.height : "";
-		
+
 				//var theLocation = URL+add_act+RTEtsConfigParams+cur_width+cur_height+(anchor?anchor:"");
 				var theLocation = URL+add_act+RTEtsConfigParams+cur_width+cur_height;
 				document.location = theLocation;
@@ -343,13 +343,13 @@ class SC_rte_select_image {
 				} else {
 					tinyMCEPopup.execCommand("mceBeginUndoLevel");
 					var ed = tinyMCE.activeEditor;
-					var el = ed.selection.getNode();			
+					var el = ed.selection.getNode();
 					var args = {
 						"title" : "",
 						"src" : file,
 						"width" : width,
 						"height" : height
-					};			
+					};
 
 					if (el && el.nodeName == "IMG") {
 						ed.dom.setAttribs(el, args);
@@ -359,25 +359,25 @@ class SC_rte_select_image {
 						ed.dom.setAttrib("__mce_tmp", "id", "");
 						ed.undoManager.add();
 					}
-					tinyMCEPopup.execCommand("mceEndUndoLevel");			
+					tinyMCEPopup.execCommand("mceEndUndoLevel");
 				}
 
 				tinyMCEPopup.close();
-				
+
 				return false;
 			}
-			
+
 			function launchView(url)	{	//
 				var thePreviewWindow="";
-				thePreviewWindow = window.open("'.$this->siteUrl.TYPO3_mainDir.'show_item.php?table="+url,"ShowItem","height=300,width=410,status=0,menubar=0,resizable=0,location=0,directories=0,scrollbars=1,toolbar=0");	
+				thePreviewWindow = window.open("'.$this->siteUrl.TYPO3_mainDir.'show_item.php?table="+url,"ShowItem","height=300,width=410,status=0,menubar=0,resizable=0,location=0,directories=0,scrollbars=1,toolbar=0");
 				if (thePreviewWindow && thePreviewWindow.focus)	{
 					thePreviewWindow.focus();
 				}
 			}
 			function getCurrentImageRef()	{	//
-				if (self.parent.parent 
-				&& self.parent.parent.document.idPopup 
-				&& self.parent.parent.document.idPopup.document 
+				if (self.parent.parent
+				&& self.parent.parent.document.idPopup
+				&& self.parent.parent.document.idPopup.document
 				&& self.parent.parent.document.idPopup.document._selectedImage)	{
 					return self.parent.parent.document.idPopup.document._selectedImage;
 				}
@@ -405,7 +405,7 @@ class SC_rte_select_image {
 					selectedImageRef.hspace=document.imageData.iHspace.value;
 					selectedImageRef.title=document.imageData.iTitle.value;
 					selectedImageRef.alt=document.imageData.iTitle.value;
-		
+
 					selectedImageRef.border= (document.imageData.iBorder.checked ? 1 : 0);
 
 					self.parent.parent.edHidePopup();
@@ -422,16 +422,16 @@ class SC_rte_select_image {
 					if (parseInt(selectedImageRef.border))	{
 						document.imageData.iBorder.checked = 1;
 					}
-					
+
 				}
 				return false;
 			}
-		
+
 			var selectedImageRef = getCurrentImageRef();	// Setting this to a reference to the image object.
 			-->
 		</script>
 		';
-		
+
 			// Starting content:
 		$this->content="";
 		$this->content.=$this->doc->startPage($LANG->getLL('title',1));
@@ -439,12 +439,12 @@ class SC_rte_select_image {
 
 	/**
 	 * [Describe function...]
-	 * 
+	 *
 	 * @return	[type]		...
 	 */
 	function main()	{
 		global $LANG, $TYPO3_CONF_VARS, $FILEMOUNTS;
-		
+
 		$menu='
 			<!-- Tab menu -->
 			<div class="tabs">
@@ -461,15 +461,15 @@ class SC_rte_select_image {
 		$menu.='
 				</ul>
 			</div>';
-		
+
 		$this->content.=$menu;
 		$this->content.='<div class="panel_wrapper">';
-	
+
 		if ($this->act!="upload")	{
 
 				// Getting flag for showing/not showing thumbnails:
 			$noThumbs = $GLOBALS["BE_USER"]->getTSConfigVal("options.noThumbsInRTEimageSelect");
-		
+
 			if (!$noThumbs)	{
 					// MENU-ITEMS, fetching the setting for thumbnails from File>List module:
 				$_MOD_MENU = array('displayThumbs' => '');
@@ -481,7 +481,7 @@ class SC_rte_select_image {
 				$thumbNailCheck='';
 			}
 
-				// File-folders:	
+				// File-folders:
 			$foldertree = t3lib_div::makeInstance("localFolderTree");
 			$tree=$foldertree->getBrowsableTree();
 			list(,,$specUid) = explode("_",t3lib_div::_GP("PM"));
@@ -500,7 +500,7 @@ class SC_rte_select_image {
 			// Upload
 			// ***************************
 
-				// File-folders:	
+				// File-folders:
 			$foldertree = t3lib_div::makeInstance("localFolderTree");
 			$tree=$foldertree->getBrowsableTree();
 			$this->content.= '<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
@@ -535,21 +535,21 @@ class SC_rte_select_image {
 
 	/**
 	 * Print content of module
-	 * 
-	 * @return	void		
+	 *
+	 * @return	void
 	 */
 	function printContent()	{
 		$this->content.= $this->doc->endPage();
 		echo $this->content;
 	}
-	
+
 
 	/***************************
 	 *
-	 * OTHER FUNCTIONS:	
+	 * OTHER FUNCTIONS:
 	 *
 	 ***************************/
-	 
+
 	/**
 	 * @param	[type]		$expandFolder: ...
 	 * @param	[type]		$plainFlag: ...
@@ -557,23 +557,23 @@ class SC_rte_select_image {
 	 */
 	function expandFolder($expandFolder=0,$plainFlag=0,$noThumbs=0)	{
 		global $LANG;
-		
+
 		$expandFolder = $expandFolder ? $expandFolder :t3lib_div::_GP("expandFolder");
 		$out="";
-		
+
 		$resolutionLimit_x = $this->thisConfig['typo3filemanager.']['maxPlainImages.']['width'];
 		$resolutionLimit_y = $this->thisConfig['typo3filemanager.']['maxPlainImages.']['height'];
-		
+
 		if ($expandFolder)	{
 			$files = t3lib_div::getFilesInDir($expandFolder,($plainFlag?"jpg,jpeg,gif,png":$GLOBALS["TYPO3_CONF_VARS"]["GFX"]["imagefile_ext"]),1,1);	// $extensionList="",$prependPath=0,$order="")
 			if (is_array($files))	{
 				reset($files);
-			
-				$titleLen=intval($GLOBALS["BE_USER"]->uc["titleLen"]);	
+
+				$titleLen=intval($GLOBALS["BE_USER"]->uc["titleLen"]);
 				$picon='<img src="'.$this->doc->backPath.'gfx/i/_icon_webfolders.gif" width="18" height="16" alt="folder" />';
 				$picon.=htmlspecialchars(t3lib_div::fixed_lgd_cs(basename($expandFolder),$titleLen));
 				$out.='<span class="nobr">'.$picon.'</span><br />';
-				
+
 				$imgObj = t3lib_div::makeInstance("t3lib_stdGraphic");
 				$imgObj->init();
 				$imgObj->mayScaleUp=0;
@@ -582,11 +582,11 @@ class SC_rte_select_image {
 				$lines=array();
 				while(list(,$filepath)=each($files))	{
 					$fI=pathinfo($filepath);
-					
+
 					//$iurl = $this->siteUrl.t3lib_div::rawUrlEncodeFP(substr($filepath,strlen(PATH_site)));
 					$iurl = t3lib_div::rawUrlEncodeFP(substr($filepath,strlen(PATH_site)));
 					$imgInfo = $imgObj->getImageDimensions($filepath);
-					
+
 					$icon = t3lib_BEfunc::getFileIcon(strtolower($fI["extension"]));
 					$pDim = $imgInfo[0]."x".$imgInfo[1]." pixels";
 					$size=" (".t3lib_div::formatSize(filesize($filepath))."bytes, ".$pDim.")";
@@ -606,12 +606,12 @@ class SC_rte_select_image {
 						$ATag2='<a href="#" onclick="launchView(\''.rawurlencode($filepath).'\'); return false;">';
 						$ATag2_e="</a>";
 					}
-					
+
 					$filenameAndIcon=$ATag.$icon.htmlspecialchars(t3lib_div::fixed_lgd_cs(basename($filepath),$titleLen)).$ATag_e;
-					
+
 					$lines[]='<tr class="bgColor4"><td nowrap="nowrap">'.$filenameAndIcon.'&nbsp;</td></tr><tr><td nowrap="nowrap" class="pixel">'.$pDim.'&nbsp;</td></tr>';
 					$lines[]='<tr><td>'.(
-						$noThumbs ? 
+						$noThumbs ?
 						"" :
 						$ATag2.t3lib_BEfunc::getThumbNail($this->doc->backPath.'thumbs.php',$filepath,'hspace="5" vspace="5" border="1"', $this->thisConfig['typo3filemanager.']['thumbs.']['width'] . 'x' . $this->thisConfig['typo3filemanager.']['thumbs.']['height']).$ATag2_e).
 						'</td></tr>';
@@ -625,7 +625,7 @@ class SC_rte_select_image {
 
 	/**
 	 * [Describe function...]
-	 * 
+	 *
 	 * @param	[type]		$path: ...
 	 * @return	[type]		...
 	 */
@@ -649,7 +649,7 @@ class SC_rte_select_image {
 			<div id="c-override">
 				<input type="checkbox" name="overwriteExistingFiles" value="1" /> '.$GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_misc.php:overwriteExistingFiles',1).'
 			</div>
-			
+
 		</td>
 		</tr>
 		</table></FORM></fieldset>';
@@ -659,7 +659,7 @@ class SC_rte_select_image {
 
 	/**
 	 * [Describe function...]
-	 * 
+	 *
 	 * @param	[type]		$str: ...
 	 * @return	[type]		...
 	 */
@@ -671,7 +671,7 @@ class SC_rte_select_image {
 
 	/**
 	 * [Describe function...]
-	 * 
+	 *
 	 * @param	[type]		$str: ...
 	 * @return	[type]		...
 	 */
