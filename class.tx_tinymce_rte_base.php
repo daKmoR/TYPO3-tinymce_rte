@@ -28,7 +28,7 @@
  * @author Thomas Allmer <thomas.allmer@webteam.at>
  *
  */
- 
+
 require_once(PATH_t3lib.'class.t3lib_rteapi.php');
 require_once(PATH_t3lib.'class.t3lib_tsparser.php');
 require_once(PATH_t3lib.'class.t3lib_cs.php');
@@ -37,6 +37,7 @@ require_once(PATH_t3lib.'class.t3lib_page.php');
 class tx_tinymce_rte_base extends t3lib_rteapi {
 
 	var $forceUTF8 = true;
+	private static $coreLoaded = false;
 
 	/**
 	 * Draws the RTE
@@ -56,26 +57,26 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	function drawRTE($parentObject, $table, $field, $row, $PA, $specConf, $thisConfig, $RTEtypeVal, $RTErelPath, $thePidValue) {
 		$code = '';
 		$parentObject->RTEcounter = rand();
-		
+
 		// get the language code of the Content Element
 		$row['ISOcode'] = $parentObject->getAvailableLanguages();
 		$row['ISOcode'] = strtolower( $row['ISOcode'][$row['sys_language_uid']]['ISOcode'] );
-		
+
 		$this->currentPage = $row['pid'];
 		if ($this->currentPage < 0) {
 			$pidRow = t3lib_BEfunc::getRecord($table, abs($this->currentPage),'pid');
 			$this->currentPage = $pidRow['pid'];
 		}
-		
+
 		$config = $this->init($thisConfig, $parentObject->RTEcounter, $PA);
-		
+
 		$configOrder = $this->getConfigOrder($table, $row, $PA);
 		$config = $this->mergeLocationConfig($config, $configOrder, $PA);
-		
+
 		if ( $row['ISOcode'] == 'def' )
 			$row['ISOcode'] = $config['defaultLanguageFE'];
 		$row['ISOcode'] = ($row['ISOcode'] == 'en') ? 'default' : $row['ISOcode'];
-		
+
 		$config = $this->fixTinyMCETemplates($config, $row);
 		$code .= $this->getFileDialogJS( $config, $this->getPath('EXT:tinymce_rte/./'), $parentObject, $table, $field, $row);
 
@@ -84,18 +85,18 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$config['callbackJavascriptFile'] = $this->getPath($config['callbackJavascriptFile']);
 			$code .= '<script type="text/javascript" src="' . $config['callbackJavascriptFile'] . '"></script>';
 		}
-		
+
 		//loads the current Value and create the textarea
 		$value = $this->transformContent('rte', $PA['itemFormElValue'], $table, $field, $row, $specConf, $thisConfig, $RTErelPath, $thePidValue);
 		$code .= $this->getTextarea($parentObject, $PA, $value, $config);
-		
+
 		return $code;
 	}
-	
+
 	function getTextarea($parentObject, $PA, $value, $config) {
 		$code = $this->triggerField($PA['itemFormElName']);
 		$code .= '<textarea id="RTEarea'.$parentObject->RTEcounter.'" class="tinymce_rte" name="'.htmlspecialchars($PA['itemFormElName']).'" rows="30" cols="100">'.t3lib_div::formatForTextarea($value).'</textarea>';
-		
+
 		if ( !$config['useFEediting'] ) {
 			$config['init.']['window'] = 'self';
 			$config['init.']['element_id'] = 'RTEarea' . $parentObject->RTEcounter;
@@ -114,7 +115,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		}
 		return $code;
 	}
-	
+
 	/**
 	 * Returns true if the RTE is available. Here you check if the browser requirements are met.
 	 * If there are reasons why the RTE cannot be displayed you simply enter them as text in ->errorLog
@@ -124,17 +125,17 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	function isAvailable()	{
 		return true;
 	}
-	
+
 	/**
 	 * initial all the values for the RTE
-	 * 
+	 *
 	 * @param	array		config to use
 	 * @param	array		rteId (a counter)
 	 * @return	array		initiated config
-	 */	
+	 */
 	function init($config, $rteId = 1, $PA=array()) {
 		global $LANG, $BE_USER;
-		
+
 		if ( TYPO3_branch == 4.1 && !t3lib_extMgm::isLoaded('tinymce_rte_patch41') )
 			die('for TYPO3 4.1 you need to install the extension tinymce_rte_patch41');
 
@@ -146,7 +147,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		} else {
 			$LANG = $GLOBALS['LANG'];
 		}
-		
+
 		$this->language = $LANG->lang;
 
 		// language conversion from TLD to iso631
@@ -162,44 +163,44 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$config['init.']['language'] = $this->language;
 		$config['init.']['document_base_url'] = t3lib_div::getIndpEnv('TYPO3_SITE_URL');
 		$config['init.']['elements'] = 'RTEarea' . $rteId;
-			
+
 		// resolve EXT pathes for these values
 		$config['init.']['spellchecker_rpc_url'] = $this->getPath($config['init.']['spellchecker_rpc_url']) . '?pageId=' . $this->currentPage;
 		$config['tiny_mcePath'] = $this->getPath($config['tiny_mcePath']);
 		$config['tiny_mceGzipPath'] = $this->getPath($config['tiny_mceGzipPath']);
-		
+
 		// defines if you want to force UTF8 on every config entry
 		$this->forceUTF8 = $config['forceUTF8'] ? true : false;
-		
+
 		if( is_array($BE_USER->userTS['RTE.']) ) {
 			$config = $this->array_merge_recursive_override($config, $BE_USER->userTS['RTE.']['default.']);
 		}
-		
+
 		return $config;
 	}
-	
+
 	/**
 	 * Merges the Configs for Locations into the main config
 	 *
 	 * @param	array  The config that should be modified
-	 * @param array  
+	 * @param array
 	 * @return array The altered config
-	 */	
+	 */
 	function mergeLocationConfig($config, $configOrder = array('default'), $PA = array() ) {
 		if (TYPO3_MODE == 'BE') {
 			global $BE_USER;
 		}
-		
+
 		if (!is_array($BE_USER->userTS['RTE.']))
 			$BE_USER->userTS['RTE.'] = array();
-	
+
 		$pageTs = t3lib_BEfunc::getPagesTSconfig($this->currentPage);
-		
+
 		// Merge configs
 		foreach ($configOrder as $order) {
 			$order = explode('.', $order);
 			// Only use this when order[0] matches tablename contained in $PA['itemFormElName']
-			// otherwise all configurations delivered by the hook would be merged  
+			// otherwise all configurations delivered by the hook would be merged
 			if ( preg_match('/'.$order[0].'/', $PA['itemFormElName']) || ($order[0] == 'default' && $order[1] == 'lang') ) {
 				// Added even cases , since we do not know what ext developers return using the hook
 				// Do we need higher cases, since we do not know what will come from the hook?
@@ -241,14 +242,14 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				$config = $this->array_merge_recursive_override($config, $utsc);
 			}
 		}
-		
+
 		unset( $config['field.'] );
 		unset( $config['lang.'] );
 		unset( $config['ctype.'] );
-		
+
 		return $config;
 	}
-	
+
 	/**
 	 * Returns the BE location of the RTE
 	 *
@@ -263,7 +264,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$table,
 			$table . '.lang.' . $row['ISOcode']
 		);
-		
+
 		// Custom location based on table name
 		switch ($table) {
 			case 'tt_content':
@@ -271,19 +272,19 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				// location based on tablename + tt_content Ctype
 				$where[] = $table . '.ctype.' . $row['CType'];
 				$where[] = $table . '.ctype.' . $row['CType'] . '.lang.' . $row['ISOcode'];
-			
+
 				// location based on tablename + tt_content column position is added
 				$where[] = $table . '.field.colPos' . $row['colPos'];
 				$where[] = $table . '.field.colPos' . $row['colPos'] . '.lang.' . $row['ISOcode'];
-				
+
 				$where[] = $table . '.field.colPos' . $row['colPos'] . '.ctype.' . $row['CType'];
 				$where[] = $table . '.field.colPos' . $row['colPos'] . '.ctype.' . $row['CType'] . '.lang.' . $row['ISOcode'];;
-				
+
 				// TemplaVoila is installed
 				if (t3lib_extMgm::isLoaded('templavoila')) {
 					require_once(t3lib_extMgm::extPath('templavoila').'class.tx_templavoila_api.php');
 					$tvAPI = t3lib_div::makeInstance('tx_templavoila_api');
-					
+
 					// Add all nested TV fields to location
 					$tmp = array();
 					$uid = $row['uid'];
@@ -319,19 +320,19 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				$where = array_merge($where, $tmp);
 			}
 		}
-		
+
 		return $where;
 	}
-	
+
 	/**
 	 * including of all nessecary core files (gzip or seperate, additional language files, callbackJS)
-	 * 
+	 *
 	 * @param	array		config to use
 	 * @return	array		code incl. script tags
 	 */
 	function getCoreScript( $config ) {
 		$code = '';
-		
+
 		$loaded = ( t3lib_extmgm::isLoaded($config['languagesExtension']) ) ? 1 : 0;
 		if ($config['gzip'])
 			$code .= '
@@ -356,13 +357,13 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 				$code .= '</script>';
 			}
 		}
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * create the init code for the RTE
-	 * 
+	 *
 	 * @param	array		config to use
 	 * @return	array		code incl. script tags
 	 */
@@ -380,10 +381,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		';
 		return $code;
 	}
-	
+
 	/**
 	 * alternative to array_merge_recursive (which won't override valuse)
-	 * 
+	 *
 	 * @param	array		source array
 	 * @param	array		array to merge with
 	 * @return	array		merged array (values are overwritten)
@@ -393,7 +394,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			if( is_array($ins) ) foreach( $ins as $k => $v ) {
 				if(isset($arr[$k])&&is_array($v)&&is_array($arr[$k]))
 					$arr[$k] = $this->array_merge_recursive_override($arr[$k],$v);
-				else 
+				else
 					$arr[$k] = $v;
 			}
 		}
@@ -405,7 +406,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 	/**
 	 * creates an valid array that can be parsed (recursive)
 	 * removes "." from array keys and ensure that array values are in UTF-8 format
-	 * 
+	 *
 	 * @param	array		config array to be fixed
 	 * @return	array		fixed array
 	 */
@@ -421,10 +422,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * Check if string is in UTF-8 format
-	 * 
+	 *
 	 * @param	array	string to check
 	 * @return	boolean	true if string is valid utf-8
 	 */
@@ -434,7 +435,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 
 	/**
 	 * parses the array to a valid javascript object in JSON
-	 * 
+	 *
 	 * @param	array		config array to be parced
 	 * @return	string	javascript object in JSON
 	 */
@@ -457,10 +458,10 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$code = preg_replace('/(.*"table_col_limit"\s*:\s*)"(.*?)"(.*)/', '\1\2\3', $code);
 		return str_replace( array('"false"', '"true"', '"self"'), array('false', 'true', 'self'), $code);
 	}
-	
+
 	/**
 	 * loads all needed language files with the tinymce.Scritploader
-	 * 
+	 *
 	 * @param	string	language to use in iso631 (example 'en', 'de' ...)
 	 * @param	string	list of plugins (seperated with ',')
 	 * @param	string	path of the language files
@@ -478,13 +479,13 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		';
 		return $msg;
 	}
-	
+
 	/**
 	 * returns the setupTSconfig for a given id
-	 * 
-	 * @param	int		current page id		
+	 *
+	 * @param	int		current page id
 	 * @return	string	the corresponding setupTSconfig
-	 */		
+	 */
 	function getSetupTS($pageUid) {
 		$sysPageObj = t3lib_div::makeInstance('t3lib_pageSelect');
 		$rootLine = $sysPageObj->getRootLine($pageUid);
@@ -495,14 +496,14 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 		$TSObj->generateConfig();
 		return $TSObj->setup;
 	}
-	
+
 	/**
 	 * resolves numerous pathes, creates a seperate array for the Templates inclusion, removes unnecessary code in the init part
-	 * 
+	 *
 	 * @param	array		RTE config array
-	 * @param	int		current page id		
+	 * @param	int		current page id
 	 * @return	string	the "fixed" RTE config
-	 */	
+	 */
 	function fixTinyMCETemplates($config, $row) {
 	  $init_templates = array();
 		$templates = array();
@@ -529,13 +530,13 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$config['init.']['template_templates.'] = $init_templates;
 		}
 		$config['TinyMCE_templates.'] = $templates;
-		
+
 		return $config;
 	}
-	
+
 	/**
 	 * creates the javascript code (incl. <script> tags) for the typo3filemanager
-	 * 
+	 *
 	 * @return	string	the javascript code to allow selection of pages in a TYPO3 dialog
 	 */
 	function getFileDialogJS($config, $path, $pObj, $table, $field, $row) {
@@ -595,7 +596,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 
 	/**
 	 * resolves a relative path
-	 * 
+	 *
 	 * @param	string	path to be resolved
 	 * @param	boolean	do you wan't absolute path or relative?
 	 * @return	string	resolved path
@@ -607,7 +608,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			return t3lib_div::getFileAbsFileName($path);
 		return $httpTypo3Path . str_replace(PATH_site,'',t3lib_div::getFileAbsFileName($path));
   }
-	
+
 	/**
 	 * Tests if the value represents an integer number. [copied from tx_realurl]
 	 *
@@ -627,7 +628,7 @@ class tx_tinymce_rte_base extends t3lib_rteapi {
 			$result = t3lib_utility_Math::canBeInterpretedAsInteger($value);
 		}
 		return $result;
-	}	
+	}
 
 }
 
