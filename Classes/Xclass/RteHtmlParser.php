@@ -92,8 +92,13 @@ class RteHtmlParser extends \TYPO3\CMS\Core\Html\RteHtmlParser {
 							// Try to transform the href into a FAL reference
 							try {
 								$fileOrFolderObject = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->retrieveFileOrFolderObject($link_param);
-							} catch(\TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException $e) {
-								// no file - nothing to do
+							} catch(\Exception  $e) {
+								if ($e instanceof \TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException OR $e instanceof \TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException) {
+									// no file or folder - nothing to do
+								} else {
+									// Rethrow the Exception
+									throw $e;
+								}
 							}
 							if ($fileOrFolderObject instanceof \TYPO3\CMS\Core\Resource\Folder) {
 								// It's a folder
@@ -162,6 +167,81 @@ class RteHtmlParser extends \TYPO3\CMS\Core\Html\RteHtmlParser {
 		}
 		// Return content:
 		return implode('', $blockSplit);
+	}
+
+	/**
+	 * Transformation handler: 'ts_images' / direction: "rte"
+	 * Processing images from database content going into the RTE.
+	 * Processing includes converting the src attribute to an absolute URL.
+	 *
+	 * @param string $value Content input
+	 * @return string Content output
+	 * @todo Define visibility
+	 */
+	public function TS_images_rte($value) {
+		$siteUrl = $this->siteUrl();
+		$sitePath = str_replace(\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST'), '', $siteUrl);
+		// Split content by <img> tags and traverse the resulting array for processing:
+		$imgSplit = $this->splitTags('img', $value);
+		foreach ($imgSplit as $k => $v) {
+			// image found:
+			if ($k % 2) {
+				// Init
+				$attribArray = $this->get_tag_attributes_classic($v, 1);
+				$absRef = trim($attribArray['src']);
+				// Unless the src attribute is already pointing to an external URL:
+				if (strtolower(substr($absRef, 0, 4)) != 'http') {
+					$isMagicImage = FALSE;
+					$fileFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
+					$magicFolder = $fileFactory->getFolderObjectFromCombinedIdentifier(
+						$this->rteImageStorageDir()
+					);
+					if ($magicFolder instanceof \TYPO3\CMS\Core\Resource\Folder) {
+						$magicFolderPath = $magicFolder->getPublicUrl();
+						$pathPre = $magicFolderPath . 'RTEmagicC_';
+						if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($attribArray['src'], $pathPre)) {
+							$isMagicImage = TRUE;
+						}
+					}
+					if ($attribArray['data-htmlarea-file-uid'] && !$isMagicImage) {
+						$fileObject = $fileFactory->getFileObject($attribArray['data-htmlarea-file-uid']);
+						$filePath = $fileObject->getForLocalProcessing(FALSE);
+						$attribArray['src'] = $siteUrl . substr($filePath, strlen(PATH_site));
+					} else {
+						$attribArray['src'] = substr($attribArray['src'], strlen($this->relBackPath));
+						// if site is in a subpath (eg. /~user_jim/) this path needs to be removed because it will be added with $siteUrl
+						$attribArray['src'] = preg_replace('#^' . preg_quote($sitePath, '#') . '#', '', $attribArray['src']);
+						// If the image is not magic and does not have a file uid, try to add the uid
+						if (!$attribArray['data-htmlarea-file-uid'] && !$isMagicImage) {
+							try {
+								$fileOrFolderObject = $fileFactory->retrieveFileOrFolderObject($attribArray['src']);
+								if ($fileOrFolderObject instanceof \TYPO3\CMS\Core\Resource\FileInterface) {
+									$fileIdentifier = $fileOrFolderObject->getIdentifier();
+									$fileObject = $fileOrFolderObject->getStorage()->getFile($fileIdentifier);
+									$attribArray['data-htmlarea-file-uid'] = $fileObject->getUid();
+									$attribArray['data-htmlarea-file-table'] = 'sys_file';
+								}
+							} catch(\Exception  $e) {
+								if ($e instanceof \TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException OR $e instanceof \TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException) {
+									// no file or folder - nothing to do
+								} else {
+									// Rethrow the Exception
+									throw $e;
+								}
+							}
+						}
+						$attribArray['src'] = $siteUrl . $attribArray['src'];
+					}
+					if (!isset($attribArray['alt'])) {
+						$attribArray['alt'] = '';
+					}
+					$params = \TYPO3\CMS\Core\Utility\GeneralUtility::implodeAttributes($attribArray);
+					$imgSplit[$k] = '<img ' . $params . ' />';
+				}
+			}
+		}
+		// Return processed content:
+		return implode('', $imgSplit);
 	}
 
 	/**
